@@ -10,7 +10,7 @@ Distributed as a Claude Code plugin named `metasci` (see `.claude-plugin/plugin.
 
 ## Skill Architecture
 
-Skills live under `skills/` in five category folders. Each skill is a directory with `SKILL.md` plus optional `references/`, `scripts/`, `templates/`.
+Skills live under `skills/` in four category folders. Each skill is a directory with `SKILL.md` plus optional `references/`, `scripts/`, `templates/`.
 
 ```
 skills/
@@ -20,26 +20,25 @@ skills/
 │   ├── socrates/       # Socratic maieutic dialogue
 │   ├── picasso/        # visual director → image-generation prompts
 │   └── feynman-digest/ # Teach-Back comprehension digest
-├── writing/        # academic writing & style transfer
+├── writing/        # academic writing, style transfer, review & proofreading
 │   ├── meta-writing/
 │   ├── meta-rewriting/
 │   ├── meta-rewriting-antiai/
 │   ├── meta-rewriting-loop/
-│   └── meta-styling/
-├── extraction/     # PDF → structured analysis layers
-│   ├── extraction-knowledge/
-│   ├── extraction-logic/
-│   └── extraction-vocab/
-├── review/         # draft review & proofreading
+│   ├── meta-styling/
 │   ├── meta-review/
 │   ├── paper-proofreader/
 │   ├── paper-proofreader-v2/
 │   └── paper-proofreader_evidence/
+├── extraction/     # PDF → structured analysis layers
+│   ├── extraction-knowledge/
+│   ├── extraction-logic/
+│   └── extraction-vocab/
 └── research/       # autonomous data-driven research
     └── agentic-research/
 ```
 
-The plugin manifest registers these five category folders in its `skills` array, so each skill loads as `skills/<category>/<name>/SKILL.md`.
+The plugin manifest registers these four category folders in its `skills` array, so each skill loads as `skills/<category>/<name>/SKILL.md`.
 
 ## Key Conventions
 

@@ -9,9 +9,8 @@ Skills are organized into five categories under `skills/`:
 ```
 skills/
 ├── persona/      virgil · beatrice · socrates · picasso · feynman-digest
-├── writing/      meta-writing · meta-rewriting · meta-rewriting-antiai · meta-rewriting-loop · meta-styling
+├── writing/      meta-writing · meta-rewriting · meta-rewriting-antiai · meta-rewriting-loop · meta-styling · meta-review · paper-proofreader · paper-proofreader-v2 · paper-proofreader_evidence
 ├── extraction/   extraction-knowledge · extraction-logic · extraction-vocab
-├── review/       meta-review · paper-proofreader · paper-proofreader-v2 · paper-proofreader_evidence
 └── research/     agentic-research
 ```
 
@@ -359,7 +358,7 @@ Research_{topic}/           # Agentic research output
 
 ### v1.0.0 (Current)
 - Renamed `Meta_researcher` → `METASCI`; plugin name `meta-researcher` → `metasci`
-- Reorganized skills into five categories: persona, writing, extraction, review, research
+- Reorganized skills into four categories: persona, writing (incl. review/proofreading), extraction, research
 - Documented persona skills (virgil, beatrice, socrates, picasso, feynman-digest)
 - Slimmed feynman-digest; fixed `.claude-plugin/plugin.json` skill paths and removed the dead top-level `plugin.json`
 

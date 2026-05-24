@@ -1,6 +1,21 @@
-# Meta_researcher
+# METASCI
 
-A Claude Code skill set for analyzing research papers (PDF) and supporting academic writing — covering knowledge extraction, style analysis, logic/structure mapping, vocabulary inventory, multi-source writing, multi-reviewer draft improvement, and autonomous data-driven research.
+A personal Claude Code skill collection in two domains: **academic research** (paper analysis and writing) and **dialogue personas** (guided explanation and creative direction). Formerly `Meta_researcher`.
+
+## Structure
+
+Skills are organized into five categories under `skills/`:
+
+```
+skills/
+├── persona/      virgil · beatrice · socrates · picasso · feynman-digest
+├── writing/      meta-writing · meta-rewriting · meta-rewriting-antiai · meta-rewriting-loop · meta-styling
+├── extraction/   extraction-knowledge · extraction-logic · extraction-vocab
+├── review/       meta-review · paper-proofreader · paper-proofreader-v2 · paper-proofreader_evidence
+└── research/     agentic-research
+```
+
+The detailed sections below document the academic-research skills; the persona skills are summarized under "Persona skills".
 
 ## Overview
 
@@ -49,9 +64,13 @@ A Claude Code skill set for analyzing research papers (PDF) and supporting acade
 
 ## Installation
 
-### For Claude Code
+### As a plugin
 
-Copy the `skills/` folder to your project's `.claude/skills/` directory, or to `~/.claude/skills/` for global access:
+This repository is a Claude Code plugin (`metasci`); skills load from the category folders under `skills/` (configured in `.claude-plugin/plugin.json`). Point Claude Code at a clone with `claude --plugin-dir /path/to/METASCI`.
+
+### Manual copy
+
+Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude/skills/` for global access, or a project's `.claude/skills/`. The trees below illustrate per-skill file layouts:
 
 ```
 ~/.claude/skills/                    # Global (available in all projects)
@@ -87,7 +106,7 @@ Copy the `skills/` folder to your project's `.claude/skills/` directory, or to `
 
 ## Skills
 
-### v0.7.0 (Current)
+### Research skills
 
 | Skill | Description | Output |
 |-------|-------------|--------|
@@ -99,6 +118,16 @@ Copy the `skills/` folder to your project's `.claude/skills/` directory, or to `
 | meta-styling | Extract lexical style patterns (A) / Revise draft to match (B) | `Style_{topic}/` |
 | meta-review | Multi-reviewer draft improvement using logic+vocab extractions | `Review_{timestamp}/` |
 | agentic-research | Autonomous data-driven scientific discovery with iterative analysis | `Research_{topic}/` |
+
+### Persona skills
+
+| Skill | Description |
+|-------|-------------|
+| virgil | Adaptive incremental explanation — guides through a topic one segment at a time, pausing for confirmation |
+| beatrice | One-shot complete explanation — the whole logical arc at once; sister skill to virgil |
+| socrates | Socratic dialogue through maieutic questioning |
+| picasso | Visual director — turns concepts into image-generation prompts |
+| feynman-digest | Teach-Back digest — restates the prior explanation from the listener's perspective |
 
 ---
 
@@ -328,7 +357,13 @@ Research_{topic}/           # Agentic research output
 
 ## Version History
 
-### v0.7.0 (Current)
+### v1.0.0 (Current)
+- Renamed `Meta_researcher` → `METASCI`; plugin name `meta-researcher` → `metasci`
+- Reorganized skills into five categories: persona, writing, extraction, review, research
+- Documented persona skills (virgil, beatrice, socrates, picasso, feynman-digest)
+- Slimmed feynman-digest; fixed `.claude-plugin/plugin.json` skill paths and removed the dead top-level `plugin.json`
+
+### v0.7.0
 - Added meta-rewriting skill (one-shot style transfer pipeline)
 - Renamed skills for consistency: extraction-{target} + meta-{action} convention
 - Updated all cross-references across skills, CLAUDE.md, and README

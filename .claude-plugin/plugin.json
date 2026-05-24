@@ -1,11 +1,12 @@
 {
-  "name": "meta-researcher",
-  "description": "Academic paper analysis and writing toolkit. Extract knowledge, analyze structure/logic/vocabulary/style from research papers (PDF), and support academic writing with multi-reviewer draft improvement.",
-  "version": "0.7.1",
+  "name": "metasci",
+  "description": "METASCI — a personal Claude Code skill collection spanning academic research (knowledge/logic/vocabulary extraction, writing, rewriting, multi-reviewer proofreading, agentic research) and dialogue personas (Virgil, Beatrice, Socrates, Picasso, Feynman digest). Supports AI collaboration based on Gemini CLI.",
+  "version": "1.0.0",
   "author": {
     "name": "KKH"
   },
   "license": "MIT",
+  "repository": "https://github.com/kkhgeo/METASCI",
   "keywords": [
     "research",
     "knowledge-extraction",
@@ -16,7 +17,17 @@
     "draft-review",
     "multi-reviewer",
     "logic-extraction",
-    "vocab-extraction"
+    "vocab-extraction",
+    "agentic-research",
+    "persona",
+    "dialogue",
+    "teaching"
   ],
-  "skills": "./skills/"
+  "skills": [
+    "skills/persona",
+    "skills/writing",
+    "skills/extraction",
+    "skills/review",
+    "skills/research"
+  ]
 }

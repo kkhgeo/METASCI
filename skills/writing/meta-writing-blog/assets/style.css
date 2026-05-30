@@ -1,5 +1,5 @@
 /* ===========================================================================
-   distill-paper-blog — custom styles
+   meta-writing-blog — custom styles
    Only what the Distill template.v2.js does NOT already give us:
      1. a Korean webfont for .lang-ko text
      2. the bilingual language-toggle visibility rules + toggle UI
@@ -18,17 +18,20 @@
 }
 
 /* --- 2. Bilingual language toggle ----------------------------------------- */
-/* Default (no class on body, or .show-both): show both languages, EN first.   */
+/* Korean-primary: the page opens with body.show-ko (Korean only). The toggle
+   switches to .show-en (English only) or to neither class (둘 다 = both).
+   In both-mode the Korean block is authored first, so Korean reads on top.     */
 body.show-en .lang-ko { display: none; }
 body.show-ko .lang-en { display: none; }
 
-/* Give the Korean block a subtle left rule when both are shown, so the eye can
-   tell the two languages apart. Removed when only one language is visible.     */
-body:not(.show-en):not(.show-ko) .lang-ko {
+/* In 둘 다 mode, give the secondary (English) block a subtle left rule and a
+   muted tone so the eye can tell it from the primary Korean. Removed when only
+   one language is visible.                                                      */
+body:not(.show-en):not(.show-ko) .lang-en {
   border-left: 2px solid #e6e6e6;
   padding-left: 0.9em;
   margin-top: 0.2em;
-  color: #3c3c3c;
+  color: #555;
 }
 
 /* The floating toggle control */

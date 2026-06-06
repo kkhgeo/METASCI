@@ -1,0 +1,11 @@
+{
+  "_comment": "Reference only. Paths are machine-specific. Prefer scripts/install-hooks.mjs (auto-generates absolute paths). Replace <ABSOLUTE_PATH_TO> with the folder where this skill lives.",
+  "hooks": {
+    "SessionStart": [
+      { "hooks": [ { "type": "command", "command": "node \"<ABSOLUTE_PATH_TO>/metasci-memory/hooks/inject-memory.mjs\"" } ] }
+    ],
+    "Stop": [
+      { "hooks": [ { "type": "command", "command": "node \"<ABSOLUTE_PATH_TO>/metasci-memory/hooks/record-turn.mjs\"" } ] }
+    ]
+  }
+}

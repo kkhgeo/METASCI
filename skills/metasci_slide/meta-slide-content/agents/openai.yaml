@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Slide Content"
+  short_description: "Plan research presentation content"
+  default_prompt: "Use $meta-slide-content to turn this source material into a research presentation plan."

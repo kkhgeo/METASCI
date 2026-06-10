@@ -8,12 +8,9 @@
 - `Style_EIA_Review/` — 스타일 추출 결과 (`metasci-style-extraction` 산출)
   - `KimKH2020_style.md`, `KEI2022_style.md`
 
-## 발간물 원본 PDF는 여기 없음 (의도적)
+## 발간물 원본 PDF는 보관하지 않음
 
-저작권(KEI)·공개 저장소 노출·용량 문제로, 원본 PDF 2편
-(2020 EIA Review v4, 2022 EIA Review v1)은 이 **공개** 저장소에 올리지 않는다.
-PDF 원본은 로컬에만 보관한다:
-
-```
-Z:\KKH_Knowledge\Meta_researcher\kkh_korean_tone\
-```
+원본 PDF 2편(2020 EIA Review v4, 2022 EIA Review v1)은 저작권(KEI)·용량 때문에
+이 공개 저장소에 올리지 않으며, 로컬 사본도 보관하지 않는다.
+필요 시 KEI / 저널(EIA Review)에서 재취득한다.
+Blueprint 갱신에는 위 Logic/Style 추출 `.md`로 충분하다.

@@ -69,7 +69,7 @@ Parse response:
 For top-ranked papers, attempt full text access:
 
 1. **PMC:** search `site:ncbi.nlm.nih.gov/pmc`
-2. **Unpaywall:** `https://api.unpaywall.org/v2/{DOI}?email=user@example.com`
+2. **Unpaywall:** `https://api.unpaywall.org/v2/{DOI}?email=kkhgeo@gmail.com`
 3. **arXiv:** `https://arxiv.org/abs/{ID}`
 
 If no full text: proceed with abstract (notify user).

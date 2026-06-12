@@ -134,7 +134,7 @@ Select top 3-5 papers. Add to `knowledge_bank.sources[]` with `origin: "web"`.
 
 **Full text access attempt (for top-ranked papers):**
 1. PMC: search `site:ncbi.nlm.nih.gov/pmc`
-2. Unpaywall: `https://api.unpaywall.org/v2/{DOI}?email=user@example.com`
+2. Unpaywall: `https://api.unpaywall.org/v2/{DOI}?email=kkhgeo@gmail.com`
 3. arXiv: `https://arxiv.org/abs/{ID}`
 
 If no full text available, proceed with abstract only and notify orchestrator.
@@ -158,12 +158,16 @@ writing_files = files where type in [
 
 **Step 4b — Apply distribution case.**
 
-| Case | Condition | R1 | R2 | R3 | R4 |
-|---|---|---|---|---|---|
-| A | 4+ content files | writing-manual + Group A | writing-manual + Group B | writing-manual only | nothing |
-| B | 2-3 content files | writing-manual + all content | writing-manual + all writing | writing-manual only | nothing |
-| C | 0-1 files | writing-manual + available | writing-manual only | (skip) | nothing |
-| D | 0 knowledge files | writing-manual only | (skip) | (skip) | nothing |
+| Case | Condition | R1 | R2 | R3 | R4 | R5 |
+|---|---|---|---|---|---|---|
+| A | 4+ content files | writing-manual + Group A | writing-manual + Group B | writing-manual only | nothing | nothing |
+| B | 2-3 content files | writing-manual + all content | writing-manual + all writing | writing-manual only | nothing | nothing |
+| C | 0-1 files | writing-manual + available | writing-manual only | (skip) | nothing | nothing |
+| D | 0 knowledge files | writing-manual only | (skip) | (skip) | nothing | nothing |
+
+R4 and R5 carry no knowledge by design (persona-only reviewers) and stay
+active in every case. See `knowledge/distribution_strategy.md` for the
+full case definitions and reviewer counts.
 
 **Step 4c — Balance check.**
 - No reviewer should have more than 5 files
@@ -178,12 +182,13 @@ Present to user (in Korean):
 ---
 ### Knowledge Distribution
 
-| Reviewer | Files | Focus |
+| 리뷰어 | 자료 | 관점 |
 |---|---|---|
 | R1 | [file1], [file2], [file3] | [focus description] |
 | R2 | [file4], [file5] | [focus description] |
-| R3 | writing-manual only | Rule baseline |
-| R4 | (none) | LLM judgment |
+| R3 | writing-manual만 | 규칙 기준선 |
+| R4 | (없음) | 일반 학술 리뷰어 (LLM 판단) |
+| R5 | (없음) | 인접 분야 과학자 독자 |
 
 Total: [N] knowledge files across [M] reviewers
 
@@ -203,8 +208,8 @@ If the user adjusts distribution before approval:
 | `"R2에서 [file] 빼"` | Remove file from R2's group |
 | `"분배 다시 해줘"` | Re-run Phase 4 from scratch |
 | `"파일 추가: [path]"` | Run Phases 1-2 on new file, then re-distribute |
-| `"리뷰어 3명만"` | Drop R3 or R4 (user's choice) |
-| `"리뷰어 2명만"` | Keep R1 + R4 only |
+| `"리뷰어 [N]명만"` | Reduce to N reviewers — confirm which to keep; suggested drop order: R3 → R2 → R5, keeping R1 + R4 as the minimum pair |
+| `"R[n] 빼줘"` | Drop that specific reviewer |
 
 After any override, regenerate the distribution summary table for re-approval.
 

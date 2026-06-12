@@ -14,6 +14,7 @@ session = {
 
     // Paper content
     paper_path: str,
+    paper_authors: [str],     // for Agent B self-citation detection
     sections: [{ name, text, para_count }],
 
     // Knowledge
@@ -34,6 +35,8 @@ session = {
     corrections: [{ level, section, para_idx, sent_idx, original, revised, basis }],
     skipped: [{ section, para_idx, sent_idx }],
     ref_cache: { "Author (Year)": { status, title, doi } },
+    numeric_cache: [{ paragraph_value, elsewhere_value, location,
+                      verdict, severity }],  // Agent B Step 0 results
 
     // Metrics
     deliberation_stats: { ... },  // see deliberation.md
@@ -58,6 +61,8 @@ session = {
 - Corrections list (revision history)
 - Skipped items
 - Reference cache (verified citations)
+- Numeric cache (Agent B integrity results)
+- Paper authors
 - Knowledge distribution plan
 - Deliberation stats
 

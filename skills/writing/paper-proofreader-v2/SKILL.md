@@ -2,7 +2,7 @@
 name: paper-proofreader-v2
 description: >
   Multi-reviewer academic paper proofreading with knowledge-distributed
-  deliberation. 2-4 reviewers with identical instructions but different
+  deliberation. 2-5 reviewers with identical instructions but different
   knowledge allocations review the same text in parallel, then deliberate
   to reach consensus. Supports 3 modes: Paper (full draft), Section,
   and Paragraph (with sentence-level review). Local knowledge files
@@ -19,27 +19,24 @@ description: >
 
 ## 1. Environment
 
-- **Runtime:** Claude Code with SendMessage for parallel reviewer sub-agents
+- **Runtime:** Claude Code; reviewers run as parallel sub-agents
+  (one **Agent tool** call per reviewer, all in a single response)
 - **Output language:** All user-facing output in Korean (한국어)
 - **Agent internal prompts:** English (for optimal LLM performance)
 - **English original text:** Always displayed alongside Korean explanation
 - **User input style:** Korean or English, free-form; see `config/navigation.md` for input mapping
-- **Tools used:** Read, Glob, Grep, WebSearch, WebFetch, SendMessage
-- **Visual format:** v5 box+line hybrid Tier system, defined in
-  `config/output_format.md`. **Every structural block is rendered inside
-  a fenced code block** (triple backticks) — this is non-negotiable, and
-  the only reason boxes/lines align under Korean text. **No ANSI color**
-  (the markdown renderer strips it). Severity shapes `▲ ● ○ ■` carry
-  the severity signal alone. **Box width: ~100 chars.** Use **full
-  boxes** (`┌─┐ │ └─┘`) only for English-only content (English original
-  quotes) and the Tier 1 priority table — these can reliably align right
-  edges. Use **line pattern** (top+bottom horizontal rules `══` or `──`,
-  no right edge) for Korean labels, intent tables, conflict R1/R4 sides,
-  navigation/action prompts — anywhere right-edge alignment under Korean
-  width math would break the box. **Translation** stays in a `┌─ 번역 ─┐`
-  full box, with conservative content (5+ char buffer inside). Default
-  to **Tier 1** (compact Top-3); user opens Tier 2 single card via
-  `"1번"`/`"#3 자세히"`, Tier 3 full list via `"다 보여줘"`.
+- **Tools used:** Read, Glob, Grep, WebSearch, WebFetch, Agent
+- **Visual format:** `config/output_format.md` (v12 — lines only) is the
+  **single source of truth** for all rendering. Summary of v12: no
+  `┌─┐` full boxes, no blockquote, no italics, no ANSI color, no emoji
+  other than severity shapes `■ ▲ ● ○`. Structure comes from horizontal
+  rules (`══` major / `──` minor, ~100 chars); body text is plain prose
+  outside code blocks with `**bold**` on citations and key terms; the
+  Tier 1 priority table is the only element kept inside a fenced code
+  block. Default to **Tier 1** (compact Top-3); user opens Tier 2 single
+  card via `"1번"`/`"#3 자세히"`, Tier 3 full list via `"다 보여줘"`.
+  Any formatting example elsewhere in this skill is illustrative —
+  when in doubt, `config/output_format.md` wins.
 
 ---
 
@@ -50,7 +47,7 @@ paper-proofreader-v2/
 ├── SKILL.md                              ← This file (orchestrator)
 ├── agents/
 │   ├── agent_e.md                        ← Knowledge Bank Builder
-│   ├── agent_reviewer.md                 ← Universal Reviewer Prompt Template (R1-R4)
+│   ├── agent_reviewer.md                 ← Universal Reviewer Prompt Template (R1-R5)
 │   └── agent_b.md                        ← Reference Verification
 ├── config/
 │   ├── navigation.md                     ← Mode switching & user input mapping
@@ -122,8 +119,13 @@ Parse the user's request to extract:
 | `paper_path` | User provides file or folder path | `Z:/KKH_Research/Project/Draft/discussion.md` |
 | `section` | Explicit or inferred from filename | `Discussion` |
 | `target_journal` | User states or null | `"Geoderma"` |
+| `paper_authors` | Title page / frontmatter / ask user if absent | `["Kim", "Lee"]` |
 | `knowledge_path` | Explicit path or auto-discovered | `Z:/KKH_Research/Project/Knowledge/` |
 | `mode` | User intent or default | `paper`, `section`, `paragraph` |
+
+`paper_authors` is stored in session state and used by Agent B for
+self-citation detection (`agents/agent_b.md` Step 7). If it cannot be
+inferred from the draft, ask the user once during initialization.
 
 If the user pastes text directly without a file path, treat as Mode 3 (paragraph).
 See `config/navigation.md` for full input mapping.
@@ -168,12 +170,13 @@ Display the distribution table (in Korean):
 ---
 ### Knowledge Distribution
 
-| Reviewer | Files | Focus |
+| 리뷰어 | 자료 | 관점 |
 |---|---|---|
 | R1 | [files] | [focus] |
 | R2 | [files] | [focus] |
-| R3 | writing-manual only | Rule baseline |
-| R4 | (none) | LLM judgment |
+| R3 | writing-manual만 | 규칙 기준선 |
+| R4 | (없음) | 일반 학술 리뷰어 (LLM 판단) |
+| R5 | (없음) | 인접 분야 과학자 독자 |
 
 Total: [N] knowledge files across [M] reviewers
 
@@ -181,6 +184,8 @@ Total: [N] knowledge files across [M] reviewers
 *"이대로 진행" / "분배 변경" / "파일 추가: [경로]"*
 ```
 
+Rows shown depend on the distribution case (A-D) from
+`knowledge/distribution_strategy.md` — list only the active reviewers.
 Wait for user approval. Handle overrides per `knowledge/distribution_strategy.md`
 User Override section.
 
@@ -191,14 +196,15 @@ User Override section.
 **Entry:** User says "전체 초고 봐줘", "논문 전체 검토", "full draft", etc.
 
 **Context loading:** Follow `harness/context_loading.md` Mode 1 rules.
-Load only each section's first 2 sentences + `writing-manual/INDEX.md` routing table.
+Load the full draft text + `writing-manual/INDEX.md` routing table.
 
 ### 5a. Run Reviewers in Parallel
 
-Launch R1-R4 (or however many active reviewers) in parallel via SendMessage.
+Launch all active reviewers (R1-R5, per the distribution case) in
+parallel — one Agent tool call per reviewer, all in a single response.
 Each reviewer receives the prompt from `agents/agent_reviewer.md` with:
 - `{mode}` = `paper`
-- `{target_text}` = section summaries (first 2 sentences per section)
+- `{target_text}` = the full draft (all sections, complete text)
 - `{allocated_knowledge}` = per distribution plan
 - `{writing_manual_content}` = INDEX.md only (not full section files)
 
@@ -233,19 +239,21 @@ Or drill-down from Mode 1.
 
 **Context loading:** Follow `harness/context_loading.md` Mode 2 rules.
 - Read full section text
-- Read section-specific writing-manual file (from INDEX.md routing)
-- Read `cross_section/cohesion_flow.md` + `cross_section/stance_hedging.md`
+- Read the writing-manual files listed in the section's
+  `writing-manual/INDEX.md` Step 1 routing row (section file +
+  that row's cross-section files) — the routing table is the single
+  source of truth for which manual files load per section
 - Match knowledge_index to section keywords
 - Full-read matched knowledge files (Phase 2 load if not yet loaded)
 
 ### 6a. Run Reviewers in Parallel
 
-Launch R1-R4 via SendMessage with:
+Launch all active reviewers in parallel (one Agent tool call each) with:
 - `{mode}` = `section`
 - `{target_text}` = full section text
 - `{section_name}` = section name
 - `{allocated_knowledge}` = per distribution (re-matched to section keywords)
-- `{writing_manual_content}` = section file + cross-section files
+- `{writing_manual_content}` = files from the INDEX.md routing row
 
 Mode-specific focus: STRUCTURE primary (paragraph arrangement),
 LOGIC + HEDGING secondary.
@@ -297,9 +305,9 @@ interpretation of the paragraph's intent:
 
 Wait for user confirmation or correction. Store as `{confirmed_intent}`.
 
-### 7b. Paragraph-Level Review by R1-R4
+### 7b. Paragraph-Level Review by All Active Reviewers
 
-Launch R1-R4 in parallel with:
+Launch all active reviewers in parallel (one Agent tool call each) with:
 - `{mode}` = `paragraph`
 - `{target_text}` = paragraph (with surrounding context)
 - `{confirmed_intent}` = user-confirmed intent
@@ -323,7 +331,7 @@ For each sentence:
    **[KR]** `[번역]`
    ```
 
-2. Launch R1-R4 in parallel via SendMessage.
+2. Launch all active reviewers in parallel (one Agent tool call each).
    Each reviewer gets the sentence + paragraph context + confirmed intent
    + their allocated knowledge + writing-manual content.
    All six criteria checked at sentence level.
@@ -367,7 +375,7 @@ Agent B following `agents/agent_b.md`:
 #### 레퍼런스 확인
 | REF | 상태 | 제목 | DOI |
 |---|---|---|---|
-| Author (Year) | 확인됨 / 미확인 | [...] | [...] |
+| Author (Year) | `○ 확인됨` / `● 추정` / `▲ 미확인` | [...] | [...] |
 
 ---
 *"다음 단락" / "이 단락 다시" / "섹션으로"*

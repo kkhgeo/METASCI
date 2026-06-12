@@ -9,7 +9,7 @@ Verify the **load-bearing facts** of a reviewed paragraph:
 3. **Secondary-source flagging** — quantitative claims cited only through
    reviews/textbooks are surfaced for the user to trace to primary sources
 
-This agent is the integrity layer: clarity issues are handled by R1-R4,
+This agent is the integrity layer: clarity issues are handled by R1-R5,
 but a wrong number or a missing citation is a credibility failure that
 deliberation cannot catch from text alone.
 
@@ -18,7 +18,7 @@ deliberation cannot catch from text alone.
 ## Trigger
 
 Agent B runs automatically after a paragraph's sentence-level review
-is complete (all sentences in the paragraph have been reviewed by R1-R4
+is complete (all sentences in the paragraph have been reviewed by R1-R5
 and deliberation is done). It runs as a single batch covering three
 sub-steps in order:
 
@@ -231,6 +231,9 @@ by topic keywords), suggest them by name. Cross-check with
 
 ### Step 7: Self-citation chain detection (optional)
 
+The paper's own author group is `session.paper_authors` (collected at
+SKILL.md Step 0b; if empty, skip this step silently).
+
 Build a simple graph: if the citation matches the paper's own author group
 AND that citation, in turn, cites the same author group as its own primary
 source for the claim, mark `CIRCULAR_SELF_CITATION` with severity MEDIUM.
@@ -243,28 +246,32 @@ references; if unavailable, skip silently.
 
 Present results to user (in Korean) as **three sub-blocks**, in order:
 
+All sub-block headers use the v12 3-line pattern (`──` / `**라벨**` / `──`)
+from `config/output_format.md`.
+
 #### Sub-block A — 숫자 정합성 (Step 0 results)
 
 ```markdown
-#### 숫자 정합성 검토
+──────────────────────────────────────────────────────────────────────────────────────────────────
+**숫자 정합성 검토**
+──────────────────────────────────────────────────────────────────────────────────────────────────
 
 | 위치 | 토큰 | 다른 위치 값 | 판정 | 심각도 |
 |---|---|---|---|---|
-| 단락 N, 문장 M | "N = 120" | Methods: "N = 125" | UNCONSISTENT | CRITICAL |
+| 단락 N, 문장 M | "N = 120" | Methods: "N = 125" | INCONSISTENT | CRITICAL |
 | 단락 N, 문장 M | "60% (n = 38/100)" | (paragraph internal) | MATH_ERROR | CRITICAL |
 | 단락 N, 문장 M | "12.34 mg/g" | Table 2: "12.3 ± 0.4" | SIG_FIG_DRIFT | MEDIUM |
 ```
 
 If no inconsistencies:
 ```markdown
-#### 숫자 정합성 검토
-이 단락의 숫자가 다른 섹션과 일치합니다.
+**숫자 정합성 검토** — 이 단락의 숫자가 다른 섹션과 일치합니다.
 ```
 
 If only single-paragraph context (Mode 3 standalone):
 ```markdown
-#### 숫자 정합성 검토
-[paragraph-internal check only — 다른 섹션 미제공]
+**숫자 정합성 검토** — paragraph-internal check only (다른 섹션 미제공)
+
 | 항목 | 결과 |
 |---|---|
 | 백분율 ↔ 원시 카운트 | OK / 불일치 |
@@ -274,14 +281,16 @@ If only single-paragraph context (Mode 3 standalone):
 #### Sub-block B — 레퍼런스 확인 (Steps 1-5 results)
 
 ```markdown
-#### 레퍼런스 확인
+──────────────────────────────────────────────────────────────────────────────────────────────────
+**레퍼런스 확인**
+──────────────────────────────────────────────────────────────────────────────────────────────────
 
 | REF | 상태 | 제목 | DOI |
 |---|---|---|---|
-| Author (Year) | FOUND | [Paper title] | [DOI or N/A] |
-| Author et al. (Year) | FOUND | [Paper title] | [10.xxxx/...] |
-| Author (Year) | LIKELY | [Probable title] | [DOI or N/A] |
-| Author et al. (Year) | NOT_FOUND | - | - |
+| Author (Year) | `○ 확인됨` | [Paper title] | [DOI or N/A] |
+| Author et al. (Year) | `○ 확인됨` | [Paper title] | [10.xxxx/...] |
+| Author (Year) | `● 추정` | [Probable title] | [DOI or N/A] |
+| Author et al. (Year) | `▲ 미확인` | - | - |
 ```
 
 #### Sub-block C — 2차 인용 경고 (Step 6 results)
@@ -305,17 +314,20 @@ If `CIRCULAR_SELF_CITATION` detected:
 
 If neither detected:
 ```markdown
-#### 2차 인용 경고
-이 단락의 정량 인용은 1차 자료에서 가져왔습니다.
+**2차 인용 경고** — 이 단락의 정량 인용은 1차 자료에서 가져왔습니다.
 ```
 
 ### Status Display
 
-| Status | Korean display | Icon |
-|---|---|---|
-| `FOUND` | 확인됨 | (none) |
-| `LIKELY` | 추정 (제목 미확인) | (none) |
-| `NOT_FOUND` | 미확인 | warning |
+| Status | Korean display |
+|---|---|
+| `FOUND` | `○ 확인됨` |
+| `LIKELY` | `● 추정` (제목 미확인) |
+| `NOT_FOUND` | `▲ 미확인` |
+
+These three markers are the canonical status vocabulary — used
+identically here, in `config/output_format.md`, and in SKILL.md
+summaries. Severity shapes only; no other icons.
 
 ### NOT_FOUND Warning
 
@@ -338,7 +350,7 @@ If the paragraph contains no citations:
 ```
 
 ### Self-citation
-If the citation author matches the paper's own author:
+If the citation author matches `session.paper_authors`:
 Mark as `SELF` — do not web-search, just note it.
 
 ### Citation in table/figure caption
@@ -375,8 +387,11 @@ Agent B results are stored in `session.ref_cache` and `session.numeric_cache`, a
 - `deliberation_stats.numeric_inconsistencies` counter (new)
 - `deliberation_stats.secondary_citations_flagged` counter (new)
 
-These counters feed directly into the **Top-N Priority Sort** in
-`harness/deliberation.md`. Numeric inconsistencies receive `category_weight +3`,
-secondary-source citations receive `+2`, and citation NOT_FOUND receives `+3` —
-making integrity findings naturally outrank stylistic ones in the closing
-priority block.
+These counters feed the **Top-N Priority Sort** in `harness/deliberation.md`
+**from the point Agent B has run** — i.e., the Mode 3 paragraph-completion
+view and the session summary (Agent B triggers only after a paragraph's
+sentence-level review, so Mode 1/2 closing blocks cannot contain its
+findings). Where they do enter the pool: numeric inconsistencies receive
+`category_weight +3`, secondary-source citations `+2`, and citation
+NOT_FOUND `+3` — making integrity findings naturally outrank stylistic
+ones.

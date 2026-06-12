@@ -19,13 +19,16 @@ This manual guides an AI proofreading agent to evaluate and improve **advanced s
 | Conclusion | `sections/07_conclusion.md` + `cross_section/stance_hedging.md` |
 
 ### Step 2 — Apply cross-section principles always
-These files apply to **every section** regardless:
+The **principles** in these files apply to every section. The **files
+load progressively** (see `harness/context_loading.md`): in Mode 2,
+load only the cross-section files listed in the section's Step 1
+routing row; in Mode 3 (sentence level), load all of them.
 - `cross_section/cohesion_flow.md` — Given-New, thematic progression, paragraph architecture, **Banana Rule (terminological consistency)**, **acronym discipline**
 - `cross_section/sentence_craft.md` — Nominalization, voice, subject-verb, tense
 - `cross_section/stance_hedging.md` — Hedges, boosters, self-mention, engagement markers
 - `cross_section/clutter_redundancy.md` — Dead-weight phrases, intro-phrase deletion, lexical redundancy (Sainani-style clutter audit)
 
-### Step 3 — Check for advanced non-native writer issues
+### Step 3 — Check for advanced non-native writer issues (Mode 3)
 - `cross_section/advanced_nns_issues.md` — Collocation, register, article use, discourse-level errors
 
 ### Step 4 — Apply integrity audit (Mode 1 always; Mode 2/3 when numeric/citation content present)

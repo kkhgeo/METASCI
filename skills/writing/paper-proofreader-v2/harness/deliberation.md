@@ -3,7 +3,7 @@
 ## Purpose
 
 Define how to compare, classify, and present results from
-multiple reviewers (R1–R4) who independently reviewed the same text.
+multiple reviewers (R1–R5) who independently reviewed the same text.
 
 ---
 
@@ -78,8 +78,9 @@ Header line: `발견자: R1 단독` (replace with the actual reviewer ID).
 Reviewers propose contradictory changes to the same text.
 
 Use **card 2c** (conflict layout). Both reviewers' suggestions and
-rationales appear in their own labeled boxes side-by-side (vertically
-stacked, each in `┌─ R[n] 의견 ─┐`).
+rationales appear in their own labeled sub-sections, vertically stacked,
+each under a 3-line header (`──` / `**R[n] 의견**` / `──`) per the v12
+card format.
 
 Header line: `의견 충돌:  R1 ↔ R4`.
 
@@ -100,17 +101,18 @@ Within each category, order by severity (HIGH > MEDIUM > LOW).
 ## No-Issue Consensus
 
 If all reviewers agree there are no issues with the current text, use the
-plain box from `config/output_format.md`:
+v12 line pattern from `config/output_format.md`:
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│  전원 동의 — 이 [문장/단락/섹션]에 수정 필요 없음.       │
-└──────────────────────────────────────────────────────────┘
+──────────────────────────────────────────────────────────────────────────────────────────────────
+**전원 동의** — 이 [문장/단락/섹션]에 수정 필요 없음.
 
-┌──────────────────────────────────────────────────────────┐
-│  진행  "다음"  ·  "그래도 자세히 봐줘"                   │
-└──────────────────────────────────────────────────────────┘
+──────────────────────────────────────────────────────────────────────────────────────────────────
+진행 `"다음"` · 상세 `"그래도 자세히 봐줘"`
 ```
+
+(The horizontal rules and prose are emitted as plain text, not inside a
+code block — shown fenced here only for documentation.)
 
 ---
 
@@ -190,9 +192,13 @@ combination of severity, agreement, and category weight:
 ```
 impact_score =
     severity_weight (CRITICAL=4, HIGH=3, MEDIUM=2, LOW=1)
-  + reviewer_agreement (count of reviewers flagging it, max 4)
+  + reviewer_agreement (count of reviewers flagging it, max 5)
   + category_weight
 ```
+
+Note on CRITICAL: reviewers (R1–R5) only emit HIGH/MEDIUM/LOW (see
+`agents/agent_reviewer.md` output schema). CRITICAL enters the pool
+exclusively from Agent B integrity findings (`agents/agent_b.md`).
 
 Where `category_weight` adds priority for findings that affect
 the paper's credibility, not only its style:
@@ -209,24 +215,21 @@ the paper's credibility, not only its style:
 | Clutter / redundancy | +1 |
 | Sentence-craft polish | +0 |
 
+Timing note: the first three categories originate from Agent B, which
+runs only after a paragraph's sentence-level review (Mode 3). In Mode 1
+and Mode 2 Top-N blocks, these categories appear only when a reviewer
+raised the same concern as a FACTUAL finding; once Agent B results exist
+(Mode 3 paragraph completion and session summary), its findings join the
+pool with these weights.
+
 Tie-break order: severity → agreement → location (earlier in document first).
 
 ### Output format
 
-The Top-N priority block is rendered as the **Tier 1 boxed table** from
-`config/output_format.md`:
-
-```
-지금 꼭 봐야 할 [N]가지
-
-┌────┬────────┬─────────────────┬─────────────────────────┐
-│ #  │ 심각도 │ 카테고리        │ 한 줄 요약              │
-├────┼────────┼─────────────────┼─────────────────────────┤
-│ 1  │  ▲     │ [category]      │ [≤25자]                 │
-│ 2  │  ▲     │ [category]      │ [≤25자]                 │
-│ 3  │  ●     │ [category]      │ [≤25자]                 │
-└────┴────────┴─────────────────┴─────────────────────────┘
-```
+The Top-N priority block is rendered as the **Tier 1 priority table**
+exactly as specified in `config/output_format.md` (the table is the one
+element kept inside a fenced code block; ~100 chars wide; one-line
+summaries ≤50자).
 
 Severity → marker mapping: CRITICAL → `■` · HIGH → `▲` · MEDIUM → `●` ·
 LOW → `○`. No other emoji or icon may appear in the table.
@@ -239,23 +242,22 @@ follows the table). The user pulls detail by saying `"1번"` /
 ### Suppression rule
 
 If fewer than N issues exist, list only what exists. If zero issues exist
-across all reviewers, replace the table with:
+across all reviewers, replace the table with the v12 suppression block
+(see `config/output_format.md`):
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│  이 [모드 단위]에서 우선 수정할 항목이 없습니다.         │
-└──────────────────────────────────────────────────────────┘
+──────────────────────────────────────────────────────────────────────────────────────────────────
+이 [모드 단위]에서 우선 수정할 항목이 없습니다.
+──────────────────────────────────────────────────────────────────────────────────────────────────
 ```
 
 ### Interaction with confidence routing
 
-If the top-ranked item has CONFIDENCE: LOW, append a one-line flag box
-**below** the Tier 1 table (before the nav box):
+If the top-ranked item has CONFIDENCE: LOW, append a one-line flag
+**below** the Tier 1 table (before the nav line), in plain prose:
 
 ```
-┌──────────────────────────────────────────────────────────┐
-│  1순위는 신뢰도 낮음 — "검색해봐" 라고 하면 보강합니다.  │
-└──────────────────────────────────────────────────────────┘
+**1순위는 신뢰도 낮음** — `"검색해봐"` 라고 하면 보강합니다.
 ```
 
 The user can say `"검색해봐"` to invoke the web-search supplement before

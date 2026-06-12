@@ -11,16 +11,18 @@ Prevent context overflow by loading only what is needed now.
 
 ### Mode 1: Paper
 
-**Goal:** Broad overview, not details.
+**Goal:** Whole-draft structural judgment. Reviewers need the complete
+argument — structure, arc, and coverage gaps cannot be judged from
+summaries.
 
 | Load | Source | Why |
 |---|---|---|
-| Each section's first 2 sentences | Paper file(s) | Section identification |
+| Full draft text (all sections) | Paper file(s) | Review target |
 | writing-manual/INDEX.md | Skill directory | Routing table only |
 | knowledge_index (metadata only) | Init scan | Show available knowledge |
 
-**Do NOT load:** Full section texts, writing-manual section files,
-full knowledge files, cross_section manuals.
+**Do NOT load:** Writing-manual section files, full knowledge files,
+cross_section manuals (those load in Mode 2/3).
 
 ### Mode 2: Section
 
@@ -29,19 +31,17 @@ full knowledge files, cross_section manuals.
 | Load | Source | Why |
 |---|---|---|
 | Full section text | Paper file | Review target |
-| writing-manual section file | `sections/[section].md` | Section-specific rules |
-| `cross_section/cohesion_flow.md` | Skill directory | Structure analysis |
-| `cross_section/stance_hedging.md` | Skill directory | Hedging norms |
+| writing-manual files from the section's INDEX.md routing row | `writing-manual/INDEX.md` Step 1 table | Section file + that section's cross-section files — the routing table is the single source of truth |
 | Knowledge files matched to section | Knowledge Bank | Reviewer knowledge |
 
-**Do NOT load:** Other sections' text, `sentence_craft.md`,
-`advanced_nns_issues.md` (those are for sentence-level).
+**Do NOT load:** Other sections' text, cross-section files not in the
+section's routing row (the remaining ones load in Mode 3).
 
 ### Mode 3: Paragraph
 
 **Goal:** One paragraph deeply, then sentence-by-sentence.
 
-**Paragraph phase (intent confirmation + Agent PG):**
+**Paragraph phase (intent confirmation + paragraph-level review):**
 
 | Load | Source | Why |
 |---|---|---|
@@ -51,20 +51,18 @@ full knowledge files, cross_section manuals.
 | `cross_section/cohesion_flow.md` | Already loaded | Reuse |
 | Matched knowledge entries | Knowledge Bank | Paragraph-specific |
 
-**Sentence phase (Agent R1-R4):**
+**Sentence phase (all active reviewers):**
 
 | Additional load | Source | Why |
 |---|---|---|
-| `cross_section/sentence_craft.md` | Skill directory | Sentence rules |
-| `cross_section/advanced_nns_issues.md` | Skill directory | NNS checks |
-| `cross_section/stance_hedging.md` | Already loaded | Reuse |
+| All `cross_section/` files not yet loaded (e.g. `sentence_craft.md`, `advanced_nns_issues.md`, `clutter_redundancy.md`) | Skill directory | Sentence-level rules apply in full at this depth |
 
 ---
 
 ## Reviewer-Specific Loading
 
 Each reviewer gets different knowledge but the SAME:
-- Writing-manual files (except R4 who gets nothing)
+- Writing-manual files (except R4/R5 who get nothing)
 - Review target text
 - Confirmed intent (if available)
 
@@ -72,7 +70,8 @@ Each reviewer gets different knowledge but the SAME:
 R1: [writing-manual files] + [Knowledge Group A files]
 R2: [writing-manual files] + [Knowledge Group B files]
 R3: [writing-manual files only]
-R4: [review target text + confirmed intent only]
+R4: [review target text + confirmed intent + R4 persona directive]
+R5: [review target text + confirmed intent + R5 persona directive]
 ```
 
 See `knowledge/distribution_strategy.md` for grouping rules.
@@ -88,13 +87,13 @@ Session start:
      (header-only, ~20 lines per file)
 
 Mode 1 entry:
-  3. Read paper file(s) — section first sentences only
+  3. Read paper file(s) in full
   4. No additional loads
 
 Mode 2 entry:
   5. Read full section text
   6. Read section-specific writing-manual
-  7. Read cross_section files (cohesion, stance)
+  7. Read the cross_section files from the section's INDEX.md routing row
   8. Match knowledge_index to section keywords
   9. Full-read matched knowledge files (Phase 2 load)
   10. Build Knowledge Bank for this section

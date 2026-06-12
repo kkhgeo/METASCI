@@ -11,7 +11,7 @@
 
 ## Visual Design Principles (MANDATORY)
 
-### 1. The coloring problem and how v6 solves it
+### 1. The coloring problem and how v12 solves it
 
 Claude Code renders output through **React (Ink) + chalk**. Implications:
 
@@ -26,17 +26,17 @@ Claude Code renders output through **React (Ink) + chalk**. Implications:
   - `### H3 / ## H2 / # H1` → bold + emphasis color.
   - Fenced code blocks ```` ``` ```` → monospace, distinct background.
 
-The v6 strategy: **mix code blocks (for line/box structure) with
+The v12 strategy: **mix code blocks (for line/box structure) with
 markdown tokens (for color and emphasis) by deliberately breaking out
 of code blocks where coloring is needed.**
 
 The previous v5 wrapped everything in one code block, which preserved
-alignment but flattened all color. v6 sacrifices some alignment in
+alignment but flattened all color. v12 sacrifices some alignment in
 exchange for chalk-applied color via markdown.
 
 ### 2. Lines, not boxes
 
-The v6 default is **horizontal-rule line pattern**:
+The v12 default is **horizontal-rule line pattern**:
 
 - `══════════════════════════════════════════════════════════════════════════════════════════════════` (top-bottom of card titles, double rule, ~100 chars)
 - `──────────────────────────────────────────────────────────────────────────────────────────────────` (sub-section dividers, single rule, ~100 chars)
@@ -51,7 +51,7 @@ minor divisions (sub-sections within a card, action prompts).
 ### 3. Width target
 
 Horizontal rule width: **~100 characters** of `═` or `─`. This is the
-v6 calibration; fits standard CLI windows comfortably.
+v12 calibration; fits standard CLI windows comfortably.
 
 ### 4. Where color comes from (markdown token map — v12)
 
@@ -449,15 +449,14 @@ the consequences of **false positives** and **false negatives** are rarely symme
 ```
 맞으면 `"ㅇ"` · 다르면 `"수정: [내용]"`
 
-**v11 핵심 규칙:**
+**v12 핵심 규칙 (이 블록에 적용):**
 
-- **원문/번역 위계**: 원문은 평문(roman, no italic), 번역은 `>` blockquote (dim, 보조).
-  검토자의 시선이 자연스럽게 ground truth(원문)에 우선 가도록.
-- **이중 부호화 제거**: blockquote 안에 따옴표 안 씀. `>` 마커가 이미 인용 블록을 표지.
-- **인용/용어 강조**: 저자-연도와 핵심 용어에만 `**bold**`. 본문 전체에 italic 도배 안 함.
+- **원문/번역 모두 평문 prose** — blockquote·이탤릭 없음 (v12 ban list).
+  위계는 bold 강조 밀도로만 표현.
+- **인용/용어 강조**: 저자-연도와 핵심 용어에만 `**bold**`.
 - **¶ 표기**: `§2.1 ¶2` 형식 (학술 표준). `(두 번째)` 같은 자연어 표기 회피.
 - 콘텐츠 한 줄당 ~90-95 visible columns.
-- 의도 확인은 blockquote (정리/요약 = 보조 정보 위계).
+- 의도 확인 블록도 동일 — 3-라인 헤더(`──`/`**라벨**`/`──`) + 평문.
 
 **Wrap 폭 가이드:**
 - 라인 길이: ~98자 (`──` × 98).
@@ -510,7 +509,7 @@ Then issue cards (Tier 2 format, v12 rules). If no issue:
 | REF | 상태 | 제목 |
 |---|---|---|
 | Author (Year) | `▲ 미확인` | [...] |
-| Author (Year) | `● 일부확인` | [...] |
+| Author (Year) | `● 추정` | [...] |
 | Author (Year) | `○ 확인됨` | [...] |
 
 Status markers in inline code → chalk applies monospace + tint.
@@ -586,19 +585,17 @@ Status markers in inline code → chalk applies monospace + tint.
 
 - Horizontal rules (`══` / `──`): 100 characters total.
 - Inline code (`` `…` ``): no width budget — renderer wraps.
-- Blockquote (`>`): break manually at ~80 visible chars per `>` line
-  for predictable wrapping.
 - Tier 1 priority table: keep inside a fenced code block; ~100 chars
   total table width.
 
 ---
 
-## What changed v5 → v6
+## What changed v5 → v12
 
-| Aspect | v5 | v6 (current) |
+| Aspect | v5 | v12 (current) |
 |---|---|---|
-| English quotes (v6) | Inline code (monospace + tint) | **Plain prose**, **bold** on citations/key terms |
-| Korean translation (v6) | `> blockquote` (left rule + dim italic) | **Plain prose**, **bold** on citations/key terms |
+| English quotes | Inline code (monospace + tint) | **Plain prose**, **bold** on citations/key terms |
+| Korean translation | `> blockquote` (left rule + dim italic) | **Plain prose**, **bold** on citations/key terms |
 | Italics | Action prompts + via blockquote | **Banned everywhere** |
 | Left vertical bars | `>` blockquote rule, `▌` markers | **Banned everywhere** — lines only |
 | Sub-section labels | `**▌ 라벨**` | **3-line header** (`──` / `**라벨**` / `──`) |

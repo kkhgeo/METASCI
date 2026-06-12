@@ -93,10 +93,14 @@ Total reviewers: 4 (R1, R2, R4, R5)
 R1 → writing-manual only
 R2 → (skip)
 R3 → (skip)
-R4 → nothing
+R4 → nothing                  (generic academic-writing reviewer persona)
+R5 → nothing                  (cross-disciplinary scientific reader persona)
 
-Total reviewers: 2 (R1, R4)
+Total reviewers: 3 (R1, R4, R5)
 ```
+
+R4 and R5 need no knowledge files, so they stay active in every case —
+their personas are the whole point of including them.
 
 ### Step 4: Balance check
 
@@ -114,12 +118,13 @@ After distribution, show user:
 ---
 ### Knowledge Distribution
 
-| Reviewer | Files | Focus |
+| 리뷰어 | 자료 | 관점 |
 |---|---|---|
-| R1 | Benz2024, Long2025, Kim2024_logic | Domain + structure |
-| R2 | Bhattarai2023, Wu2024, Kim2024_vocab | Domain + terminology |
-| R3 | writing-manual only | Rule baseline |
-| R4 | (none) | LLM judgment |
+| R1 | Benz2024, Long2025, Kim2024_logic | 도메인 + 구조 |
+| R2 | Bhattarai2023, Wu2024, Kim2024_vocab | 도메인 + 용어 |
+| R3 | writing-manual만 | 규칙 기준선 |
+| R4 | (없음) | 일반 학술 리뷰어 (LLM 판단) |
+| R5 | (없음) | 인접 분야 과학자 독자 |
 
 Total: [N] knowledge files across [M] reviewers
 
@@ -139,8 +144,8 @@ The user can manually adjust distribution:
 | `"R2에서 Kim2024 빼"` | Remove file from R2's group |
 | `"분배 다시 해줘"` | Re-run distribution algorithm |
 | `"파일 추가: [path]"` | Add to index, parse, re-distribute |
-| `"리뷰어 3명만"` | Drop R3 or R4 (user's choice) |
-| `"리뷰어 2명만"` | Keep R1 + R4 only |
+| `"리뷰어 [N]명만"` | Reduce to N reviewers — confirm with user which to keep; suggested drop order: R3 → R2 → R5, keeping R1 + R4 as the minimum pair |
+| `"R5 빼줘"` / `"R[n] 빼줘"` | Drop that specific reviewer |
 
 ---
 
@@ -148,8 +153,8 @@ The user can manually adjust distribution:
 
 ### Mode 1: Paper
 - Each reviewer gets the full draft + their knowledge allocation
-- If the draft is very long, each reviewer may get a summary
-  instead of full text (see `harness/context_loading.md`)
+  (always full text — structural judgment requires the whole argument,
+  not summaries)
 
 ### Mode 2: Section
 - Each reviewer gets the full section text + their knowledge

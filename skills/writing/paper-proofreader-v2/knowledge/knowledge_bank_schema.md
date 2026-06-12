@@ -74,6 +74,17 @@ knowledge_bank = {
         ]
     },
 
+    // === Numeric facts (for Agent B Step 0 cross-check) ===
+    numerics: [
+        {
+            value: str,              // canonical form, e.g. "N = 125", "12.3 ± 0.4 mg/g"
+            unit: str | null,        // SI unit if applicable
+            context: str,            // what the number describes
+            location: str,           // section/table where it appears
+            source_id: str           // which source it came from
+        }
+    ],
+
     // === Layer 2: Domain Knowledge ("what is known") ===
     domain_knowledge: {
         theoretical: [

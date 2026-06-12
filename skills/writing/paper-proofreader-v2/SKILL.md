@@ -25,16 +25,14 @@ description: >
 - **Agent internal prompts:** English (for optimal LLM performance)
 - **English original text:** Always displayed alongside Korean explanation
 - **User input style:** Korean or English, free-form; see `config/navigation.md` for input mapping
-- **Tools used:** Read, Glob, Grep, WebSearch, WebFetch, Agent
-- **Visual format:** `config/output_format.md` (v12 — lines only) is the
-  **single source of truth** for all rendering. Summary of v12: no
-  `┌─┐` full boxes, no blockquote, no italics, no ANSI color, no emoji
-  other than severity shapes `■ ▲ ● ○`. Structure comes from horizontal
-  rules (`══` major / `──` minor, ~100 chars); body text is plain prose
-  outside code blocks with `**bold**` on citations and key terms; the
-  Tier 1 priority table is the only element kept inside a fenced code
-  block. Default to **Tier 1** (compact Top-3); user opens Tier 2 single
-  card via `"1번"`/`"#3 자세히"`, Tier 3 full list via `"다 보여줘"`.
+- **Tools used:** Read, Glob, Grep, WebSearch, WebFetch, Agent, AskUserQuestion
+- **Output:** `config/output_format.md` (v13) defines a **content
+  contract, not rendering rules**. Visual layout is at the model's
+  discretion within standard Markdown — never hand-draw boxes or
+  horizontal rules. The contract fixes what must be present: Korean
+  output with English originals, Top-3 tier discipline, unified
+  severity/status labels, plain-language explanations, a next-actions
+  line on every screen, and AskUserQuestion at decision points.
   Any formatting example elsewhere in this skill is illustrative —
   when in doubt, `config/output_format.md` wins.
 
@@ -51,7 +49,7 @@ paper-proofreader-v2/
 │   └── agent_b.md                        ← Reference Verification
 ├── config/
 │   ├── navigation.md                     ← Mode switching & user input mapping
-│   ├── output_format.md                  ← Display rules (bilingual, deliberation results)
+│   ├── output_format.md                  ← Output content contract (v13, no rendering rules)
 │   └── session_management.md             ← State, save/restore, error handling
 ├── harness/
 │   ├── deliberation.md                   ← Multi-reviewer result synthesis protocol
@@ -186,8 +184,16 @@ Total: [N] knowledge files across [M] reviewers
 
 Rows shown depend on the distribution case (A-D) from
 `knowledge/distribution_strategy.md` — list only the active reviewers.
-Wait for user approval. Handle overrides per `knowledge/distribution_strategy.md`
-User Override section.
+
+Ask for approval via AskUserQuestion (options: "이대로 진행" /
+"분배 변경" / "파일 추가"). Handle overrides per
+`knowledge/distribution_strategy.md` User Override section.
+
+**Fast path:** if the distribution is Case D (no knowledge files at
+all — including when the user pasted text directly with no paper path),
+skip the approval step entirely. Just state in one line that the review
+runs with R1 + R4 + R5 and proceed. The user can still adjust later
+with `"분배 보여줘"` / `"파일 추가: [경로]"`.
 
 ---
 
@@ -225,10 +231,11 @@ Apply `harness/confidence_routing.md` for display detail level.
 
 ### 5c. Present Priority Sections
 
-Render results using the **Tier 1 box format** from
-`config/output_format.md` (header box → "지금 꼭 봐야 할 3가지" boxed
-table → nav box). Top-3 by default; user expands to Top-5 / full list
-via `"다 보여줘"` (Tier 3). Do not emit raw markdown headings.
+Present per the `config/output_format.md` content contract: a short
+heading, a standard Markdown table of the Top-3 priority issues
+(순위 / 심각도 / 카테고리 / 한 줄 요약), and a closing next-actions
+line. Top-3 by default; user expands to Top-5 / full list via
+`"다 보여줘"`.
 
 ---
 
@@ -265,11 +272,11 @@ Focus on paragraph-level issues.
 
 ### 6c. Present Results
 
-Render results using the **Tier 1 box format** from
-`config/output_format.md`. Header box names the section and paragraph
-count; the "지금 꼭 봐야 할 3가지" boxed table lists the Top-3 paragraph
-issues by impact score; nav box closes. User expands via
-`"1번"` (Tier 2 card) or `"다 보여줘"` (Tier 3, all cards).
+Present per the `config/output_format.md` content contract: heading
+names the section and paragraph count; a standard Markdown table lists
+the Top-3 paragraph issues by impact score; closing next-actions line.
+User expands via `"1번"` (single issue detail) or `"다 보여줘"`
+(full list).
 
 ---
 
@@ -303,53 +310,59 @@ interpretation of the paragraph's intent:
 맞나요? 다르면 말씀해주세요.
 ```
 
-Wait for user confirmation or correction. Store as `{confirmed_intent}`.
+Confirm via AskUserQuestion (options: "맞아요" / "다름 — 직접 설명").
+Store the result as `{confirmed_intent}`.
 
-### 7b. Paragraph-Level Review by All Active Reviewers
+### 7b. Single Panel Round — Paragraph AND All Sentences
 
 Launch all active reviewers in parallel (one Agent tool call each) with:
 - `{mode}` = `paragraph`
-- `{target_text}` = paragraph (with surrounding context)
+- `{target_text}` = full paragraph (with prev/next paragraph context),
+  with sentences pre-numbered per the splitting rules in
+  `config/session_management.md`
 - `{confirmed_intent}` = user-confirmed intent
-- Focus: does the paragraph deliver the confirmed intent?
+- `{allocated_knowledge}` + `{writing_manual_content}` per distribution
 
-Run deliberation on paragraph-level results.
-Present consensus/unique/conflict items about the paragraph as a whole.
+Each reviewer reports, in one pass:
+- **Paragraph-level findings** — does the paragraph deliver the
+  confirmed intent? Structure, flow (location: `"Paragraph N (whole)"`)
+- **Sentence-level findings** — all six criteria per sentence
+  (location: `"Sentence M"`)
 
-### 7c. Sentence-by-Sentence Review
+This is ONE panel round per paragraph. Do NOT launch a new panel per
+sentence — the per-sentence walkthrough below works entirely from this
+round's results. (Wall-clock cost drops from one round per sentence to
+one round per paragraph.)
 
-Split the paragraph into sentences (follow sentence splitting rules
-from `config/session_management.md`).
+### 7c. Deliberation + Sentence Walkthrough
 
-For each sentence:
+1. Run the deliberation protocol (`harness/deliberation.md`) **once**
+   over all findings, grouped by sentence; paragraph-level findings
+   form their own group.
 
-1. Display the sentence with context:
-   ```markdown
-   ### 단락 [N] — 문장 [M/전체]
-   *이전:* [이전 문장]
-   **[EN]** `[current sentence]`
-   **[KR]** `[번역]`
-   ```
+2. Present paragraph-level results first (Top-3 per tier discipline).
 
-2. Launch all active reviewers in parallel (one Agent tool call each).
-   Each reviewer gets the sentence + paragraph context + confirmed intent
-   + their allocated knowledge + writing-manual content.
-   All six criteria checked at sentence level.
+3. Walk through **only the sentences that have findings**, one at a
+   time. For each:
+   - display: previous sentence (context) → current sentence →
+     Korean translation → issues (consensus / unique / conflict),
+     with detail level per `harness/confidence_routing.md`
+   - decision via AskUserQuestion — pick the 4 most relevant options,
+     e.g. "수정안 A 적용" / "수정안 B 적용" / "원문 유지" /
+     "건너뛰기" (use "검색해봐" as an option when confidence is LOW)
 
-3. Collect results. Run deliberation protocol.
-   Classify into consensus/unique/conflict.
+4. Sentences with no findings are NOT stepped through individually.
+   Summarize them in one line: "문장 2, 5, 7 — 전원 동의, 수정 불필요."
 
-4. Present results with confidence-appropriate detail
-   (see `harness/confidence_routing.md`).
+5. Batch commands are honored at any point during the walkthrough
+   (see `config/navigation.md`):
+   - `"전부 적용"` — apply every consensus suggestion in this paragraph
+     at once (multi-alternative issues take the recommended option)
+   - `"합의만 적용"` — apply consensus items; still walk through
+     unique findings and conflicts
+   - `"나머지 건너뛰기"` — skip all remaining decisions in this paragraph
 
-5. Show action options:
-   ```markdown
-   *"적용" / "수정안 A" / "수정안 B" / "다음" / "건너뛰기" / "검색해봐"*
-   ```
-
-6. Wait for user decision. Record in session state.
-
-7. Advance to next sentence. Repeat.
+6. Record every decision in session state.
 
 ### 7d. Post-Paragraph: Agent B Reference Verification
 
@@ -375,7 +388,7 @@ Agent B following `agents/agent_b.md`:
 #### 레퍼런스 확인
 | REF | 상태 | 제목 | DOI |
 |---|---|---|---|
-| Author (Year) | `○ 확인됨` / `● 추정` / `▲ 미확인` | [...] | [...] |
+| Author (Year) | 확인됨 / 추정 / 미확인 | [...] | [...] |
 
 ---
 *"다음 단락" / "이 단락 다시" / "섹션으로"*

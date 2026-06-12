@@ -34,20 +34,20 @@ Aggregate confidence:
   - Single reviewer only → use that reviewer's confidence
 ```
 
-All three routing levels render with the **v12 card formats** from
-`config/output_format.md` (cards 2a / 2b / 2c). Confidence routing
-controls **how much detail** goes inside the card and **which actions**
-are offered — never the visual structure itself.
+All three routing levels follow the `config/output_format.md` content
+contract (원문 → 문제 → 수정안 → 근거 → 발견자). Confidence routing
+controls **how much detail** goes into the issue and **which actions**
+are offered — never the visual layout itself.
 
 ### HIGH Confidence Routing
 
 ```
-Display (inside the v12 card):
+Display:
   - Issue + suggestion (concise)
-  - Brief Korean explanation (≤1 sentence in the 문제 block)
-  - Evidence source (if any) in the 근거 block
+  - Brief Korean explanation (≤1 sentence in 문제)
+  - Evidence source (if any) in 근거
 
-User interaction:
+User interaction (AskUserQuestion options or typed):
   - Expect quick decision: "적용" / "다음" / "건너뛰기"
   - No automatic expansion
 ```
@@ -55,32 +55,31 @@ User interaction:
 ### MEDIUM Confidence Routing
 
 ```
-Display (inside the v12 card):
+Display:
   - Issue + suggestion with detailed rationale
   - Full Korean explanation with original-vs-suggestion comparison
-    (2 sentences in the 문제 block)
-  - Evidence source with context in the 근거 block
+    (2 sentences in 문제)
+  - Evidence source with context in 근거
   - 발견자 line notes which reviewers flagged it
 
-User interaction:
-  - Present options clearly
+User interaction (AskUserQuestion options or typed):
   - "적용" / "수정해서 적용" / "건너뛰기" / "자세히"
 ```
 
 ### LOW Confidence Routing
 
 ```
-Display (inside the v12 card):
-  - Issue flagged as uncertain — add a plain-prose line below the
-    근거 block: **리뷰어들의 확신이 낮습니다** + 불확실한 이유 한 줄
-  - All available reviewer perspectives shown (card 2b or 2c layout)
+Display:
+  - Issue flagged as uncertain — add one plain line below 근거:
+    **리뷰어들의 확신이 낮습니다** + 불확실한 이유 한 줄
+  - All available reviewer perspectives shown
 
 Automatic action:
   - Offer web search: "이 부분에 대해 유사 논문의 표현을 검색할까요?"
   - If user agrees → run targeted web search
   - Present search results alongside reviewer suggestions
 
-User interaction:
+User interaction (AskUserQuestion options or typed):
   - "검색해봐" / "이대로 괜찮아" / "건너뛰기" / "직접 수정"
 ```
 
@@ -101,20 +100,16 @@ When triggered (automatically or by user request):
 6. Present as additional evidence:
 
 ```markdown
-──────────────────────────────────────────────────────────────────────────────────────────────────
-**추가 검색 결과**
-──────────────────────────────────────────────────────────────────────────────────────────────────
+### 추가 검색 결과
 
 **검색어** — [query]
 
 **유사 표현**
-
-1. [sentence from Paper A] — **Author (Year)**, Journal
-2. [sentence from Paper B] — **Author (Year)**, Journal
+1. [sentence from Paper A] — Author (Year), Journal
+2. [sentence from Paper B] — Author (Year), Journal
 
 **보강된 수정안** — [improved suggestion based on evidence]
-
-[왜 이 표현이 더 적절한지 한국어 설명 — 평문]
+[왜 이 표현이 더 적절한지 한국어 설명]
 ```
 
 ---

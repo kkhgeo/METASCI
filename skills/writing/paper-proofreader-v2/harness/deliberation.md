@@ -41,50 +41,46 @@ Two issues "match" when they:
 
 ### Step 3: Classify into Three Categories
 
-All three categories use the **box-drawn issue card** defined in
-`config/output_format.md` (Tier 2, sections 2a / 2b / 2c).
-Do NOT emit raw markdown headings (`####`) or bullet lists for issue
-results. The card format is mandatory.
+Each presented issue follows the `config/output_format.md` content
+contract: 원문 → 문제 → 수정안(들) → 근거 → 발견자, in plain Korean.
+Visual layout is at the model's discretion (standard Markdown).
 
 #### Category 1: Consensus (2+ reviewers agree)
 
 Two or more reviewers flagged the same issue.
 
-- Use **card 2a** (single-alternative) when the issue is LOGIC /
-  STRUCTURE / FACTUAL — the correction is determinate.
-- Use **card 2b** (multi-alternative) when the issue is STYLE / HEDGING /
-  TERMINOLOGY / CLUTTER — show 2–3 tone-varied alternatives drawn
-  from across the agreeing reviewers (prefer variety of `tone` labels
-  over near-duplicates; cap at 3).
+- Single alternative when the issue is LOGIC / STRUCTURE / FACTUAL —
+  the correction is determinate.
+- Multiple alternatives (2–3, labeled A/B/C with tone + rationale +
+  recommendation) when the issue is STYLE / HEDGING / TERMINOLOGY /
+  CLUTTER — draw tone-varied alternatives from across the agreeing
+  reviewers (prefer variety over near-duplicates; cap at 3).
 
-Header line: `발견자: R1+R3 합의` (or `R1+R2+R4 합의`).
+발견자 line: `발견자: R1+R3 합의` (or `R1+R2+R4 합의`).
 
-**User action:** `"[#] 적용"` (single) or `"[#] [A/B/C] 적용"` (multi).
+**User action:** AskUserQuestion options, or typed `"[#] 적용"` /
+`"[#] [A/B/C] 적용"`.
 
 #### Category 2: Unique Finding (1 reviewer only, with evidence)
 
 Only one reviewer flagged it, but provides a rationale.
+Single or multiple alternatives per `agents/agent_reviewer.md` Rule 11.
 
-- Card 2a if the reviewer supplied one alternative.
-- Card 2b if the reviewer supplied multiple alternatives per
-  `agents/agent_reviewer.md` Rule 11.
+발견자 line: `발견자: R1 단독` (replace with the actual reviewer ID).
 
-Header line: `발견자: R1 단독` (replace with the actual reviewer ID).
-
-**User action:** `"[#] 적용"` / `"[#] [A/B/C] 적용"` / `"[#] 무시"`.
+**User action:** AskUserQuestion options, or typed `"[#] 적용"` /
+`"[#] [A/B/C] 적용"` / `"[#] 무시"`.
 
 #### Category 3: Conflict (reviewers disagree)
 
 Reviewers propose contradictory changes to the same text.
+Show each reviewer's suggestion and rationale in its own labeled
+sub-section, plus a one-line explanation of why they disagree.
 
-Use **card 2c** (conflict layout). Both reviewers' suggestions and
-rationales appear in their own labeled sub-sections, vertically stacked,
-each under a 3-line header (`──` / `**R[n] 의견**` / `──`) per the v12
-card format.
+발견자 line: `의견 충돌: R1 ↔ R4`.
 
-Header line: `의견 충돌:  R1 ↔ R4`.
-
-**User action:** `"R[n] 따름"` / `"직접 입력"` / `"건너뛰기"`.
+**User action:** AskUserQuestion (options: `R1 따름` / `R4 따름` /
+`직접 입력` / `건너뛰기`).
 
 ---
 
@@ -100,19 +96,11 @@ Within each category, order by severity (HIGH > MEDIUM > LOW).
 
 ## No-Issue Consensus
 
-If all reviewers agree there are no issues with the current text, use the
-v12 line pattern from `config/output_format.md`:
+If all reviewers agree there are no issues with the current text, say
+so in one plain line and offer the next actions:
 
-```
-──────────────────────────────────────────────────────────────────────────────────────────────────
-**전원 동의** — 이 [문장/단락/섹션]에 수정 필요 없음.
-
-──────────────────────────────────────────────────────────────────────────────────────────────────
-진행 `"다음"` · 상세 `"그래도 자세히 봐줘"`
-```
-
-(The horizontal rules and prose are emitted as plain text, not inside a
-code block — shown fenced here only for documentation.)
+> **전원 동의** — 이 [문장/단락/섹션]에 수정 필요 없음.
+> 진행 `"다음"` · 상세 `"그래도 자세히 봐줘"`
 
 ---
 
@@ -150,15 +138,19 @@ Deliberation compares: which paragraphs need attention?
 
 Output: paragraph-level issue map.
 
-### Mode 3: Paragraph — Intent and sentence deliberation
+### Mode 3: Paragraph — Single-round deliberation, grouped by sentence
 
-**Paragraph phase:**
-Focus on: does the paragraph deliver the confirmed intent?
-Deliberation: do reviewers agree on whether intent is delivered?
+Reviewers return paragraph-level AND sentence-level findings from ONE
+panel round (see SKILL.md 7b). Deliberation also runs once:
 
-**Sentence phase:**
-Focus on: logic, style, hedging, terminology, factual accuracy.
-Deliberation: standard 3-category classification per sentence.
+1. Group all findings — paragraph-level findings (`"Paragraph N
+   (whole)"`) form one group; sentence-level findings group by
+   sentence number.
+2. Within each group, run the standard 3-category classification
+   (consensus / unique / conflict).
+3. The orchestrator then presents paragraph-level results first and
+   walks through flagged sentences one at a time (SKILL.md 7c) —
+   no further reviewer calls are needed during the walkthrough.
 
 ---
 
@@ -226,39 +218,30 @@ Tie-break order: severity → agreement → location (earlier in document first)
 
 ### Output format
 
-The Top-N priority block is rendered as the **Tier 1 priority table**
-exactly as specified in `config/output_format.md` (the table is the one
-element kept inside a fenced code block; ~100 chars wide; one-line
-summaries ≤50자).
+The Top-N priority block is a **standard Markdown table** with columns
+순위 / 심각도 / 카테고리 / 한 줄 요약, per the `config/output_format.md`
+content contract.
 
-Severity → marker mapping: CRITICAL → `■` · HIGH → `▲` · MEDIUM → `●` ·
-LOW → `○`. No other emoji or icon may appear in the table.
+Severity labels: CRITICAL → 치명 · HIGH → 높음 · MEDIUM → 중간 ·
+LOW → 낮음. Words only — no symbols or emoji.
 
 Do **not** auto-expand the top item below the table. The Tier 1 view is
 intentionally compact (the full nav box from `config/output_format.md`
 follows the table). The user pulls detail by saying `"1번"` /
-`"#1 자세히"`, which renders the appropriate Tier 2 card (2a / 2b / 2c).
+`"#1 자세히"`, which renders that issue's full detail
+(원문 → 문제 → 수정안 → 근거 → 발견자).
 
 ### Suppression rule
 
-If fewer than N issues exist, list only what exists. If zero issues exist
-across all reviewers, replace the table with the v12 suppression block
-(see `config/output_format.md`):
-
-```
-──────────────────────────────────────────────────────────────────────────────────────────────────
-이 [모드 단위]에서 우선 수정할 항목이 없습니다.
-──────────────────────────────────────────────────────────────────────────────────────────────────
-```
+If fewer than N issues exist, list only what exists. If zero issues
+exist across all reviewers, replace the table with one plain sentence:
+"이 [모드 단위]에서 우선 수정할 항목이 없습니다."
 
 ### Interaction with confidence routing
 
-If the top-ranked item has CONFIDENCE: LOW, append a one-line flag
-**below** the Tier 1 table (before the nav line), in plain prose:
-
-```
+If the top-ranked item has CONFIDENCE: LOW, append one plain line below
+the table (before the next-actions line):
 **1순위는 신뢰도 낮음** — `"검색해봐"` 라고 하면 보강합니다.
-```
 
 The user can say `"검색해봐"` to invoke the web-search supplement before
 deciding.

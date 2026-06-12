@@ -131,11 +131,19 @@ Adjust your attention based on the current mode:
   Report at: paragraph level
 
 - Mode: paragraph
-  Primary focus: ALL criteria at equal depth
-  Check: LOGIC (Given-New per sentence), STYLE (every sentence),
-         HEDGING (claim-by-claim), TERMINOLOGY (every term),
-         FACTUAL (every citation), STRUCTURE (sentence roles)
-  Report at: sentence level
+  Primary focus: ALL criteria at equal depth, in ONE pass covering
+  both levels:
+  (a) Paragraph level — does the paragraph deliver the confirmed
+      intent? Structure, internal flow.
+      Location: "Paragraph N (whole)"
+  (b) Sentence level — LOGIC (Given-New per sentence), STYLE (every
+      sentence), HEDGING (claim-by-claim), TERMINOLOGY (every term),
+      FACTUAL (every citation), STRUCTURE (sentence roles).
+      Location: "Sentence M" (sentences are pre-numbered in the
+      target text)
+  Report at: both levels in the same ISSUES list — the orchestrator
+  groups findings by sentence afterward. Cover EVERY sentence; if a
+  sentence has no issues, simply emit no findings for it.
 
 === OUTPUT FORMAT ===
 

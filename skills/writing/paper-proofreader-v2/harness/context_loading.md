@@ -41,21 +41,16 @@ section's routing row (the remaining ones load in Mode 3).
 
 **Goal:** One paragraph deeply, then sentence-by-sentence.
 
-**Paragraph phase (intent confirmation + paragraph-level review):**
+Mode 3 runs ONE reviewer round covering both paragraph and sentence
+levels (SKILL.md 7b), so everything loads at Mode 3 entry:
 
 | Load | Source | Why |
 |---|---|---|
 | Target paragraph + prev/next paragraph | Paper file | Context |
 | Confirmed intent | User input | Anchor for analysis |
 | writing-manual section file | Already loaded from Mode 2 | Reuse |
-| `cross_section/cohesion_flow.md` | Already loaded | Reuse |
+| ALL `cross_section/` files (incl. `sentence_craft.md`, `advanced_nns_issues.md`, `clutter_redundancy.md`) | Skill directory | The single round also reviews at sentence depth |
 | Matched knowledge entries | Knowledge Bank | Paragraph-specific |
-
-**Sentence phase (all active reviewers):**
-
-| Additional load | Source | Why |
-|---|---|---|
-| All `cross_section/` files not yet loaded (e.g. `sentence_craft.md`, `advanced_nns_issues.md`, `clutter_redundancy.md`) | Skill directory | Sentence-level rules apply in full at this depth |
 
 ---
 
@@ -101,7 +96,7 @@ Mode 2 entry:
 
 Mode 3 entry:
   12. Extract paragraph + surrounding context
-  13. Read sentence-level cross_section files
+  13. Read all remaining cross_section files (single round covers sentence depth)
   14. Narrow knowledge to paragraph-relevant entries
   15. Run intent confirmation with user
 

@@ -54,13 +54,15 @@ The user can start from any mode:
 
 ## Within Mode 3: Paragraph Flow
 
-Mode 3 has two phases that flow naturally:
+Mode 3 flows in three phases (one reviewer round total):
 
 ```
-Phase A: Paragraph (의도 확인 + 구조 검토)
-  ↓ 사용자 승인 후
-Phase B: Sentence (문장별 리뷰어 토론)
-  ↓ 모든 문장 완료
+Phase A: 의도 확인 (사용자 승인)
+  ↓
+Phase B: 리뷰어 패널 1회전 (단락 + 모든 문장 동시 검토)
+  → 단락 수준 결과 제시
+  → 지적이 있는 문장만 하나씩 워크스루 (리뷰어 재호출 없음)
+  ↓ 모든 결정 완료
 Phase C: Reference verification (Agent B)
   ↓ 자동
 Completion summary
@@ -68,12 +70,12 @@ Completion summary
 다음 단락 or 사용자 선택
 ```
 
-The user can skip phases:
+The user can skip steps:
 
 | User says | Action |
 |---|---|
-| "바로 문장 검토" | Skip Phase A → Phase B |
-| "단락만 봐줘" | Phase A only, skip Phase B |
+| "바로 문장 검토" | Skip Phase A (intent inferred, not confirmed) |
+| "단락만 봐줘" | Present paragraph-level results only, skip sentence walkthrough |
 | "레퍼런스 생략" | Skip Phase C |
 
 ---
@@ -96,6 +98,9 @@ The user can skip phases:
 
 ## Sentence-Level Actions
 
+Decisions are normally offered as AskUserQuestion options; these typed
+commands are always honored as well:
+
 | User says | Action |
 |---|---|
 | "적용" | Apply consensus/single suggestion |
@@ -106,6 +111,14 @@ The user can skip phases:
 | "검색해봐" / "다른 논문에서는?" | Trigger web search for comparable expressions |
 | "자세히" / "왜?" | Expand explanation |
 | "이 단락 다시" | Restart current paragraph |
+
+### Batch commands (paragraph walkthrough)
+
+| User says | Action |
+|---|---|
+| "전부 적용" | Apply every consensus suggestion in this paragraph at once (multi-alternative issues take the recommended option) |
+| "합의만 적용" | Apply consensus items; continue walkthrough for unique findings and conflicts only |
+| "나머지 건너뛰기" | Skip all remaining decisions in this paragraph |
 
 ---
 

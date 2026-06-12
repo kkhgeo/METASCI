@@ -246,21 +246,20 @@ references; if unavailable, skip silently.
 
 Present results to user (in Korean) as **three sub-blocks**, in order:
 
-All sub-block headers use the v12 3-line pattern (`──` / `**라벨**` / `──`)
-from `config/output_format.md`.
+Layout follows the `config/output_format.md` content contract —
+standard Markdown headings and tables, severity in Korean words
+(치명 / 높음 / 중간 / 낮음).
 
 #### Sub-block A — 숫자 정합성 (Step 0 results)
 
 ```markdown
-──────────────────────────────────────────────────────────────────────────────────────────────────
-**숫자 정합성 검토**
-──────────────────────────────────────────────────────────────────────────────────────────────────
+### 숫자 정합성 검토
 
 | 위치 | 토큰 | 다른 위치 값 | 판정 | 심각도 |
 |---|---|---|---|---|
-| 단락 N, 문장 M | "N = 120" | Methods: "N = 125" | INCONSISTENT | CRITICAL |
-| 단락 N, 문장 M | "60% (n = 38/100)" | (paragraph internal) | MATH_ERROR | CRITICAL |
-| 단락 N, 문장 M | "12.34 mg/g" | Table 2: "12.3 ± 0.4" | SIG_FIG_DRIFT | MEDIUM |
+| 단락 N, 문장 M | "N = 120" | Methods: "N = 125" | 불일치 | 치명 |
+| 단락 N, 문장 M | "60% (n = 38/100)" | (단락 내부) | 계산 오류 | 치명 |
+| 단락 N, 문장 M | "12.34 mg/g" | Table 2: "12.3 ± 0.4" | 유효숫자 불일치 | 중간 |
 ```
 
 If no inconsistencies:
@@ -281,16 +280,14 @@ If only single-paragraph context (Mode 3 standalone):
 #### Sub-block B — 레퍼런스 확인 (Steps 1-5 results)
 
 ```markdown
-──────────────────────────────────────────────────────────────────────────────────────────────────
-**레퍼런스 확인**
-──────────────────────────────────────────────────────────────────────────────────────────────────
+### 레퍼런스 확인
 
 | REF | 상태 | 제목 | DOI |
 |---|---|---|---|
-| Author (Year) | `○ 확인됨` | [Paper title] | [DOI or N/A] |
-| Author et al. (Year) | `○ 확인됨` | [Paper title] | [10.xxxx/...] |
-| Author (Year) | `● 추정` | [Probable title] | [DOI or N/A] |
-| Author et al. (Year) | `▲ 미확인` | - | - |
+| Author (Year) | 확인됨 | [Paper title] | [DOI or N/A] |
+| Author et al. (Year) | 확인됨 | [Paper title] | [10.xxxx/...] |
+| Author (Year) | 추정 | [Probable title] | [DOI or N/A] |
+| Author et al. (Year) | 미확인 | - | - |
 ```
 
 #### Sub-block C — 2차 인용 경고 (Step 6 results)
@@ -321,13 +318,13 @@ If neither detected:
 
 | Status | Korean display |
 |---|---|
-| `FOUND` | `○ 확인됨` |
-| `LIKELY` | `● 추정` (제목 미확인) |
-| `NOT_FOUND` | `▲ 미확인` |
+| `FOUND` | 확인됨 |
+| `LIKELY` | 추정 (제목 미확인) |
+| `NOT_FOUND` | 미확인 |
 
-These three markers are the canonical status vocabulary — used
+These three words are the canonical status vocabulary — used
 identically here, in `config/output_format.md`, and in SKILL.md
-summaries. Severity shapes only; no other icons.
+summaries. Words only; no symbols or icons.
 
 ### NOT_FOUND Warning
 

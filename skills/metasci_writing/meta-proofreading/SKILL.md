@@ -1,5 +1,5 @@
 ---
-name: paper-proofreader-v2
+name: meta-proofreading
 description: >
   Multi-reviewer academic paper proofreading with knowledge-distributed
   deliberation. 2-5 reviewers with identical instructions but different
@@ -10,12 +10,13 @@ description: >
   freeform markdown) are auto-discovered and distributed to reviewers.
   All user-facing output in Korean.
   
-  Trigger phrases: "논문 교정", "paper proofreading", "proofread",
-  "교정 시작", "논문 검토", "paper review", "교정해줘",
-  "논문 교정 v2", "리뷰어 교정"
+  Trigger phrases: "meta-proofreading", "메타 교정", "메타교정",
+  "패널 교정", "리뷰어 교정", "다중 리뷰어 교정", "panel proofreading".
+  Do NOT trigger on generic phrases like "논문 교정" or "proofread"
+  alone — those belong to other proofreading skills.
 ---
 
-# Paper Proofreader v2 — Multi-Reviewer Deliberation Orchestrator
+# Meta-Proofreading — Multi-Reviewer Deliberation Orchestrator
 
 ## 1. Environment
 
@@ -41,7 +42,7 @@ description: >
 ## 2. File Map
 
 ```
-paper-proofreader-v2/
+meta-proofreading/
 ├── SKILL.md                              ← This file (orchestrator)
 ├── agents/
 │   ├── agent_e.md                        ← Knowledge Bank Builder

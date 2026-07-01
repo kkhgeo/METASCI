@@ -1,7 +1,6 @@
 ---
 name: meta-writing-blog
-description: Turn an academic paper into a Distill.pub-style explainer blog post — a polished, multifile HTML article that introduces and explains the paper for a general-technical audience. Produces a Distill v2 project (index.html + bibliography.bib + figures/) with bilingual Korean/English prose, a language toggle, margin notes, KaTeX math, BibTeX citations, and lightweight interactive elements. Use this skill WHENEVER the user wants to write a paper-introduction post, a "논문 소개 글/블로그", a paper explainer, a Distill-style article, or wants to turn a PDF/arXiv link or their reading notes into a beautiful web article — even if they don't say "Distill" by name. Triggers include "이 논문 블로그로 써줘", "논문 소개 글 만들어줘", "Distill 스타일로", "paper explainer", "write a blog post about this paper", "arXiv 링크 글로".
-trigger: /meta-writing-blog
+description: Turn an academic paper (PDF, arXiv link, or reading notes) into a Distill.pub-style explainer blog post — a polished, bilingual Korean/English HTML article that explains the paper for a general-technical audience. Use whenever the user wants a paper explainer or a paper-introduction post, even if they don't say "Distill" by name. Triggers include "이 논문 블로그로 써줘", "논문 소개 글 만들어줘", "Distill 스타일로", "arXiv 링크 글로", "write a paper explainer", "write a blog post about this paper".
 ---
 
 # meta-writing-blog
@@ -30,7 +29,7 @@ The article loads `template.v2.js` from the CDN, so viewing needs internet. At t
 
 **1. Get the source.** arXiv → WebFetch the abstract; for full text use the **markitdown** skill on the PDF/HTML. Local PDF → **markitdown** (or the `pdf` skill). Notes → use directly. Don't block on questions you can answer by reading the paper.
 
-**2. Blueprint the narrative (don't skip).** Read `references/voice-and-structure.md`, then map the paper to the 8-beat scaffold: opening (problem) → what → where → task → why-hard → method → results → outlook. The load-bearing rule: **the reader meets the problem (why-hard) before the method.** Sections are flexible — merge, split, or rename — but keep that order. For two or more papers, use the multi-paper variant (shared problem spine + parallel cases + synthesis), not one pass per paper.
+**2. Blueprint the narrative (don't skip).** Read `references/voice-and-structure.md`. First fix the **mission** in one line — *who is this article for, and why would they read it* (the reader's stake, not the paper's abstract); infer it from the paper, and ask the user only if it is genuinely ambiguous (e.g. practitioners vs researchers). The mission anchors how beat 1 frames the problem and how deep the article goes. Then map the paper to the 8-beat scaffold: opening (problem) → what → where → task → why-hard → method → results → outlook. The load-bearing rule: **the reader meets the problem (why-hard) before the method.** Sections are flexible — merge, split, or rename — but keep that order. For two or more papers, use the multi-paper variant (shared problem spine + parallel cases + synthesis), not one pass per paper.
 
 **3. Scaffold.** Create `<slug>/figures/` and copy `assets/index.html`, `style.css`, and `bibliography.bib` into it. Edit the copies — don't author the Distill chrome from scratch.
 

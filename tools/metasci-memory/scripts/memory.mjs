@@ -1,9 +1,32 @@
 import fs from 'node:fs'
+import os from 'node:os'
 import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
+// cwd 드리프트에 좌우되지 않도록 프로젝트 루트를 위로 거슬러 탐색한다.
+// 1) 기존 _memory/ 가 있는 조상 재사용(중복·stray 방지) → 2) .claude/·.git/ 마커(home 자신 제외)
+// → 3) 못 찾으면 cwd. 명시적 opts.root 는 항상 우선(훅·--root 는 기존 동작 그대로).
+export function resolveProjectRoot(start = process.cwd()) {
+  const home = os.homedir()
+  let dir = path.resolve(start)
+  for (let d = dir; ; ) {
+    if (fs.existsSync(path.join(d, '_memory'))) return d
+    if (d === home) break
+    const parent = path.dirname(d)
+    if (parent === d) break
+    d = parent
+  }
+  for (let d = dir; d !== home; ) {
+    if (fs.existsSync(path.join(d, '.claude')) || fs.existsSync(path.join(d, '.git'))) return d
+    const parent = path.dirname(d)
+    if (parent === d) break
+    d = parent
+  }
+  return dir
+}
+
 export function memRoot(opts = {}) {
-  const base = opts.root || process.cwd()
+  const base = opts.root || resolveProjectRoot()
   return path.join(base, '_memory')
 }
 

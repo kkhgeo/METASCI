@@ -3,7 +3,7 @@ import assert from 'node:assert/strict'
 import fs from 'node:fs'
 import os from 'node:os'
 import path from 'node:path'
-import { memRoot, ensure, record, appendFact, listSessions, load } from '../scripts/memory.mjs'
+import { memRoot, resolveProjectRoot, ensure, record, appendFact, listSessions, load } from '../scripts/memory.mjs'
 
 function tmp() {
   return fs.mkdtempSync(path.join(os.tmpdir(), 'mem-'))
@@ -11,6 +11,22 @@ function tmp() {
 
 test('memRoot returns _memory under root', () => {
   assert.equal(memRoot({ root: '/x' }), path.join('/x', '_memory'))
+})
+
+test('resolveProjectRoot reuses an existing _memory in an ancestor (no cwd drift)', () => {
+  const dir = tmp()
+  fs.mkdirSync(path.join(dir, '_memory'))
+  const sub = path.join(dir, 'a', 'b')
+  fs.mkdirSync(sub, { recursive: true })
+  assert.equal(resolveProjectRoot(sub), path.resolve(dir))
+})
+
+test('resolveProjectRoot falls back to nearest .claude/.git marker when no _memory exists', () => {
+  const dir = tmp()
+  fs.mkdirSync(path.join(dir, '.claude'))
+  const sub = path.join(dir, 'x', 'y')
+  fs.mkdirSync(sub, { recursive: true })
+  assert.equal(resolveProjectRoot(sub), path.resolve(dir))
 })
 
 test('ensure creates _memory, sessions/, MEMORY.md', () => {

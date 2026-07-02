@@ -1,0 +1,833 @@
+<!doctype html>
+<!-- ============================================================================
+  meta-writing-blog — KEI 브리프 템플릿 (독립 이식형)
+  Voice: 조용한 editorial 학술 논조 (impersonal, –다체, 한국어 전용). Format: KEI 브리프.
+  사용법: 이 폴더를 통째로 brief-{slug}/ 로 복사한 뒤 [REPLACE ...] 자리를 채운다.
+    - 각 <section>은 서사의 한 beat. 문제→방법 순서를 유지한다 (voice-and-structure.md).
+    - 컴포넌트는 STYLE_GUIDE.md §4 참고. 안 쓰는 컴포넌트 예시는 삭제한다.
+    - 자산 경로는 전부 로컬(assets/…, figures/…). ../ 접두를 쓰지 않는다.
+    - 사이트(release/briefs_files/)로 옮겨 발간할 때만 로고/Back/end-nav 링크를 복원한다.
+    - CSS는 아래 <style>에 인라인. 토큰·크기 값은 바꾸지 않는다.
+============================================================================= -->
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="description" content="[REPLACE: 한 줄 요약 — 검색·SNS 미리보기용]">
+<title>[REPLACE: 제목] · KEI AI 융합연구단</title>
+<meta name="theme-color" content="#f6f0e3">
+<link rel="apple-touch-icon" href="assets/KEI_Wordmark.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Orbitron:wght@900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy.css">
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
+<style>
+  :root{
+    --bg:#f6f0e3;
+    --ink:#0f1624;
+    --muted:rgba(15,22,36,.62);
+    --muted-strong:rgba(15,22,36,.82);
+    --muted-mid:rgba(15,22,36,.68);
+    --faint:rgba(15,22,36,.38);
+    --line:rgba(15,22,36,.12);
+    --line-soft:rgba(15,22,36,.06);
+    --blue:#009fde;
+    --green:#00ab84;
+    --amber:#ff8a2a;
+    --warn:#c46411;             /* deeper amber for warning callouts */
+    --serif:'Paperlogy','Pretendard Variable','Pretendard','Inter',sans-serif;  /* sans-serif gothic — used for tabular/equation content for visual consistency */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  html,body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Paperlogy','Pretendard Variable','Pretendard','Inter',sans-serif;
+    -webkit-font-smoothing:antialiased;
+    word-break:keep-all;
+    overflow-wrap:break-word;
+    min-height:100vh;
+  }
+  ::selection{ background:rgba(0,159,222,.20); color:var(--ink); }
+
+  /* ---- Top bar ---- */
+  .topbar{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:24px 64px; border-bottom:1px solid var(--line);
+  }
+  .topbar .logo{ display:flex;align-items:center;gap:10px;text-decoration:none; }
+  .topbar .logo .dot{
+    width:12px; height:12px; border-radius:50%;
+    background:var(--blue);
+    box-shadow:0 0 14px rgba(0,159,222,.45),0 0 4px rgba(0,171,132,.55),0 0 3px rgba(255,255,255,.8) inset;
+  }
+  .topbar .logo svg{ height:51px; width:auto; display:block }
+  .topbar .logo svg .cls-1{ fill:var(--ink) }
+  .topbar .logo svg .cls-2{ fill:#009fde }
+  .topbar .logo svg .cls-3{ fill:#00ab84 }
+  .topbar .back{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:20px; font-weight:600; letter-spacing:.08em; text-transform:uppercase;
+    line-height:28px;
+    color:var(--blue); text-decoration:none;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:4px 2px; border-bottom:1px solid transparent;
+    transition:border-color .25s, color .25s;
+  }
+  .topbar .back:hover{ color:var(--ink); border-bottom-color:rgba(0,159,222,.45) }
+
+  /* ---- Hero band ---- */
+  .hero-band{
+    position:relative; isolation:isolate; overflow:hidden;
+    min-height:180px; padding:24px 64px; background:#05070d;
+    display:flex; align-items:center;     /* vertically center topbar */
+  }
+  .hero-band > .topbar{ width:100%; }
+  .hero-band__bg{
+    position:absolute; inset:0; z-index:1;
+    background:url("assets/hero-bg.jpg") center/cover no-repeat;
+    filter:saturate(1.08) contrast(1.06);
+  }
+  .hero-band__scrim{
+    position:absolute; inset:0; z-index:2; pointer-events:none;
+    background:
+      linear-gradient(180deg,
+        rgba(7,10,20,.55) 0%,
+        rgba(7,10,20,.22) 30%,
+        transparent 55%,
+        transparent 85%,
+        rgba(7,10,20,.18) 100%);
+  }
+  .hero-band > .topbar{ position:relative; z-index:10; }
+  .hero-band .topbar{ padding:0; border:0; }
+  .hero-band .topbar .logo svg .cls-1{ fill:#e8e6de; }
+  .hero-band .topbar .logo .dot{
+    background:#00e5c5;
+    box-shadow:0 0 18px #00e5c5,0 0 6px #009fde,0 0 3px rgba(255,255,255,.8) inset;
+    animation:pulse 2.2s ease-in-out infinite;
+  }
+  .hero-band .topbar .back:hover{
+    color:#ffffff; border-bottom-color:rgba(255,255,255,.45);
+  }
+  @keyframes pulse{
+    0%,100%{ opacity:.55; transform:scale(1) }
+    50%    { opacity:.95; transform:scale(1.08) }
+  }
+
+  /* ---- Article container ---- */
+  .article{
+    max-width:760px;
+    margin:0 auto;
+    padding:56px 32px 96px;
+  }
+
+  /* Article header */
+  .article-header{
+    margin-bottom:48px;
+    padding-bottom:36px;
+    border-bottom:1px solid var(--line);
+  }
+  .page-label{
+    display:flex; align-items:center; gap:14px;
+    font-family:'Space Grotesk',sans-serif;
+    font-size:18px; font-weight:600;
+    letter-spacing:.08em; text-transform:uppercase;
+    color:var(--blue); margin-bottom:24px;
+  }
+  .page-label .dot{
+    width:12px; height:12px; border-radius:50%;
+    background:var(--blue);
+    box-shadow:0 0 14px rgba(0,159,222,.45),0 0 4px rgba(0,171,132,.55),0 0 3px rgba(255,255,255,.8) inset;
+    animation: pulse 2.2s ease-in-out infinite;
+  }
+  .article-header h1{
+    font-family:'Paperlogy','Archivo',sans-serif;
+    font-weight:800;
+    font-size:clamp(28px, 3.6vw, 40px);
+    line-height:1.22; letter-spacing:-0.02em;
+    color:var(--ink);
+    margin-bottom:14px;
+  }
+  .article-subtitle{
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-size:clamp(17px, 1.5vw, 20px);
+    font-weight:400; line-height:1.45;
+    color:var(--muted-strong);
+    margin-bottom:24px;
+    letter-spacing:-0.005em;
+  }
+  .article-header .byline{
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-size:16px; font-weight:500;
+    color:var(--muted-strong);
+    margin-bottom:6px;
+  }
+  .article-header .article-meta{
+    font-family:'JetBrains Mono', ui-monospace, monospace;
+    font-size:14px; font-weight:500;
+    letter-spacing:.04em; text-transform:uppercase;
+    color:var(--muted);
+  }
+  .article-header .article-meta .date{ color:var(--blue); }
+  .article-header .article-meta em{
+    font-style:normal; color:var(--muted-strong); margin-left:4px;
+  }
+
+  /* Lede / abstract */
+  .article-abstract{
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-size:18px; font-weight:400; line-height:1.8;
+    color:var(--muted-strong);
+    border-left:3px solid var(--blue);
+    padding:6px 0 6px 22px;
+    margin-bottom:56px;
+  }
+
+  /* Body copy */
+  .article-body{
+    font-family:'Paperlogy','Pretendard Variable','Pretendard','Inter',sans-serif;
+    font-size:17px;
+    line-height:1.85;
+    color:var(--muted-strong);
+  }
+  .article-body section{ margin-bottom:64px; }
+  .article-body section:last-child{ margin-bottom:0; }
+
+  .article-body h2{
+    font-family:'Paperlogy','Archivo',sans-serif;
+    font-weight:700;
+    font-size:clamp(22px, 2.2vw, 28px);
+    line-height:1.3; letter-spacing:-0.015em;
+    color:var(--ink);
+    margin:0 0 24px;
+  }
+  .article-body h3{
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-weight:600;
+    font-size:19px; line-height:1.4;
+    margin:32px 0 12px;
+    color:var(--ink);
+    letter-spacing:-0.005em;
+  }
+  .article-body p{ color:var(--muted-strong); margin-bottom:1.4em; }
+  .article-body p:last-child{ margin-bottom:0; }
+  .article-body strong{ color:var(--ink); font-weight:700; }
+  .article-body em{ color:var(--ink); font-style:italic; }
+  .article-body a{
+    color:var(--blue);
+    text-decoration:none;
+    border-bottom:1px solid rgba(0,159,222,.35);
+    transition:border-color .2s, color .2s;
+    word-break:break-all;
+  }
+  .article-body a:hover{ color:var(--ink); border-bottom-color:var(--ink); }
+
+  .article-body ul, .article-body ol{
+    padding-left:24px;
+    color:var(--muted-strong);
+    margin-bottom:1.4em;
+  }
+  .article-body li{ margin-bottom:8px; line-height:1.75; }
+  .article-body li::marker{ color:var(--faint); }
+
+  .article-body code{
+    font-family:'JetBrains Mono', ui-monospace, monospace;
+    font-size:0.92em;
+    background:rgba(15,22,36,.06);
+    padding:2px 6px; border-radius:3px;
+    color:var(--ink);
+  }
+  .article-body pre{
+    background:rgba(15,22,36,.045);
+    border-left:2px solid var(--line);
+    padding:18px 22px;
+    margin:28px 0; overflow-x:auto;
+    font-family:'JetBrains Mono', ui-monospace, monospace;
+    font-size:13.5px; line-height:1.7;
+    color:var(--ink);
+  }
+  .article-body pre code{ background:transparent; padding:0; font-size:inherit; }
+
+  .article-body blockquote{
+    margin:36px 0;
+    padding:6px 0 6px 24px;
+    border-left:2px solid var(--line);
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-size:19px; font-style:italic;
+    line-height:1.55; letter-spacing:-0.01em;
+    color:var(--ink);
+  }
+
+  /* ---- Callout (subtle left rule, no box) ---- */
+  .callout{
+    margin:36px 0;
+    padding:6px 0 6px 24px;
+    border-left:2px solid var(--blue);
+  }
+  .callout-warn{ border-left-color:var(--warn); }
+  .callout-title{
+    font-family:'Paperlogy','Pretendard Variable','Pretendard','Inter',sans-serif;
+    font-size:clamp(17px, 1.5vw, 20px);
+    font-weight:400;
+    line-height:1.45;
+    letter-spacing:-0.005em;
+    color:var(--blue);
+    margin-bottom:8px;
+  }
+  .callout-warn .callout-title{ color:var(--warn); }
+  .callout p{
+    font-size:17px;                 /* match body copy */
+    color:var(--muted-strong);
+    line-height:1.85;               /* match body copy */
+    margin-bottom:0.7em;
+  }
+  .callout p:last-child{ margin-bottom:0; }
+
+  /* ---- Variable list (dl) ---- */
+  .var-list{ margin:24px 0 32px; }
+  .var-row{
+    display:grid;
+    grid-template-columns:48px 1fr;
+    align-items:baseline;
+    gap:18px;
+    margin-bottom:18px;
+  }
+  .var-row:last-child{ margin-bottom:0; }
+  .var-row dt{
+    font-family:var(--serif);
+    font-style:italic; font-weight:400;
+    font-size:20px;
+    color:var(--ink);
+  }
+  .var-row dd{
+    font-size:17px;
+    color:var(--muted-strong);
+    line-height:1.7;
+  }
+
+  /* ---- Equation block ---- */
+  .figure-equations{ margin:40px 0; }
+  .equations-display{ max-width:460px; margin:0 auto; }
+  .eq-line{
+    display:flex; align-items:center; gap:16px;
+    margin-bottom:14px;
+    font-size:21px;
+    font-family:var(--serif);
+    font-variant-numeric:tabular-nums;
+    line-height:1.4;
+  }
+  .eq-line:last-of-type{ margin-bottom:0; }
+  .eq-lhs{
+    font-style:italic;
+    min-width:72px;
+    color:var(--ink);
+    opacity:.78;
+  }
+  .eq-op{ color:var(--muted); }
+  .eq-rhs{ color:var(--ink); font-weight:500; }
+
+  /* ---- Data table (custom row layout) ---- */
+  .data-table{
+    margin:32px 0;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .data-row{
+    display:grid;
+    grid-template-columns:auto 1fr 2.4fr;
+    gap:20px;
+    padding:13px 0;
+    align-items:baseline;
+    font-size:17px;
+    line-height:1.6;
+    border-bottom:1px solid var(--line-soft);
+  }
+  .data-row:last-child{ border-bottom:none; }
+  .data-label{
+    font-family:var(--serif);
+    font-weight:600;
+    min-width:72px;
+    color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  .data-value{
+    font-family:var(--serif);
+    font-weight:600;
+    color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  .data-note{ color:var(--muted-strong); }
+
+  /* ---- Comparison cards (no actual grid — sequential) ---- */
+  .comparison-grid{ margin:36px 0; }
+  .comparison-card{ margin-bottom:32px; }
+  .comparison-card:last-child{ margin-bottom:0; }
+  .comparison-card h3{
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-weight:700; font-size:19px;
+    color:var(--ink);
+    margin:0 0 8px;
+    letter-spacing:-0.005em;
+  }
+  .comparison-card p{
+    font-size:15.5px;
+    color:var(--muted-strong);
+    line-height:1.7;
+    margin-bottom:0;
+  }
+
+  /* ---- Figure with canvas ---- */
+  .figure-canvas{
+    margin:40px 0;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    overflow:hidden;
+  }
+  .figure-canvas canvas{
+    display:block; width:100%; height:320px;
+    background:transparent;
+  }
+  .figure-canvas figcaption{
+    padding:14px 4px 14px;
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-size:14px; line-height:1.6;
+    color:var(--muted);
+  }
+
+  /* ---- Interactive explorer ---- */
+  .explorer-box{
+    margin:40px 0;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .explorer-box canvas{
+    display:block; width:100%; height:380px;
+    background:transparent;
+  }
+  .slider-group{ padding:20px 4px 16px; }
+  .slider-row{
+    display:grid;
+    grid-template-columns:110px 1fr 56px;
+    align-items:center; gap:14px;
+    margin-bottom:14px;
+  }
+  .slider-row:last-of-type{ margin-bottom:18px; }
+  .slider-row label{
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-size:15px; font-weight:500;
+    color:var(--muted-strong);
+  }
+  .slider-val{
+    font-family:var(--serif);
+    font-size:15px; font-weight:600;
+    text-align:right; color:var(--ink);
+    font-variant-numeric:tabular-nums;
+  }
+  input[type="range"]{
+    -webkit-appearance:none; appearance:none;
+    width:100%; height:3px;
+    outline:none; background:var(--line);
+  }
+  input[type="range"]::-webkit-slider-thumb{
+    -webkit-appearance:none;
+    width:16px; height:16px; border-radius:50%; cursor:pointer;
+    background:var(--ink); border:2px solid var(--bg);
+    box-shadow:0 0 0 1px var(--line);
+    transition:transform .15s;
+  }
+  input[type="range"]::-webkit-slider-thumb:hover{ transform:scale(1.15); }
+  input[type="range"]::-moz-range-thumb{
+    width:16px; height:16px; border-radius:50%; cursor:pointer;
+    background:var(--ink); border:2px solid var(--bg);
+    box-shadow:0 0 0 1px var(--line);
+  }
+  .reset-btn{
+    margin-top:4px;
+    padding:7px 16px;
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-size:13px; font-weight:500; letter-spacing:.02em;
+    color:var(--ink);
+    background:var(--bg);
+    border:1px solid var(--line); border-radius:3px;
+    cursor:pointer;
+    transition:border-color .2s, color .2s;
+  }
+  .reset-btn:hover{ border-color:var(--ink); }
+
+  /* ---- References (APA hanging indent) ---- */
+  .article-refs{
+    margin-top:64px;
+    padding-top:28px;
+    border-top:1px solid var(--line);
+  }
+  .article-refs h2{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px; font-weight:600;
+    letter-spacing:.10em; text-transform:uppercase;
+    color:var(--blue);
+    margin-bottom:18px;
+  }
+  .references{
+    list-style:none; padding:0;
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-size:14.5px; line-height:1.72;
+    color:var(--muted-strong);
+  }
+  .references li{
+    padding-left:28px; text-indent:-28px;
+    margin-bottom:14px;
+  }
+  .references li:last-child{ margin-bottom:0; }
+  .references em{ color:var(--ink); font-style:italic; }
+  .references a{
+    color:var(--muted);
+    text-decoration:none;
+    border-bottom:1px solid var(--line);
+    transition:color .2s, border-color .2s;
+    word-break:break-all;
+  }
+  .references a:hover{ color:var(--blue); border-bottom-color:var(--blue); }
+
+  /* ---- Colophon ---- */
+  .colophon{
+    margin-top:48px;
+    padding-top:24px;
+    border-top:1px solid var(--line-soft);
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-size:14px; line-height:1.7;
+    color:var(--muted);
+  }
+
+  /* ---- End-of-article nav ---- */
+  .article-end-nav{
+    margin-top:48px;
+    padding-top:28px;
+    border-top:1px solid var(--line);
+  }
+  .article-end-nav a{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:16px; font-weight:600;
+    letter-spacing:.06em; text-transform:uppercase;
+    color:var(--blue); text-decoration:none;
+    display:inline-flex; align-items:center; gap:8px;
+    padding:4px 0; border-bottom:1px solid transparent;
+    transition:border-color .25s, color .25s;
+  }
+  .article-end-nav a:hover{
+    color:var(--ink); border-bottom-color:rgba(0,159,222,.45);
+  }
+
+  /* ---- Footer ---- */
+  .site-footer{
+    border-top:1px solid var(--line);
+    padding:36px 64px 44px;
+  }
+  .site-footer__inner{
+    max-width:1660px; margin:0 auto;
+    display:flex; justify-content:space-between; align-items:flex-start;
+    gap:48px; flex-wrap:wrap;
+  }
+  .site-footer a{
+    color:var(--ink); text-decoration:none;
+    font-family:'Paperlogy','Space Grotesk',sans-serif;
+    font-size:18px; font-weight:500;
+    display:inline-flex; align-items:center; gap:10px;
+    transition:color .2s;
+  }
+  .site-footer a:hover{ color:var(--blue) }
+  .site-footer .address{
+    font-family:'Paperlogy','Space Grotesk',sans-serif;
+    font-size:18px; font-weight:500;
+    line-height:1.4; color:var(--ink);
+    text-align:right;
+  }
+  .mail-icon{ width:18px; height:18px; flex:none; opacity:.9 }
+
+  /* ---- Responsive ---- */
+  @media (max-width:768px){
+    .topbar{ padding:16px 24px }
+    .hero-band{ padding:16px 24px; min-height:140px; }
+    .article{ padding:40px 22px 72px; }
+    .article-body{ font-size:16px; }
+    .article-body section{ margin-bottom:48px; }
+    .data-row{ grid-template-columns:auto 1fr; gap:12px; }
+    .data-note{ grid-column:1 / -1; color:var(--muted); }
+    .var-row{ grid-template-columns:36px 1fr; gap:14px; }
+    .slider-row{ grid-template-columns:1fr 1fr 48px; }
+    .figure-canvas canvas{ height:260px; }
+    .explorer-box canvas{ height:320px; }
+    .site-footer{ padding:32px 24px }
+    .site-footer__inner{ flex-direction:column; gap:20px }
+    .site-footer .address{ text-align:left }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero-band">
+  <div class="hero-band__bg" aria-hidden="true"></div>
+  <div class="hero-band__scrim" aria-hidden="true"></div>
+
+  <div class="topbar">
+    <!-- 독립 폴더에서는 로고를 링크하지 않는다(홈이 없음). 사이트 발간 시:
+         <span class="logo"> → <a class="logo" href="../index.ko.html"> 로 복원. -->
+    <span class="logo" aria-label="KEI AI 융합연구단">
+      <span class="dot" aria-hidden="true"></span>
+      <svg viewBox="83 188 163 76" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="KEI">
+        <g>
+          <path class="cls-1" d="M141.15,254.81h0c0,3.8,2.1,6.7,7.32,6.7h28.95v-9.82h-23.11c-.76,0-1.14-.37-1.14-.99v-8.18h21.85v-9.82h-21.85v-7.92h24.24v-9.82h-36.27v39.85Z"/>
+          <path class="cls-1" d="M117.34,237.61l19.15-22.65h-14.61l-13.9,16.44v-16.44h-12.03v42.34h0c0,2.39,1.32,4.21,4.6,4.21h7.42v-15.74c7.67,2.45,13.83,8.28,16.74,15.74h12.08c-2.87-10.42-10.03-19.05-19.46-23.9Z"/>
+          <path class="cls-1" d="M186.34,214.96v42.34c0,2.39,1.32,4.21,4.6,4.21h7.42v-46.55h-12.03Z"/>
+        </g>
+        <g>
+          <path class="cls-3" d="M233.28,210.31c0,5.14-4.17,9.31-9.31,9.31-1.29,0-2.53-.27-3.65-.74v9.69c1.18.23,2.4.36,3.65.36,10.28,0,18.62-8.34,18.62-18.62,0-1.61-.23-3.16-.61-4.66h-9.96c.79,1.37,1.26,2.96,1.26,4.66Z"/>
+          <path class="cls-2" d="M214.66,210.31c0-5.14,4.17-9.31,9.31-9.31,1.29,0,2.53.27,3.65.74v-9.69c-1.18-.23-2.4-.36-3.65-.36-10.28,0-18.62,8.34-18.62,18.62,0,1.61.23,3.16.61,4.66h9.96c-.79-1.37-1.26-2.96-1.26-4.66Z"/>
+        </g>
+      </svg>
+    </span>
+    <!-- 사이트 발간 시 복원:
+    <a href="../briefs.html" class="back" id="back-link" aria-label="브리프 목록으로">
+      <span aria-hidden="true">←</span><span>Back</span>
+    </a>
+    -->
+  </div>
+</header>
+
+<article class="article">
+  <header class="article-header">
+    <div class="page-label">
+      <span class="dot" aria-hidden="true"></span>
+      <span>Brief</span>
+    </div>
+    <h1>[REPLACE: 제목]</h1>
+    <p class="article-subtitle">[REPLACE: 부제 — 생략 가능]</p>
+    <p class="byline">[REPLACE: 저자 라인 — 예: AI 생성 · 김경호 검토]</p>
+    <p class="article-meta">
+      <span class="date">[REPLACE: YYYY.MM.DD]</span> · <em>[REPLACE: 분야 1 · 분야 2]</em>
+    </p>
+  </header>
+
+  <p class="article-abstract">
+    [REPLACE: 초록 1–3문장. 무엇을 다루고 왜 중요한지 격식 있게.]
+  </p>
+
+  <div class="article-body">
+    <!-- 각 <section>은 서사의 한 beat. 문제→방법 순서 유지. voice-and-structure.md §2 참고.
+         안 쓰는 컴포넌트 예시는 통째로 삭제한다. -->
+
+    <!-- ===== 여는 섹션: 문제·공백 진술 (해설의 시작은 논문 기여가 아니라 문제) ===== -->
+    <section id="opening">
+      <h2>[REPLACE: 여는 섹션 제목]</h2>
+      <p>[REPLACE: 문제·공백을 격식 있게 진술한다. "이 논문은 ~을 제안한다"로 시작하지 않는다.]</p>
+    </section>
+
+    <!-- ===== 핵심 개념 + callout ===== -->
+    <section id="idea">
+      <h2>[REPLACE: 핵심 개념]</h2>
+      <p>[REPLACE: 개념을 평이하게 정의한 뒤 이름을 붙인다. 예: 관련 문서를 먼저 가져오는 단계를 검색(retrieval)이라 한다.]</p>
+
+      <div class="callout">
+        <p class="callout-title">[REPLACE: callout 제목 — 예: 핵심 명제]</p>
+        <p>[REPLACE: 강조하고 싶은 핵심 진술. 경고는 위 div에 class="callout callout-warn".]</p>
+      </div>
+    </section>
+
+    <!-- ===== 정식화: figure-equations + var-list ===== -->
+    <section id="equations">
+      <h2>[REPLACE: 정식화 / 수식]</h2>
+      <p>[REPLACE: 수식이 형식화하는 아이디어를 산문으로 먼저 진술한다.]</p>
+
+      <figure class="figure-equations">
+        <div class="equations-display">
+          <div class="eq-line">
+            <span class="eq-lhs">[REPLACE: dx / dt]</span>
+            <span class="eq-op">=</span>
+            <span class="eq-rhs">[REPLACE: σ ( y − x )]</span>
+          </div>
+        </div>
+      </figure>
+
+      <dl class="var-list">
+        <div class="var-row"><dt>[REPLACE: x]</dt><dd>[REPLACE: 변수 설명.]</dd></div>
+      </dl>
+    </section>
+
+    <!-- ===== 결과/지표: data-table + figure-canvas ===== -->
+    <section id="results">
+      <h2>[REPLACE: 결과 / 지표]</h2>
+      <p>[REPLACE: 핵심 결과를 실제 수치와 함께. 한계도 분명히.]</p>
+
+      <div class="data-table">
+        <div class="data-row">
+          <span class="data-label">[REPLACE: 라벨]</span>
+          <span class="data-value">[REPLACE: 값]</span>
+          <span class="data-note">[REPLACE: 설명]</span>
+        </div>
+      </div>
+
+      <!-- figure-canvas: 스크롤 도달 시 그려지는 시각화. 아래 스크립트는 도메인 중립 예시 —
+           본인 시각화로 교체하거나 figure 블록과 스크립트를 함께 삭제한다. -->
+      <figure class="figure-canvas">
+        <canvas id="demo-canvas" role="img" aria-label="[REPLACE: 스크린리더용 설명]"></canvas>
+        <figcaption>[REPLACE: 그림이 무엇을 보여주는지 객관적으로.]</figcaption>
+      </figure>
+    </section>
+
+    <!-- ===== 사례 비교 + 인터랙티브 explorer ===== -->
+    <section id="cases">
+      <h2>[REPLACE: 사례 / 응용]</h2>
+
+      <div class="comparison-grid">
+        <div class="comparison-card">
+          <h3>[REPLACE: 사례 제목]</h3>
+          <p>[REPLACE: 사례 설명.]</p>
+        </div>
+      </div>
+
+      <!-- explorer-box: 사용자 매개변수 조작. 아래 스크립트는 도메인 중립 예시 —
+           교체하거나 블록과 스크립트를 함께 삭제한다. 학술 톤에서는 절제해 쓴다. -->
+      <div class="explorer-box">
+        <canvas id="demo-explorer" role="img" aria-label="[REPLACE: 설명]"></canvas>
+        <div class="slider-group">
+          <div class="slider-row">
+            <label for="demo-slider">[REPLACE: 슬라이더 라벨]</label>
+            <input type="range" id="demo-slider" min="1" max="8" step="0.1" value="3">
+            <span class="slider-val" id="demo-val" aria-live="polite">3.0</span>
+          </div>
+          <button id="demo-reset" class="reset-btn">초기화</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== 전망 / 결론 ===== -->
+    <section id="closing">
+      <h2>[REPLACE: 전망]</h2>
+      <p>[REPLACE: 절제된 전망. 무엇을 가능하게 하고 무엇이 남는지. 과장 없이.]</p>
+    </section>
+
+  </div>
+
+  <section class="article-refs">
+    <h2>References</h2>
+    <ul class="references">
+      <li>[REPLACE: 저자 (연도). 제목. <em>저널명, 권</em>(호), 면.]
+          <a href="[REPLACE: https://doi.org/...]">[REPLACE: https://doi.org/...]</a></li>
+    </ul>
+  </section>
+
+  <p class="colophon">
+    [REPLACE 또는 삭제: 출처/제작 노트. 예: 본 고는 ~에 기초한 해설이다.]
+  </p>
+
+  <!-- 사이트 발간 시 복원:
+  <nav class="article-end-nav">
+    <a href="../briefs.html">← 브리프 목록</a>
+  </nav>
+  -->
+</article>
+
+<footer class="site-footer">
+  <div class="site-footer__inner">
+    <a href="mailto:khkim@kei.re.kr">
+      <svg class="mail-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/>
+      </svg>
+      khkim@kei.re.kr
+    </a>
+    <div class="address">
+      Bldg. B, Sejong National Research Complex<br>
+      370 Sicheong-daero, Sejong 30147, Republic of Korea
+    </div>
+  </div>
+</footer>
+
+<script>
+  // ── Demo visualizations ──────────────────────────────────────────────────
+  // 도메인 중립 예시(감쇠하는 진행파 + 주파수 슬라이더). 브라우저에서 실시간으로
+  // 그려지며 lazy-start(IntersectionObserver) 패턴을 보여준다. 본인 시각화의 draw()
+  // 함수만 바꾸면 된다. 시각화를 쓰지 않으면 위 figure-canvas / explorer-box 블록과
+  // 이 스크립트 전체를 삭제한다.
+  document.addEventListener('DOMContentLoaded', () => {
+    const BLUE = '#009fde', AMBER = '#ff8a2a', LINE = 'rgba(15,22,36,.12)';
+
+    // ---- figure-canvas: 감쇠하는 진행파 애니메이션 ----
+    const cvs = document.getElementById('demo-canvas');
+    if (cvs) {
+      const ctx = cvs.getContext('2d');
+      let t = 0, running = false;
+      function resize() {
+        cvs.width = cvs.parentElement.clientWidth;
+        cvs.height = window.innerWidth < 768 ? 260 : 320;
+      }
+      function draw() {
+        const w = cvs.width, h = cvs.height;
+        if (!w || !h) { requestAnimationFrame(draw); return; }
+        ctx.clearRect(0, 0, w, h);
+        ctx.beginPath();
+        for (let x = 0; x <= w; x++) {
+          const y = h / 2 + Math.sin(x / 48 + t) * (h / 5) * Math.exp(-x / (w * 1.6));
+          x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = BLUE; ctx.lineWidth = 1.6;
+        ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+        ctx.stroke();
+        t += 0.03;
+        requestAnimationFrame(draw);
+      }
+      const fig = cvs.closest('.figure-canvas');
+      const obs = new IntersectionObserver(es => es.forEach(e => {
+        if (e.isIntersecting && !running) { running = true; resize(); draw(); obs.disconnect(); }
+      }), { threshold: 0.1 });
+      obs.observe(fig);
+      window.addEventListener('resize', () => { if (cvs.width) resize(); });
+    }
+
+    // ---- explorer-box: 슬라이더로 파형의 주파수 조작 ----
+    const eCvs = document.getElementById('demo-explorer');
+    if (eCvs) {
+      const ectx = eCvs.getContext('2d');
+      const slider = document.getElementById('demo-slider');
+      const valEl = document.getElementById('demo-val');
+      const resetBtn = document.getElementById('demo-reset');
+      let freq = parseFloat(slider.value);
+      function resize() {
+        eCvs.width = eCvs.parentElement.clientWidth;
+        eCvs.height = window.innerWidth < 768 ? 320 : 380;
+        drawStatic();
+      }
+      function drawStatic() {
+        const w = eCvs.width, h = eCvs.height;
+        if (!w || !h) return;
+        ectx.clearRect(0, 0, w, h);
+        ectx.beginPath(); ectx.moveTo(0, h / 2); ectx.lineTo(w, h / 2);
+        ectx.strokeStyle = LINE; ectx.lineWidth = 1; ectx.stroke();
+        ectx.beginPath();
+        for (let x = 0; x <= w; x++) {
+          const y = h / 2 + Math.sin((x / w) * freq * Math.PI * 2) * (h / 4);
+          x === 0 ? ectx.moveTo(x, y) : ectx.lineTo(x, y);
+        }
+        ectx.strokeStyle = AMBER; ectx.lineWidth = 1.8;
+        ectx.lineJoin = 'round'; ectx.lineCap = 'round';
+        ectx.stroke();
+      }
+      function onInput() {
+        freq = parseFloat(slider.value);
+        valEl.textContent = freq.toFixed(1);
+        drawStatic();
+      }
+      slider.addEventListener('input', onInput);
+      resetBtn.addEventListener('click', () => { slider.value = 3; onInput(); });
+      const box = eCvs.closest('.explorer-box');
+      const obs = new IntersectionObserver(es => es.forEach(e => {
+        if (e.isIntersecting) { resize(); obs.disconnect(); }
+      }), { threshold: 0.1 });
+      obs.observe(box);
+      window.addEventListener('resize', resize);
+    }
+  });
+</script>
+
+</body>
+</html>

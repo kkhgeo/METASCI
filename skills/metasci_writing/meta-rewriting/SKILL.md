@@ -67,9 +67,19 @@ paragraph, typically:
 
 Quote the actual problem phrases when you discuss them.
 
+**Section-aware check:** if the paragraph's section type is stated by the
+user or unmistakable from the text (Abstract / Introduction / Methods /
+Results / Discussion / thesis chapter), ALSO read
+`references/section-checklists.md` — at that moment only — and check the
+paragraph against that section's items; structural violations go into the
+③ table (missing required element = 高). If the section type is unclear,
+skip this check entirely rather than guessing.
+
 *(Grounding: Gopen & Swan 1990; Williams & Bizup, Style; Clark & Haviland
 1977; Halliday & Hasan 1976; Mensh & Kording 2017 — full verified notes in
-references/principles.md; read it only if the user asks for the sources.)*
+references/principles.md; read it only if the user asks for the sources.
+Section conventions: Perneger 2004, Ecarnot 2015, Nature template et al. —
+references/section-checklists.md.)*
 
 ### ③ 문장별 진단 표
 

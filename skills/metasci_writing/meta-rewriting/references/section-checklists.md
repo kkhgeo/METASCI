@@ -46,6 +46,7 @@
 - [ ] **초록에 참고문헌 인용 없음** [1차: Ecarnot 2015 — "There should be no references in an abstract"]
 - [ ] 결론이 결과를 단순 반복하지 않고 함의를 진술하는가
 - [ ] 저널 단어 수 제한 준수 (일반 150-300w) [1차: Perneger 2004, 저널 지침 준수]
+- [ ] **"in this paper" 류 자기지시 회피** + 일반론적 동기 서술 금지("인터넷의 중요성을 정당화할 필요 없다") [1차: Schulzrinne]
 
 ## Introduction / 서론
 
@@ -61,6 +62,9 @@
 - [ ] 목적 진술이 동어반복("we describe what we did")이나 모호("we explored issues related to X")하지 않은가 — Perneger Table 2의 흔한 실수 (高)
 - [ ] 서론이 문헌 종합 리뷰로 비대해지지 않았는가 — "neither necessary nor desirable" [1차: Perneger 2004]
 - [ ] 문제 진술(problem statement): 공백의 실재 + 중요성 + 검증 가능성을 갖추었는가 [보조: Scholar 문제진술 스레드, 5회 재게시·누적 조회 10만+]
+
+- [ ] **공백 진술의 구체성** — "연구가 부족하다/알려진 바 없다" 류 추상 공백이 아니라, 공백이 초래하는 구체적 결과·수치로 중요성을 입증하는가 [1차: IUFRO pp.58-60 — 계획서 규칙이나 서론 공백 진술에 동일 적용]
+- [ ] (학위논문·긴 논문 한정) 서론 말미 로드맵 문장 — 이후 구성 예고 [보조: Scholar]
 
 서론 시제 규칙 [1차: Ecarnot 2015 Table 2 — 원문 대조 완료]:
 - 확립된 지식 → **현재** ("Cancer is a common disease")
@@ -87,6 +91,7 @@
   - [ ] 연구 질문과 무관한 표·비필수 결과 나열 금지 — "resist the temptation" (中)
   - [ ] 해석·논평은 Discussion으로 — Results는 사실 보고
   - [ ] 시제: 관찰·수행 보고는 과거 [보조: Scholar 시제 가이드 — 관례 등급, Ecarnot Table 2의 원리 연장]
+  - [ ] **그림·표 캡션 자기완결성** — 본문 없이 캡션만으로 이해 가능해야; 그래프 서술은 시각적으로 자명한 것("부하가 늘면 지연이 는다")의 반복이 아니라 관계의 설명이어야 [1차: Schulzrinne]
 
 ## Discussion / 논의
 
@@ -110,6 +115,44 @@
 - [ ] 장별 역할 침범 없음 (예: 방법 서술이 결과 장에 등장 = Perneger Table 2 "chaotic structure")
 - [ ] 문헌고찰이 나열이 아니라 공백 도출로 수렴하는가 [1차: Pautasso 2013 Rule 10 — 리뷰는 서사가 있어야]
 
+## Research Proposal / 연구계획서
+
+구조 — 9구성요소 [1차: IUFRO 핸드북 Ch.7 (PDF 보유, pp.52-63); 보조: Scholar 계획서 스레드 다수(최대 6.8만 조회)]:
+Summary → Introduction → **Statement of Problem/Need** → Project Description(Objectives·실험계획·결과확산·시설·인용문헌) → Budget → Budget 정당화 → 특별 고려사항 → CV → 부록
+
+체크:
+- [ ] **Summary 필수 6문장** — 신뢰성·문제/필요·연구목표·방법·자원 수요·기대 성과 각 1문장 이상, 1쪽(300-500단어) 이내
+- [ ] **문제 진술 금지 문구** — "little is known about...", "there is a general lack of information...", "no research has dealt with..." 금지 → **구체적 결과·통계로 대체** ("1만 헥타르 낙엽 피해로 Y의 경제 손실" 식) (금지 문구 사용 = 高)
+- [ ] Objectives: **1-2문장, 측정·검증 가능한 성과**, 페이지에서 눈에 띄게; 능동 동사(to increase/reduce) 우선, to provide/establish 회피
+- [ ] Objectives(무엇을·언제) ≠ Methods(어떻게) ≠ Goals(추상 지향) — 세 층위 혼동 금지 (中)
+- [ ] 통계적 영가설을 목표로 진술하지 말 것
+
+## 문장 스타일 공통 (모든 섹션 — ② 논의에서 문장 수준 진단 시 적용)
+
+간결성 — 4결함 유형 [1차: Lund 가이드 12항 퇴고 체크리스트(pp.144-145)·클리셰 목록(p.125); Schulzrinne; Williams & Bizup *Concision*; 보조: Scholar 다수(최대 4.2만 조회)]:
+- [ ] **무의미 강조부사** — very, really, just, clearly, actually: 삭제하거나 더 강한 단어로 대체 (低)
+- [ ] **클리셰·상투구** — at the end of the day, in this day and age, last but not least, part and parcel 등: "자리만 차지하고 기여하지 않음" (低)
+- [ ] **메타담화 과잉** — "It is important to note that...", "in this paper"(초록에서 특히: "여기서 다른 논문 얘기를 하겠는가") (低~中)
+- [ ] **장황 구문** — "due to the fact that"→because, "a majority of"→most (低)
+
+문장 운용 [1차: FESS pp.31-33; Lund p.123]:
+- [ ] **만연체 수치 테스트** — 등위접속사(and/but/so)가 한 문장에 2개 초과면 만연체 의심; "and"-체이닝(...and...and...and) = 中
+- [ ] **문장 길이 변주** — 단문만 연속 = 단조/유아적, 복문만 연속 = 난독; 혼합이 정답
+- [ ] run-on(융합문)·comma splice·fragment — 두 주절은 세미콜론/접속사/마침표로만 연결, 종속절 단독 사용 금지 (中~高) [1차: Lund pp.135-138]
+- [ ] 제한적 vs 비제한적 관계절의 콤마 — 의미가 달라짐 ("All the students who..." 부분집합 vs "All the students, who..." 전체); that 앞 콤마 금지 [1차: Lund pp.132-134]
+
+격식 레지스터 [1차: Lund p.117, pp.120-125; FESS pp.9-11; 보조: Scholar]:
+- [ ] **축약형 금지** — don't → do not (아포스트로피 스캔으로 즉시 검출) (低)
+- [ ] 비격식어 치환 — a lot of→many/numerous, get→obtain, 문두 And/But 회피, 모호어(thing/stuff) 금지
+- [ ] 느낌표 사용 금지(생략부호 …는 생략 표시로만), 허세어 회피(vociferate→shout: 이유 없는 현학은 "pompous")
+- [ ] **객관 톤** — 가치판단("greatest of all time"→"most productive of his time"), 빈정거림 따옴표('evidence') 제거 [1차: Lund pp.120-121 수정 예문]
+- [ ] 포괄적 언어 — 총칭 he→singular they, policeman→police officer [1차: Lund pp.121-122]
+
+기타 [보조 등급 — 관례로서 견고]:
+- [ ] **능동태 기본값** — "We conducted..." > "The experiment was conducted..." — 단, **old 정보를 문장 앞으로 보내는 수동태는 정당** (principles.md 원칙 1이 우선; "수동태 금지"를 기계 적용하지 말 것)
+- [ ] 약어는 본문 첫 등장 시 풀어쓰기 정의 (표준 약어 제외)
+- [ ] 인용동사 다양화 — shows/found만 반복하지 말고 저자 태도를 담은 동사(argues, demonstrates, contends, suggests) 선별 [보조: Scholar 최고 참여 트윗(11.3만 조회); Hyland의 stance 연구와 인접]
+
 ## 인용·참고문헌 규범 (모든 섹션 공통)
 
 체크 [1차: Perneger 2004 — 원문 대조 완료]:
@@ -118,6 +161,7 @@
 - [ ] **망라적 인용 불필요** — 종설이 아닌 한 모든 문헌을 인용할 필요 없음; 인용 과밀은 초점 상실 신호 (低)
 - [ ] 직접인용 과다 회피 — 학술 산문에서는 패러프레이즈가 기본, 인용부호 남용 시 종합 부재 신호 [보조: Scholar 40 Tips]
 - [ ] 초록에는 인용 금지 [1차: Ecarnot 2015 — 초록 섹션에 기재됨]
+- [ ] **When NOT to cite** — 분야 상식, 본인의 아이디어·실험 결과, 논쟁 없는 배경 지식, 공용 지식에는 인용 불필요; 과잉 인용은 종합 능력 부재 신호 [보조: Scholar (1.3만 조회, 10항목)]
 
 ---
 
@@ -148,4 +192,8 @@ Perneger 2004 Table 2의 흔한 실수 중 단락 수준에서 검출 가능한 
 - Tullu, M.S. (2019). Writing the title and abstract for a research paper. *Saudi J Anaesth* 13(S1):S12-S17. — `papers/Tullu_2019_...pdf` (원문 대조 완료 2026-07-16)
 - Koons, G.L., Schenke-Layland, K., & Mikos, A.G. (2019). Why, When, Who, What, How, and Where for Trainees Writing Literature Review Articles. *Ann Biomed Eng* 47(11):2334-2340. — `papers/Koons_2019_...pdf`
 - Paul, J., & Criado, A.R. (2020). The art of writing literature review. *Int Business Review* 29(4):101717. — PDF 미확보(구독 전용), DOI: 10.1016/j.ibusrev.2020.101717
+- Lund University (2020). *Writing in English at University: A Guide for Second Language Writers*. — `books_guides/B3_...pdf` (Module 4 채굴 완료 2026-07-16)
+- FESS. *Academic Writing: A Handbook for Learners in the FET Sector*. — `books_guides/B6_...pdf` (pp.9-38 채굴 완료)
+- Schulzrinne, H. *Writing Technical Articles* (Columbia). — `books_guides/B5_...html`
+- IUFRO. *Handbook for Preparing and Writing Research Proposals*. — `books_guides/B1_...pdf` (Ch.7 채굴 완료)
 - @ScholarshipfPhd 트윗 코퍼스 (1,051건, 2023-02~2026-07) — `tweets/tweets_raw_1051.json`

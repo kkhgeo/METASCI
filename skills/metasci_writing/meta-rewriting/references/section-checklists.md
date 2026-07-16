@@ -10,6 +10,27 @@
 
 ---
 
+## Title / 제목 (사용자가 제목을 제시했을 때)
+
+체크 [1차: Tullu 2019, *Saudi J Anaesth* 13(S1):S12-S17 — 원문 대조 완료 2026-07-16; 보조: Scholar 제목 가이드 2025-06-16]:
+- [ ] 핵심 속성 충족 — "descriptive, direct, accurate, appropriate, concise, precise, unique, **not misleading**" (Tullu의 명시 목록)
+- [ ] **약어·두문자어 금지** — 비전문 독자가 건너뛰게 만들고 비표준 약어는 혼동 유발
+- [ ] 임상·실증 연구는 **PICO 요소 포함 시도** (Patients/대상, Intervention, Comparison, Outcome)
+- [ ] **검색용 키워드가 제목에 포함**되어 있는가 — 색인·검색엔진 회수 목적
+- [ ] 길이 최적화 — 긴 제목은 산만("boring and unfocused"), 극단적으로 짧으면 내용 대표성 상실; 저널 규정 준수
+- [ ] 내용과의 정합 — 본문이 입증하지 않는 범위를 제목이 약속하지 않는가 (misleading = 高)
+- 참고: 제목 유형은 descriptive / declarative / interrogative 3종 — 유형 자체는 선택이나 분야 관례 확인
+
+## Literature Review / 문헌고찰
+
+텍스트에서 진단 가능한 규칙 [1차: Pautasso 2013 Rules 5·6·7·9·10 — 원문 대조 완료 2026-07-16; 1차 보강: Koons et al. 2019 *Ann Biomed Eng* 47(11) (PDF 보유); 보조: Paul & Criado 2020 (closed, DOI만), Scholar 문헌고찰 21건]:
+- [ ] **비판적 스탠스** — 단순 요약 나열("A는 X를 발견했다. B는 Y를 발견했다...")이 아니라 평가·종합이 있는가 (Rule 6 "Be Critical and Consistent") — 나열형 = 高
+- [ ] **논리적 구조** — 연대순/주제별/방법론별 등 식별 가능한 조직 원리가 있는가 (Rule 7)
+- [ ] **공백 도출로 수렴** — 리뷰가 "그래서 무엇이 미해결인가"를 향해 서사적으로 진행하는가
+- [ ] **초점 유지 + 폭넓은 관심** — 리뷰 대상이 명확히 한정되면서도 인접 독자에게 유의미한가 (Rule 5)
+- [ ] **자기 연구의 객관적 취급** — 저자 자신의 선행연구를 과대 비중 없이 다루는가 (Rule 9)
+- [ ] **최신성과 고전의 균형** — 최근 문헌만도, 낡은 문헌만도 아닌가 (Rule 10 "Be Up-to-Date, but Do Not Forget Older Studies")
+
 ## Abstract / 초록
 
 5요소 구조 — 각 요소 1-3문장 [1차: Nature Summary Paragraph 공식 주석 템플릿(B7); 보조: Scholar 초록 스레드 다수, 조회 5만+]:
@@ -41,6 +62,13 @@
 - [ ] 서론이 문헌 종합 리뷰로 비대해지지 않았는가 — "neither necessary nor desirable" [1차: Perneger 2004]
 - [ ] 문제 진술(problem statement): 공백의 실재 + 중요성 + 검증 가능성을 갖추었는가 [보조: Scholar 문제진술 스레드, 5회 재게시·누적 조회 10만+]
 
+서론 시제 규칙 [1차: Ecarnot 2015 Table 2 — 원문 대조 완료]:
+- 확립된 지식 → **현재** ("Cancer is a common disease")
+- 타인의 선행 관찰 → **과거** ("Smith et al. showed that...")
+- 과거 시작·미완의 흐름 → **현재완료** ("Several researchers have investigated...")
+- 가설 정식화 → **첫 동사 과거 + 둘째 동사 현재** ("We hypothesized that drug A increases...")
+- 목적 진술 → **과거** ("We aimed to measure...")
+
 ## Methods / 연구 방법
 
 체크 [1차: Perneger 2004 Table 1 — 8요소]:
@@ -48,6 +76,7 @@
 - [ ] **재현 가능 수준의 구체성** — "specific, concrete, technical, and fairly detailed" [1차: Perneger 2004]
 - [ ] 시제: 수행한 일은 **과거시제** [1차: Ecarnot 2015 시제 표]
 - [ ] 통계 분석 소프트웨어·버전 명시 관례 [1차: Ecarnot 2015]
+- [ ] **Methods–Results 짝 규칙**: Results에 제시될 모든 결과에 대응하는 방법 서술이 존재하는가 — "you cannot present the results of a test or analysis that was not mentioned in the methods" (짝 없는 결과 = 高) [1차: Ecarnot 2015 — 원문 대조 완료]
 
 ## Results / 연구 결과
 
@@ -57,6 +86,7 @@
   - [ ] 같은 결과를 표와 본문에 중복 제시하지 않음 (中)
   - [ ] 연구 질문과 무관한 표·비필수 결과 나열 금지 — "resist the temptation" (中)
   - [ ] 해석·논평은 Discussion으로 — Results는 사실 보고
+  - [ ] 시제: 관찰·수행 보고는 과거 [보조: Scholar 시제 가이드 — 관례 등급, Ecarnot Table 2의 원리 연장]
 
 ## Discussion / 논의
 
@@ -79,6 +109,15 @@
 체크:
 - [ ] 장별 역할 침범 없음 (예: 방법 서술이 결과 장에 등장 = Perneger Table 2 "chaotic structure")
 - [ ] 문헌고찰이 나열이 아니라 공백 도출로 수렴하는가 [1차: Pautasso 2013 Rule 10 — 리뷰는 서사가 있어야]
+
+## 인용·참고문헌 규범 (모든 섹션 공통)
+
+체크 [1차: Perneger 2004 — 원문 대조 완료]:
+- [ ] **핵심 주장(key assertions)에 인용이 붙어 있는가** — 방법·도구 출처 포함 ("Key assertions should be referenced, as well as the methods and instruments used")
+- [ ] **그레이 문헌 회피** — 미출판 자료, 기술보고서, 독자가 찾기·이해하기 어려운 출처 인용 금지 (中)
+- [ ] **망라적 인용 불필요** — 종설이 아닌 한 모든 문헌을 인용할 필요 없음; 인용 과밀은 초점 상실 신호 (低)
+- [ ] 직접인용 과다 회피 — 학술 산문에서는 패러프레이즈가 기본, 인용부호 남용 시 종합 부재 신호 [보조: Scholar 40 Tips]
+- [ ] 초록에는 인용 금지 [1차: Ecarnot 2015 — 초록 섹션에 기재됨]
 
 ---
 
@@ -106,4 +145,7 @@ Perneger 2004 Table 2의 흔한 실수 중 단락 수준에서 검출 가능한 
 - Fisher et al. Guidelines for Writing a Research Paper for Publication (Liebert) — `papers/Fisher_2013_...pdf`
 - Pautasso (2013). *PLoS Comput Biol* 9(7):e1003149 — `papers/Pautasso_2013_...pdf`
 - Tsigaris & Teixeira da Silva (2026); Zhu & Yang (2026); Connell Pensky et al. (2025); Huang & Tan (2023) — `papers/` (P1은 PDF 미확보, DOI: 10.1016/j.nexres.2026.101396)
+- Tullu, M.S. (2019). Writing the title and abstract for a research paper. *Saudi J Anaesth* 13(S1):S12-S17. — `papers/Tullu_2019_...pdf` (원문 대조 완료 2026-07-16)
+- Koons, G.L., Schenke-Layland, K., & Mikos, A.G. (2019). Why, When, Who, What, How, and Where for Trainees Writing Literature Review Articles. *Ann Biomed Eng* 47(11):2334-2340. — `papers/Koons_2019_...pdf`
+- Paul, J., & Criado, A.R. (2020). The art of writing literature review. *Int Business Review* 29(4):101717. — PDF 미확보(구독 전용), DOI: 10.1016/j.ibusrev.2020.101717
 - @ScholarshipfPhd 트윗 코퍼스 (1,051건, 2023-02~2026-07) — `tweets/tweets_raw_1051.json`

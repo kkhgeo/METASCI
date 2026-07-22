@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Slide Design"
   short_description: "Turn a slide plan into Onto-style HTML design"
-  default_prompt: "Use $meta-slide-design to explore design directions and turn this approved content specification into an Onto-style HTML slide deck with Paperlogy typography and rendered screenshot verification."
+  default_prompt: "Use $meta-slide-design to explore design directions and turn this approved content specification into an Onto-style HTML slide deck, built from the Onto design tokens with Paperlogy typography, exported to PDF, and verified by rendered screenshots."

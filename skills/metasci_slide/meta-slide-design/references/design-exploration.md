@@ -1,27 +1,35 @@
 # Design Exploration
 
-Use this reference before implementing a full deck. The goal is to let the user review several creative directions early while keeping the Onto house style as the baseline principle.
+Use this reference before implementing a full deck. The goal is to let the user review
+several creative directions early while keeping the Onto house style as the baseline
+principle.
 
 ## Ground Rule
 
 The user's Onto design remains the default design language:
 
-- Paperlogy typography.
-- Keyword title plus lead statement.
+- Paperlogy typography and the token set in `onto-tokens.md`.
+- Keyword title plus a claim carried by the pull-quote or lead statement.
 - Research/institutional tone.
 - Evidence-centered layouts.
-- Dark immersive cover or section moments paired with paper-like content slides.
-- Semantic chapter colors rather than decoration.
+- Three modes: dark for the cover, contents, and close; white section openers; paper content
+  slides.
+- One semantic accent per chapter, declared on the section opener and inherited by that
+  chapter's body slides.
 
-Creative exploration may vary composition, rhythm, visual density, image treatment, diagram style, and evidence framing. It should not replace the approved content or drift into a generic marketing template.
+Creative exploration may vary composition, rhythm, visual density, image treatment, diagram
+style, and evidence framing. It should not replace the approved content or drift into a
+generic marketing template. It should not change the mode structure or the chapter-accent
+rule — those are what make a deck read as Onto.
 
 ## Default Direction Set
 
-Propose 2-4 directions. Use names like these when appropriate:
+Propose 2–4 directions. Use names like these when appropriate:
 
 1. **Classic Onto Research**
    - Closest to the existing Onto presentation.
-   - Strong left-aligned title, thin rule, colored lead statement, and evidence placed either on the right, in a bottom evidence band, or at the right end of a lower row.
+   - Strong left-aligned title, pull-quote carrying the claim, evidence placed either on the
+     right, in a bottom evidence band, or at the right end of a lower row.
    - Best when the deck must feel institutional, stable, and report-like.
 
 2. **Evidence-First Editorial**
@@ -65,7 +73,8 @@ D. Combine A section openers + C method slides
 
 ## Style Frames
 
-For substantial decks, create or describe representative style frames before completing all slides:
+For substantial decks, create or describe representative style frames before completing all
+slides:
 
 - Cover or title slide.
 - One section opener.
@@ -73,14 +82,22 @@ For substantial decks, create or describe representative style frames before com
 - One evidence/data slide.
 - One framework or process slide.
 
-If implementing immediately, capture screenshots of these representative slides first and use them as the review surface.
+If implementing immediately, capture screenshots of these representative slides first and
+use them as the review surface.
 
-When showing explanation or evidence style frames, include at least one non-two-column treatment such as a bottom evidence band, a horizontal process row, or a three-card comparison row.
+When showing explanation or evidence style frames, include at least one non-two-column
+treatment such as a title-plus-pull-quote slide, a bottom evidence band, a horizontal
+process row, or a three-card comparison row. The title-plus-pull-quote slide is worth
+showing early — it is the deck's signature and it reads as complete with no body at all.
 
 ## Constraints
 
 - Do not rewrite approved lead statements or body blocks to fit a design direction.
-- Do not choose a one-note palette; keep neutral paper and dark text as the base for content slides.
-- Avoid decorative cards inside cards.
+- Do not choose a one-note palette; keep neutral paper and dark ink as the base for content
+  slides.
+- Do not vary the accent within a chapter.
+- Avoid decorative cards inside cards, and rounded cards generally — the house corner radius
+  is essentially zero.
 - Avoid generic abstract backgrounds when the subject calls for inspectable evidence.
-- If the chosen direction makes a slide too dense, flag the slide and ask whether to split or simplify.
+- If the chosen direction makes a slide too dense, flag the slide and ask whether to split or
+  simplify.

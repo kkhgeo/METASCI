@@ -1,12 +1,15 @@
 # 섹션별 구조 체크리스트 — 근거 기반 규범
 
-2026-07-16 | 근거 등급: 각 항목에 [1차: 출판 문헌] / [보조: @ScholarshipfPhd 커뮤니티 공명도(조회·북마크)] 표기.
+2026-07-16 최초 작성 · 2026-07-23 개정 | 근거 등급: 각 항목에 [1차: 출판 문헌] / [보조: @ScholarshipfPhd 커뮤니티 공명도(조회·북마크)] 표기.
 1차 문헌 전문은 `Z:\KKH_Research\META_SCI\X_ScholarshipfPhd_KnowledgeDB\papers\` 및 `books_guides\`에 보관.
 
-**사용 규칙 (SKILL.md ②에서 호출):**
-- 단락의 섹션 유형이 명시되었거나 확실히 식별될 때만 이 파일을 읽는다.
-- 해당 섹션의 체크 항목 위반은 ③ 진단표에 포함한다. 구조 위반의 기본 심각도: 섹션 필수 요소 누락 = 高, 요소 순서·배치 문제 = 中, 관례 이탈 = 低.
+**사용 규칙 (SKILL.md ②에서 호출) — 두 층위를 구분한다:**
+- **항상 적용**: `문장 스타일 공통`과 `인용·참고문헌 규범`은 섹션 유형과 무관하게 성립하므로, 섹션을 식별하지 못한 단락에도 적용한다.
+- **섹션 식별 시에만 적용**: 각 섹션 전용 블록은 단락의 섹션 유형이 명시되었거나 확실히 식별될 때만 대조한다. 불확실하면 추측하지 말고 건너뛴다.
+- 체크 항목 위반은 ③ 진단표에 포함한다. 구조 위반의 기본 심각도: 섹션 필수 요소 누락 = 高, 요소 순서·배치 문제 = 中, 관례 이탈 = 低.
 - principles.md의 일반 원칙(정보구조·지시어·hedging)이 항상 우선하며, 이 파일은 섹션 특이적 추가 기준만 제공한다.
+
+> **2026-07-23 개정 근거.** `Writing_Principles_Extraction` 원리 은행(27개 소스, 대표 원리 185개)과 대조해 회수분을 반영했다. 은행은 모든 소스를 동등 취급하고 **수렴 수**로 신뢰를 표현하지만, 이 파일은 **권위 등급제**를 유지한다 — 추가된 항목이 전부 출판 문헌 지지를 갖고 있어 무손실로 번역되었고, 트윗만 지지하는 항목은 0건이었다. 수렴 수는 본문에 넣지 않는다: 이 파일 안에서는 수렴이 높을수록 이미 반영되어 있어 진단 가치와 역상관이기 때문이다(수렴 최상위 "저널 지침 준수"는 단락 진단 가치 0, 이번 최대 수확인 Methods 통계 블록은 수렴 1).
 
 ---
 
@@ -30,6 +33,7 @@
 - [ ] **초점 유지 + 폭넓은 관심** — 리뷰 대상이 명확히 한정되면서도 인접 독자에게 유의미한가 (Rule 5)
 - [ ] **자기 연구의 객관적 취급** — 저자 자신의 선행연구를 과대 비중 없이 다루는가 (Rule 9)
 - [ ] **최신성과 고전의 균형** — 최근 문헌만도, 낡은 문헌만도 아닌가 (Rule 10 "Be Up-to-Date, but Do Not Forget Older Studies")
+- [ ] (체계적 고찰·메타분석 한정) **검색 전략이 본문에 명시**되어 있는가 — 데이터베이스, 검색어, 기간, 포함·배제 기준. 재현 불가능한 리뷰는 서사일 뿐 (누락 = 高) [1차: Koons et al. 2019; Pautasso 2013 Rule 3]
 
 ## Abstract / 초록
 
@@ -47,6 +51,10 @@
 - [ ] 결론이 결과를 단순 반복하지 않고 함의를 진술하는가
 - [ ] 저널 단어 수 제한 준수 (일반 150-300w) [1차: Perneger 2004, 저널 지침 준수]
 - [ ] **"in this paper" 류 자기지시 회피** + 일반론적 동기 서술 금지("인터넷의 중요성을 정당화할 필요 없다") [1차: Schulzrinne]
+- [ ] **자기완결성 — 본문을 가리키는 표현 금지** ("as described above", "in Figure 2", "아래에서 논의하듯이"). 초록은 서지 DB에서 단독 유통되므로 전문 없이 홀로 읽혀야 한다 (본문 참조 = 高) [1차: Ecarnot 2015 — "should form an independent unit that is comprehensible as a stand-alone text"]
+- [ ] **결과의 제시 순서** — 1차 평가변수(주 결과) 먼저, 2차 결과 뒤. 방법에 언급한 항목에 대응 결과가 있는가 [1차: Ecarnot 2015 Table 4]
+- [ ] **배제 항목** — 비표준 약어, 평가적 진술("Surprisingly, we observed…"), 표·그림·삽화 [1차: Ecarnot 2015 Table 4 — "no discussion, or no judgemental statements"]
+- [ ] 첫 1-2문장이 인접 분야 밖 독자에게도 읽히는가 — 도입부 전문용어 밀도 (低~中) [1차: Nature Summary Paragraph 템플릿(B7) — 첫 문장은 넓은 독자 대상]
 
 ## Introduction / 서론
 
@@ -65,6 +73,7 @@
 
 - [ ] **공백 진술의 구체성** — "연구가 부족하다/알려진 바 없다" 류 추상 공백이 아니라, 공백이 초래하는 구체적 결과·수치로 중요성을 입증하는가 [1차: IUFRO pp.58-60 — 계획서 규칙이나 서론 공백 진술에 동일 적용]
 - [ ] (학위논문·긴 논문 한정) 서론 말미 로드맵 문장 — 이후 구성 예고 [보조: Scholar]
+- [ ] **마무리 순서** — 공백 진술 → 작업가설 → 목적 → (한 줄) 목적 달성 전략. 가설을 세우는 분야인데 가설 없이 목적으로 건너뛰면 결격 (순서 이탈 = 中) [1차: Ecarnot 2015 — "clearly state your working hypothesis, followed by your objective(s), and very briefly, the strategy"]
 
 서론 시제 규칙 [1차: Ecarnot 2015 Table 2 — 원문 대조 완료]:
 - 확립된 지식 → **현재** ("Cancer is a common disease")
@@ -79,7 +88,24 @@
 - [ ] 맥락·세팅 / 연구 설계 / 대상 집단 / 표집 전략 / 개입(해당 시) / 주요 변수 / 자료수집 도구·절차 / 분석 방법
 - [ ] **재현 가능 수준의 구체성** — "specific, concrete, technical, and fairly detailed" [1차: Perneger 2004]
 - [ ] 시제: 수행한 일은 **과거시제** [1차: Ecarnot 2015 시제 표]
-- [ ] 통계 분석 소프트웨어·버전 명시 관례 [1차: Ecarnot 2015]
+- [ ] **설계 명시로 시작** — 관측/실험, 전향/후향, 무작위 여부, 대조·눈가림 등 [1차: Ecarnot 2015]
+- [ ] **비통상적 방법 선택의 정당화** — 관례에서 벗어난 설계·기법에 참고문헌·지침 또는 그 선택을 요구한 구체적 맥락이 붙어 있는가. 절차만 나열되고 근거가 전무하면 결함 (中) [1차: Ecarnot 2015 — "Any choices of unusual methodology... should be justified"]
+- [ ] **왜 그 방법이 그 결과를 주는가** — 무엇을 했는지만 있고 그 절차가 어떻게 답을 산출하는지 연결이 없는가 (中) [1차: Schulzrinne; Lund Module 4]
+- [ ] (해당 분야) **1차·2차 평가변수와 각각의 측정 방법 명시** — 무엇이 주 결과인지 불명확하면 결과 해석 전체가 흔들린다 [1차: Ecarnot 2015 — "the choice of the primary endpoint is critical"]
+
+통계 서술 블록 [1차: Ecarnot 2015 — 방법의 마지막 단락]:
+- [ ] **데이터 제시 형식** 선언 — 평균±SD / 중앙값[IQR] / n(%) 중 무엇을 쓰는가
+- [ ] **변수 유형별 검정** 명시 — 어떤 변수에 어떤 검정을 적용했는가
+- [ ] 다변량 분석 시 **투입 변수** 명시
+- [ ] **표본수 산정 근거**(해당 시), **유의수준**, **다중비교 보정** 여부
+- [ ] **소프트웨어·버전** 명시
+- [ ] **하위집단 분석은 사전 명시** — 사후 분석을 사전 계획인 것처럼 서술하지 않는가 (高)
+
+윤리 진술 블록 [1차: Ecarnot 2015 — "A short note regarding ethical considerations must be included"]:
+- [ ] 인간·동물 대상 연구에 **윤리위원회 승인**(또는 미해당 사유) 진술이 있는가
+- [ ] **서면 동의** 취득 진술 (해당 시)
+- [ ] 임상시험이면 **등록번호** 기재
+- 주의: 승인번호·등록번호는 사실 정보다. 초고에 없으면 결손으로 지적하되, 리라이팅에서 만들어 넣지 않는다.
 - [ ] **Methods–Results 짝 규칙**: Results에 제시될 모든 결과에 대응하는 방법 서술이 존재하는가 — "you cannot present the results of a test or analysis that was not mentioned in the methods" (짝 없는 결과 = 高) [1차: Ecarnot 2015 — 원문 대조 완료]
 
 ## Results / 연구 결과
@@ -87,6 +113,9 @@
 - principles.md **원칙 8** (question–data–answer 템플릿, C-C-C)이 1차 기준 — 중복 기재하지 않음.
 - 추가 체크 [1차: Perneger 2004]:
   - [ ] 연구 질문 관련 결과는 빠짐없이, **백분율에는 빈도 동반, P값에는 효과크기 동반** (Table 2의 선택적 보고 실수)
+  - [ ] **수치 보고 완전성** — 값에 n과 산포(SD/SEM/IQR)가 동반되는가, 추정치에 신뢰구간이 있는가. 중심경향만 단독 제시 = 中 [1차: Fisher et al. (Liebert); Perneger 2004의 선택적 보고 원리 연장]
+  - [ ] **본문/표/그림 배분** — 1-2줄로 서술되는 결과는 본문, 둘 이상 집단의 동일 변수 비교는 표, 복잡하거나 해석이 어려운 원자료·추세는 그림. 표로 갈 것이 본문에 풀어 쓰여 있지 않은가 (中) [1차: Ecarnot 2015]
+  - [ ] **불리·무의미한 결과의 은폐** — 기대와 다르거나 유의하지 않은 결과가 완곡화·누락되지 않았는가 (高) [1차: Ecarnot 2015 — 음성 결과도 유효한 기여]
   - [ ] 같은 결과를 표와 본문에 중복 제시하지 않음 (中)
   - [ ] 연구 질문과 무관한 표·비필수 결과 나열 금지 — "resist the temptation" (中)
   - [ ] 해석·논평은 Discussion으로 — Results는 사실 보고
@@ -104,6 +133,21 @@
 - [ ] 한계 절이 존재하고 방어적 최소화로 흐르지 않는가
 - [ ] hedging 보정 — principles.md 원칙 6 적용 (결과의 인식론적 강도에 맞는 동사 선택)
 - [ ] Discussion이 결과 재나열로 채워지지 않았는가
+- [ ] **서론의 공백을 되짚는가** — 서론이 주장한 지식 공백을 이 연구가 실제로 메웠는지, 무엇을 새로 더하고 무엇을 반박하는지 명시 진술이 있는가. 없으면 "또 한 편"으로 읽힌다 (中) [1차: Ecarnot 2015 — "you can discuss whether or not your paper has succeeded in filling the gap"]
+- [ ] **범위 이동(scope creep) 검출** — 표본에서 관찰한 것이 모집단 진술로 확대되지 않았는가. "25개 중 20개에서 관찰" → "80%가 그렇다"는 원자료를 배신하는 미묘한 도약 (高) [1차: Ecarnot 2015 — "a subtle shift in interpretation that belies that original data"]
+- [ ] **선행연구 비판의 어조** — 타인 연구의 약점을 직접 지적하는 대신("X et al. failed to…") 자기 연구의 강점 진술로 함의를 전달하는가 (低~中) [1차: Ecarnot 2015 — "it pays to be diplomatic when criticizing the work of others"]
+
+## Conclusion / 결론
+
+Discussion과 별개의 결론 절을 둔 원고에 적용. Discussion 단락이면 위 항목을 쓴다.
+
+체크 [1차: Ecarnot 2015; Hon (UF); Fisher et al. (Liebert)]:
+- [ ] **새 정보 도입 금지** — 본문에 없던 데이터·결과·인용이 결론에서 처음 등장하지 않는가 (高)
+- [ ] 결과의 재나열이 아니라 **종합**인가 — 개별 수치가 아니라 전체가 무엇을 뜻하는지
+- [ ] 서론의 연구 질문에 대한 **답이 명시**되어 있는가 (서론 공백 진술과 대응)
+- [ ] 이론적·실용적 **기여 진술**이 있는가
+- [ ] hedging 유지 — 결론에서 갑자기 주장 강도가 올라가지 않는가 (principles.md 원칙 6) (高)
+- [ ] 인용 최소 (0-2개, 맥락 설정 시에만)
 
 ## 학위논문 장 단위 (Thesis/Dissertation)
 
@@ -152,6 +196,8 @@ Summary → Introduction → **Statement of Problem/Need** → Project Descripti
 - [ ] **능동태 기본값** — "We conducted..." > "The experiment was conducted..." — 단, **old 정보를 문장 앞으로 보내는 수동태는 정당** (principles.md 원칙 1이 우선; "수동태 금지"를 기계 적용하지 말 것)
 - [ ] 약어는 본문 첫 등장 시 풀어쓰기 정의 (표준 약어 제외)
 - [ ] 인용동사 다양화 — shows/found만 반복하지 말고 저자 태도를 담은 동사(argues, demonstrates, contends, suggests) 선별 [보조: Scholar 최고 참여 트윗(11.3만 조회); Hyland의 stance 연구와 인접]
+- [ ] **논리 층위 병렬** — principles.md 원칙 8의 Parallelism은 *문법 형태*를 다룬다. 여기에 *개념 차원*을 더한다: 나열된 항목이 서로 같은 차원의 범주인가. 문법이 완벽해도 차원이 섞이면 결함이다 (예: "온도, 강수, 그리고 정책 수용 장벽" — 앞 둘은 물리 변수, 셋은 제도 요인) (中) [1차: Lund Module 4; FESS pp.31-33]
+- [ ] **미수치화된 크기 진술** — "significant improvements", "substantially higher"처럼 정도를 주장하면서 수치가 없는가. principles.md 원칙 6이 다루는 *확실성* 축과 별개인 *정밀도* 축이다. **플래그 전용** — 진단표에 올리되 리라이팅에서 수치를 만들어 넣지 않는다 (中) [1차: Fisher et al. (Liebert); Schulzrinne]
 
 ## 인용·참고문헌 규범 (모든 섹션 공통)
 
@@ -183,7 +229,7 @@ Perneger 2004 Table 2의 흔한 실수 중 단락 수준에서 검출 가능한 
 ## 출처 (전문 보관 위치: X_ScholarshipfPhd_KnowledgeDB)
 
 - Perneger & Hudelson (2004). *Int J Qual Health Care* 16(3):191-192. — `papers/Perneger_2004_...pdf` (원문 대조 완료 2026-07-16)
-- Ecarnot et al. (2015). *Eur Geriatr Med* 6(6):573-579. — `papers/Ecarnot_2015_...pdf` (원문 대조 완료 2026-07-16)
+- Ecarnot et al. (2015). *Eur Geriatr Med* 6(6):573-579. — `papers/Ecarnot_2015_...pdf` (원문 대조 완료 2026-07-16 · **전문 재채굴 2026-07-23** — 통계·윤리 블록, 초록 자기완결성, 범위 이동 등 이번 증분의 대부분이 이 논문에서 나왔다)
 - Nature Summary Paragraph 공식 템플릿 — `books_guides/B7_Nature_summary-paragraph.pdf`
 - Hon, L.C. Guidelines for Writing a Thesis or Dissertation (UF) — `papers/Hon_...pdf`
 - Fisher et al. Guidelines for Writing a Research Paper for Publication (Liebert) — `papers/Fisher_2013_...pdf`
@@ -197,3 +243,8 @@ Perneger 2004 Table 2의 흔한 실수 중 단락 수준에서 검출 가능한 
 - Schulzrinne, H. *Writing Technical Articles* (Columbia). — `books_guides/B5_...html`
 - IUFRO. *Handbook for Preparing and Writing Research Proposals*. — `books_guides/B1_...pdf` (Ch.7 채굴 완료)
 - @ScholarshipfPhd 트윗 코퍼스 (1,051건, 2023-02~2026-07) — `tweets/tweets_raw_1051.json`
+- 원리 은행 (2026-07-23 대조) — `Z:\KKH_Research\META_SCI\Writing_Principles_Extraction\bank\` (27개 소스, 대표 원리 185개)
+
+---
+
+**Version**: 1.1.0

@@ -33,6 +33,7 @@ routing row; in Mode 3 (sentence level), load all of them.
 
 ### Step 4 — Apply integrity audit (Mode 1 always; Mode 2/3 when numeric/citation content present)
 - `cross_section/quantitative_integrity.md` — N consistency, percentage math, sig-fig drift, secondary-source flagging, reporting-standard compliance. Also drives Agent B's expanded behavior (numeric cross-check + Telephone Game audit)
+- `cross_section/structural_integrity.md` — **Mode 1 always; Mode 2 partially.** Correspondences *between* sections: question chain (Intro → Discussion → Conclusion), Methods↔Results one-to-one, hypothesis→analysis→interpretation order, Abstract↔body, proposition-level consistency and self-contradiction, sample-to-population drift. Every other file judges a passage against a standard internal to its section; this one judges whether the sections agree with each other. **Mode 3 cannot run these** — say so rather than implying the paragraph passed.
 
 ---
 
@@ -65,7 +66,8 @@ writing-manual/
     ├── stance_hedging.md
     ├── advanced_nns_issues.md
     ├── clutter_redundancy.md          (Sainani-style clutter audit)
-    └── quantitative_integrity.md      (N/percentage/sig-fig/Telephone Game)
+    ├── quantitative_integrity.md      (N/percentage/sig-fig/Telephone Game)
+    └── structural_integrity.md        (cross-section correspondences; Mode 1)
 ```
 
 ---

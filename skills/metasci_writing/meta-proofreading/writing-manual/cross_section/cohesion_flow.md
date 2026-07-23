@@ -175,6 +175,33 @@ For numerical and citation integrity (where acronym discipline has the highest s
 
 ---
 
+## 6d. When Reference Fails
+
+§3 lists reference (pronouns, demonstratives) as a cohesive device. It is also the
+device most likely to misfire, and the failure is diagnosable from the text alone.
+
+Flag when a referring expression meets any of these:
+
+- **Two plausible antecedents.** "The model was calibrated against the field data.
+  *This* proved unreliable." — the model, the data, or the calibration? Readers
+  have no repair strategy for a genuine ambiguity; they guess and move on, and half
+  of them guess wrong. = HIGH.
+- **Clause-scope demonstratives.** A bare *this* / *these* / *such* pointing at a
+  whole preceding clause rather than a noun. Usually repairable by attaching a
+  category noun: *this* → *this discrepancy*, *this calibration step*. The fix
+  costs one word and removes the ambiguity entirely.
+- **Distance.** The antecedent sits more than two sentences back, or across a
+  paragraph break, while intervening nouns compete for the slot.
+- **Number or category mismatch.** *These results* following a single result;
+  *this approach* following a description of two.
+
+Do not flag reference that is locally unambiguous merely because it is a pronoun —
+that is over-flagging. The test is whether a competent reader could reasonably
+resolve it two ways, which is precisely the "genuine ambiguity" exception in the
+INDEX's do-not-over-flag rule.
+
+---
+
 ## 7. Agent Diagnostic Questions
 
 For each paragraph:

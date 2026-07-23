@@ -59,9 +59,10 @@ Mode 3 flows in three phases (one reviewer round total):
 ```
 Phase A: 의도 확인 (사용자 승인)
   ↓
-Phase B: 리뷰어 패널 1회전 (단락 + 모든 문장 동시 검토)
+Phase B: 리뷰어 패널 1회전 (단락 + 모든 문장 대안 후보 생성)
+  → 심사 라운드 1회 (Agent J: 후보 채점 → 문장·단락별 최적안 선정)
   → 단락 수준 결과 제시
-  → 지적이 있는 문장만 하나씩 워크스루 (리뷰어 재호출 없음)
+  → 최적안이 원문이 아니거나 이슈가 있는 문장만 워크스루 (재호출 없음)
   ↓ 모든 결정 완료
 Phase C: Reference verification (Agent B)
   ↓ 자동
@@ -103,21 +104,25 @@ commands are always honored as well:
 
 | User says | Action |
 |---|---|
-| "적용" | Apply consensus/single suggestion |
-| "수정안 A" / "수정안 B" | Choose between alternatives |
+| "최적안 적용" / "적용" | Apply the judge-selected optimal rewrite |
+| "대안들 보여줘" / "후보 전부" | Expand the full ranked candidate menu (all surviving candidates + scores, original included) |
+| "추천만" | Collapse the menu back to the recommend-first view |
+| "N번 적용" / "2번" | In the menu view, apply the numbered candidate |
+| "대안 적용" / "대안 A" / "대안 B" | Apply a runner-up instead of the optimal (recommend-first view) |
+| "원문 유지" | Keep the original (judge's ORIGINAL selection or user override) |
 | "직접 수정" | User provides own revision |
-| "다음" / "ok" | Approve as-is, next sentence |
-| "건너뛰기" / "스킵" | Skip without approval |
-| "검색해봐" / "다른 논문에서는?" | Trigger web search for comparable expressions |
-| "자세히" / "왜?" | Expand explanation |
+| "다음" / "ok" | Approve current, next sentence |
+| "건너뛰기" / "스킵" | Skip without deciding |
+| "검색해봐" / "다른 논문에서는?" | Trigger web search (offered when 선정 신뢰도 is LOW) |
+| "자세히" / "왜?" | Expand the judge's reasoning / issue explanation |
 | "이 단락 다시" | Restart current paragraph |
 
 ### Batch commands (paragraph walkthrough)
 
 | User says | Action |
 |---|---|
-| "전부 적용" | Apply every consensus suggestion in this paragraph at once (multi-alternative issues take the recommended option) |
-| "합의만 적용" | Apply consensus items; continue walkthrough for unique findings and conflicts only |
+| "최적안 전부 적용" | Apply the judge's optimal for every sentence at once (ORIGINAL selections stay unchanged) |
+| "이슈만 처리" | Resolve flagged issues only; still walk through rewrite selections |
 | "나머지 건너뛰기" | Skip all remaining decisions in this paragraph |
 
 ---

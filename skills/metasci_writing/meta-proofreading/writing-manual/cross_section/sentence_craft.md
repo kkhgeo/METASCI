@@ -131,7 +131,34 @@ Sentence length itself is not the problem. **Structural clarity** is the issue. 
 
 ---
 
-## 7. Agent Diagnostic Questions
+## 7. Parallelism: Form and Category
+
+Coordinated elements — items in a list, terms joined by *and*/*or*, phrases after
+a colon — carry an implicit promise that they belong to one set. Two ways to break
+it:
+
+**Grammatical.** The items take different forms.
+❌ "We measured soil moisture, carbon flux, and how the vegetation responded."
+✅ "We measured soil moisture, carbon flux, and vegetation response."
+
+**Categorical — the subtler failure.** The grammar is parallel but the items come
+from different conceptual dimensions, so the list quietly changes what it is about.
+❌ "Model performance depends on temperature, precipitation, and policy uptake."
+   — two physical drivers and one institutional factor
+✅ Separate them, or name the shared dimension that actually contains all three.
+
+The categorical version survives every grammar check and still misleads: readers
+infer that coordinated items are comparable, so a mixed list implies a taxonomy
+the author does not hold. Check enumerations against a single question — *what is
+the one dimension these are all instances of?* If there is no answer, the list is
+doing two jobs.
+
+Applies to numbered objectives, hypothesis sets, and bulleted contributions as
+much as to in-sentence coordination.
+
+---
+
+## 8. Agent Diagnostic Questions
 
 - Are the main characters of the sentence in the subject position?
 - Are the main actions expressed as verbs — or hidden as nominalizations?

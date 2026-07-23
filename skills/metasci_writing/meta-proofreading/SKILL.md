@@ -3,8 +3,11 @@ name: meta-proofreading
 description: >
   Multi-reviewer academic paper proofreading with knowledge-distributed
   deliberation. 2-5 reviewers with identical instructions but different
-  knowledge allocations review the same text in parallel, then deliberate
-  to reach consensus. Supports 3 modes: Paper (full draft), Section,
+  knowledge allocations review the same text in parallel. For section and
+  paragraph review they actively generate complete rewrite candidates
+  (not just diagnoses), and a dedicated judge (Agent J) scores the pooled
+  candidates to select the optimal version — the original can win.
+  Supports 3 modes: Paper (full draft), Section,
   and Paragraph (with sentence-level review). Local knowledge files
   (extraction-knowledge, extraction-logic, extraction-vocab, PDFs,
   freeform markdown) are auto-discovered and distributed to reviewers.
@@ -47,6 +50,7 @@ meta-proofreading/
 ├── agents/
 │   ├── agent_e.md                        ← Knowledge Bank Builder
 │   ├── agent_reviewer.md                 ← Universal Reviewer Prompt Template (R1-R5)
+│   ├── agent_j.md                        ← Candidate Judge & Optimal Selector
 │   └── agent_b.md                        ← Reference Verification
 ├── config/
 │   ├── navigation.md                     ← Mode switching & user input mapping
@@ -74,7 +78,8 @@ meta-proofreading/
 | Agent | File | Instances | Role |
 |---|---|---|---|
 | **Agent E** | `agents/agent_e.md` | 1 | Knowledge discovery, parsing, distribution |
-| **Agent R** | `agents/agent_reviewer.md` | 2-5 (R1, R2, R3, R4, R5) | Parallel review with distributed knowledge / personas |
+| **Agent R** | `agents/agent_reviewer.md` | 2-5 (R1, R2, R3, R4, R5) | Parallel review — diagnose issues AND generate rewrite candidates |
+| **Agent J** | `agents/agent_j.md` | 1 per paragraph (Mode 3) / per section (Mode 2) | Judge pooled candidates, select the optimal rewrite |
 | **Agent B** | `agents/agent_b.md` | 1 | Post-paragraph reference verification |
 | **Orchestrator** | This file | 1 | Workflow control, deliberation, user interaction |
 
@@ -264,12 +269,19 @@ Launch all active reviewers in parallel (one Agent tool call each) with:
 - `{writing_manual_content}` = files from the INDEX.md routing row
 
 Mode-specific focus: STRUCTURE primary (paragraph arrangement),
-LOGIC + HEDGING secondary.
+LOGIC + HEDGING secondary. Reviewers also produce a **whole-paragraph
+candidate set** for each paragraph whose function/order/flow they question
+(`agents/agent_reviewer.md` CANDIDATE GENERATION, section scope).
 
-### 6b. Deliberation
+### 6b. Deliberation + Judge Round
 
-Same protocol as Mode 1. Classify results into consensus/unique/conflict.
-Focus on paragraph-level issues.
+Two tracks (`harness/deliberation.md`):
+- **ISSUES** → classify into consensus/unique/conflict, focus on
+  paragraph-level structural issues; feeds the Top-N block.
+- **CANDIDATES** → run **Agent J once for the section**
+  (`agents/agent_j.md`) to select the optimal rewrite for each candidate
+  paragraph. Present selections per the `config/output_format.md`
+  candidate-selection contract.
 
 ### 6c. Present Results
 
@@ -325,42 +337,69 @@ Launch all active reviewers in parallel (one Agent tool call each) with:
 - `{allocated_knowledge}` + `{writing_manual_content}` per distribution
 
 Each reviewer reports, in one pass:
+- **CANDIDATE sets** (the core output) — a complete rewrite set for the
+  paragraph as a whole AND for EVERY sentence, each candidate optimizing a
+  distinct objective, with self-scores and a nomination. Even a clean
+  sentence gets a best-effort rewrite or an explicit ORIGINAL nomination —
+  reviewers never "just think, no output"
+  (`agents/agent_reviewer.md` CANDIDATE GENERATION).
 - **Paragraph-level findings** — does the paragraph deliver the
   confirmed intent? Structure, flow (location: `"Paragraph N (whole)"`)
-- **Sentence-level findings** — all six criteria per sentence
-  (location: `"Sentence M"`)
+- **ISSUES** — only problems a same-unit rewrite cannot fix (citation,
+  placement, numeric, cross-section), location `"Sentence M"` /
+  `"Paragraph N (whole)"`.
 
 This is ONE panel round per paragraph. Do NOT launch a new panel per
-sentence — the per-sentence walkthrough below works entirely from this
-round's results. (Wall-clock cost drops from one round per sentence to
-one round per paragraph.)
+sentence — the judge round and per-sentence walkthrough below work
+entirely from this round's results.
 
-### 7c. Deliberation + Sentence Walkthrough
+### 7c. Judge Round + Sentence Walkthrough
 
-1. Run the deliberation protocol (`harness/deliberation.md`) **once**
-   over all findings, grouped by sentence; paragraph-level findings
-   form their own group.
+1. **Judge round.** Run Agent J (`agents/agent_j.md`) **once** for the
+   whole paragraph, passing the pooled candidate sets, the original
+   paragraph + numbered sentences, the confirmed intent, and the
+   writing-manual rubric. It returns the optimal rewrite + runner-ups for
+   the paragraph-whole unit and each sentence. In the same synthesis, run
+   the ISSUES classification (`harness/deliberation.md`) grouped by unit.
 
-2. Present paragraph-level results first (Top-3 per tier discipline).
+2. **Present the paragraph-whole result first** — judge's optimal (or
+   "원문이 최적") + alternatives, plus any paragraph-level issues.
 
-3. Walk through **only the sentences that have findings**, one at a
-   time. For each:
-   - display: previous sentence (context) → current sentence →
-     Korean translation → issues (consensus / unique / conflict),
-     with detail level per `harness/confidence_routing.md`
-   - decision via AskUserQuestion — pick the 4 most relevant options,
-     e.g. "수정안 A 적용" / "수정안 B 적용" / "원문 유지" /
-     "건너뛰기" (use "검색해봐" as an option when confidence is LOW)
+3. Walk through, one at a time, **only the sentences that either got a
+   non-ORIGINAL optimal from the judge OR carry an issue**. For each,
+   present **adaptively by the judge's selection confidence** (the full
+   contract is `config/output_format.md` 6b, routing in
+   `harness/confidence_routing.md`):
+   - display: previous sentence (context) → current sentence → Korean
+     translation, then present per the `config/output_format.md` 6b
+     rules — **every candidate shown in FULL (no "…", no diff-only), each
+     with a substantive explanation (what changes, why, trade-off) in the
+     message body**, not compressed into AskUserQuestion labels:
+   - **선정 신뢰도 HIGH → 추천 우선.** Show 최적안(추천) — 전문 + 왜 최적 +
+     트레이드오프 — plus 대안 1–2개 (each in full) + any issues.
+     AskUserQuestion: "최적안 적용" / "대안들 보여줘" / "원문 유지" /
+     "직접 수정".
+   - **선정 신뢰도 MEDIUM/LOW → 메뉴 자동 펼침.** Show Agent J's full
+     ranked candidate menu — each entry = 점수 + ★(최적) + **후보 전문** +
+     무엇이 바뀌나·트레이드오프 설명 + (의미 변화 시) 번역, 원문 포함 —
+     plus why confidence is low. AskUserQuestion: "N번 적용" / "원문 유지" /
+     "직접 수정" (add "검색해봐" when LOW).
+   - At any confidence the user may say "대안들 보여줘" to expand the full
+     menu, or "추천만" to collapse.
 
-4. Sentences with no findings are NOT stepped through individually.
-   Summarize them in one line: "문장 2, 5, 7 — 전원 동의, 수정 불필요."
+4. Sentences whose optimal is ORIGINAL and that carry no issues are NOT
+   stepped through. Summarize in one line: "문장 2, 5, 7 — 원문이 최적,
+   수정 불필요."
 
 5. Batch commands are honored at any point during the walkthrough
    (see `config/navigation.md`):
-   - `"전부 적용"` — apply every consensus suggestion in this paragraph
-     at once (multi-alternative issues take the recommended option)
-   - `"합의만 적용"` — apply consensus items; still walk through
-     unique findings and conflicts
+   - `"최적안 전부 적용"` — apply the judge's optimal for every sentence
+     in this paragraph at once (ORIGINAL selections stay unchanged).
+     **Confirm once before applying**, stating how many sentences will
+     change and that they are AI proposals the author has not read
+     individually: *"문장 [N]개가 한 번에 교체됩니다. 개별 검토 없이
+     적용하시겠습니까? (적용 후 `"되돌리기"`로 취소 가능)"*
+   - `"이슈만 처리"` — resolve flagged issues; still walk through rewrites
    - `"나머지 건너뛰기"` — skip all remaining decisions in this paragraph
 
 6. Record every decision in session state.
@@ -382,8 +421,8 @@ Agent B following `agents/agent_b.md`:
 ```markdown
 ---
 ### 단락 [N] 검토 완료
-- 수정: [X]건 (합의 [a], 발견 [b])
-- 승인: [Y]건
+- 수정 적용: [X]건 (최적안 [a], 대안 [b])
+- 원문 유지: [Y]건
 - 건너뛰기: [Z]건
 
 #### 레퍼런스 확인
@@ -428,10 +467,35 @@ display the session summary following `config/output_format.md`:
 |---|---|---|---|
 | 1 | [original] | [revised] | [합의/R1/R2/...] |
 
+### 이번 세션 반복 지적 유형
+
+- [2회 이상 지적된 유형과 건수, 예: 모호한 지시어 4건, 헤지 과소보정 3건]
+
+> 세션이 쌓이면 이 목록이 저자 자신의 체크리스트가 된다.
+
+### AI 사용 기록
+
+- 도구: meta-proofreading (다중 리뷰어 [N]명 + 심판 + 레퍼런스 검증)
+- 수행: 문체·논리 진단, 리라이팅 후보 생성, 후보 채점, 인용 존재 검증
+- 미수행: 사실 검증, 데이터 재계산, 분야 지식 판단, 출처 내용 대조
+- 적용된 수정 [N]건은 모두 저자가 개별 선택한 것 / 일괄 적용 [N]건
+
+### 고지
+
+> 이 산출물은 **초안**이며 확정 원고가 아니다. 적용된 문장은 AI가 생성한
+> 제안이고, 최종 판단과 책임은 저자에게 있다.
+> 최적안 선정은 AI 단독 판정이다 — 리뷰어와 심판이 같은 모델이므로,
+> 합의나 높은 점수가 옳음을 보증하지 않는다.
+> 인용의 **실재**는 Agent B가 확인하지만 **내용 일치**는 확인하지 않는다.
+> 투고 전 저널·기관의 AI 사용 정책을 확인하고, 필요하면 위 사용 기록을
+> disclosure 초안으로 활용할 것.
+
 ---
 ```
 
-Offer session save if not already saved.
+Offer session save if not already saved. When saving, include the candidate
+pool and judge decisions alongside the final text — the process record is
+what makes the AI 사용 기록 above verifiable later.
 
 ---
 
@@ -442,7 +506,8 @@ For implementation details beyond this orchestrator, read these files:
 | Topic | File |
 |---|---|
 | Knowledge discovery & parsing | `agents/agent_e.md`, `knowledge/input_handler.md` |
-| Review prompt template | `agents/agent_reviewer.md` |
+| Review prompt template (issues + candidates) | `agents/agent_reviewer.md` |
+| Candidate judging & optimal selection | `agents/agent_j.md` |
 | Reference verification | `agents/agent_b.md` |
 | Knowledge distribution rules | `knowledge/distribution_strategy.md` |
 | Knowledge bank schema | `knowledge/knowledge_bank_schema.md` |

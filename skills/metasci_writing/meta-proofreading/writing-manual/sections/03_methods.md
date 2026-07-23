@@ -39,6 +39,28 @@ The Methods section speaks to a **skeptical reader** who will ask: Why this appr
 - [ ] Is the analytical approach connected to the research question?
 - [ ] Where established methods are cited, is the citation accurate and appropriate?
 
+### Design declaration
+- [ ] Does the section open by naming the study design (observational/experimental, prospective/retrospective, randomized or not, controlled, blinded, crossover)? A reader should not have to infer the design from the procedures.
+- [ ] Where the design departs from field convention, is the departure justified by citation, guideline, or the specific context that required it? Procedures listed with no rationale for an unusual choice is an M4 failure.
+- [ ] Are the primary and secondary outcome variables identified, with the measurement used for each? When it is unclear which result is the main one, the whole interpretation is unanchored.
+
+### Statistical reporting completeness
+Beyond naming the tests (Reproducibility, above):
+- [ ] Is the data-presentation convention declared (mean ± SD / median [IQR] / n (%))?
+- [ ] Is the test matched to the variable type, and stated as such?
+- [ ] For multivariate models, are the variables entered into the model listed?
+- [ ] Is the significance threshold stated, and any correction for multiple comparisons?
+- [ ] **Are subgroup analyses declared as pre-specified?** An analysis presented as planned when it was exploratory is a reporting-integrity issue, not a style issue — flag HIGH.
+
+### Ethics and registration
+Applies to research involving humans, animals, identifiable data, or clinical intervention. Skip entirely for purely computational, instrumental, or secondary-data work rather than flagging its absence.
+- [ ] Is ethics committee / IRB approval stated (or the reason none was required)?
+- [ ] Is informed consent addressed where human participants are involved?
+- [ ] For trials, is the registry and registration number given?
+- [ ] Are data availability and any use restrictions noted where the journal requires it?
+
+> Approval numbers, registry IDs, and consent statements are **facts, not prose**. If they are missing, flag the omission — never draft a plausible-looking one into a rewrite candidate.
+
 ### Organization and logic
 - [ ] Is information presented in the order it was performed (chronological logic)?
 - [ ] Are subsections used logically — do they correspond to conceptually distinct phases?

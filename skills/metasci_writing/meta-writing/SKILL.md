@@ -56,6 +56,8 @@ Core topic: [topic]
 Section: [Introduction/Methods/Results/Discussion]
 Scope: [full section/specific part]
 Focus: [perspective/objective]
+Core message: [the single central claim this text must land — one sentence]
+Target reader: [specialist / adjacent-field / general — default: adjacent-field]
 Request type: [topic/figure/table]
 
 My Data:
@@ -74,7 +76,14 @@ Settings:
   words_per_paragraph: [150-250]
   citation_style: APA 7
   language: [bilingual/english/korean]
+  results_style: [data-only / with-comparison, default with-comparison]
 </task_spec>
+
+> `Core message` is the organizing constraint for the whole draft: every paragraph must
+> advance it, and anything that does not is cut in Phase 3.5. If the user did not supply
+> one, derive a candidate from the sources and confirm it before writing.
+> `Target reader` sets how much jargon is unpacked. `results_style: data-only` moves all
+> comparison sentences out of Results and into Discussion.
 ```
 
 ### Section Reference
@@ -150,11 +159,58 @@ Loop 4: Gap Check + Web Search
 3. Transitions: Use natural connectors (refer to section_guides.md)
 4. Concluding sentence: State implications or connect to the next paragraph
 5. Source diversity: Mix different source types when possible
+6. One idea per sentence: Split sentences that carry two independent claims
+7. Density: Every sentence must earn its place. Cut wording that adds no information
+8. Reader level: Unpack terms an `adjacent-field` reader would not know, unless
+   `Target reader: specialist` was set
+
+**Source Language Discipline (표절·의미왜곡 방지):**
+- Never transplant a sentence verbatim from a Knowledge markdown, PDF, or web page into
+  the manuscript. The Claim strings collected in Loop 2 are *notes*, not draft text —
+  restate them in your own wording.
+- If exact wording is genuinely necessary, mark it as a direct quotation with quotation
+  marks and the source, and keep it short.
+- When restating, do not shift the original's scope, strength, or emphasis. A sample-level
+  finding must not become a population-level claim; a hedged finding must not become
+  a definite one.
+- Vary reporting verbs to match what the cited author actually did
+  (reported / observed / proposed / argued / demonstrated / suggested). Do not repeat one
+  verb across consecutive citations.
 
 **Bilingual Output:**
 - English first, followed by Korean translation
 - Maintain consistency of academic terminology
 - Keep (Author, Year) citations in English even in Korean text
+
+---
+
+## Revision (Phase 3.5)
+
+The draft from Phase 3 is a first pass, not the output. Run one revision pass before
+verification. **Work global-first, local-last** — fixing commas in a paragraph that is
+about to be deleted is wasted effort.
+
+### Global pass (logic and focus)
+
+- [ ] **Core message test** — does every paragraph advance the `Core message`? Name the
+      contribution of each paragraph in one clause. A paragraph with no answer gets cut.
+- [ ] **Deletion test** — remove each paragraph in turn. If nothing downstream breaks and
+      no information is lost, delete it permanently.
+- [ ] **Order** — do the paragraphs follow the order set in `writing_template.md` §5-3?
+      Do Results and Discussion follow the same sequence as Methods?
+- [ ] **Coverage** — is any claim in the section left unsupported, and is any collected
+      source left unused for no reason?
+
+### Local pass (language)
+
+- [ ] Sentences carrying two claims are split (Rule 6)
+- [ ] Wording that adds no information is cut (Rule 7)
+- [ ] Reporting verbs are varied and match the cited author's stance
+- [ ] Terms unfamiliar to the `Target reader` are unpacked at first use
+- [ ] Tense and terminology are consistent across the whole section, and the English and
+      Korean versions still say the same thing
+
+Record what changed in this pass — it feeds A) Approach Checklist.
 
 ---
 
@@ -167,16 +223,28 @@ Loop 4: Gap Check + Web Search
 ```
 Step 1: Citation-Reference matching (in-text citations <-> References)
 Step 2: APA 7 format verification (required fields, formatting)
-Step 3: Source-specific verification (Knowledge original cross-check, PDF metadata, Web URL)
-Step 4: Generate verification report (PASS / ISSUES FOUND status + issue list)
+Step 3: Claim-Source fidelity (does the cited work actually support the claim?)
+Step 4: Source-specific verification (Knowledge original cross-check, PDF metadata, Web URL)
+Step 5: Generate verification report (PASS / ISSUES FOUND status + issue list)
 ```
+
+**Step 3 is not optional.** Steps 1-2 only prove that a citation *exists* and is formatted
+correctly. They cannot catch misattribution — citing a real paper for a claim it does not
+make. For every claim-citation pair, go back to the source text and confirm the source
+states it. Mark anything you cannot confirm as `[unverified claim]` and report it.
 
 ### Verification Checklist
 - [ ] All in-text citations exist in References
 - [ ] No orphan references
 - [ ] APA 7 format compliance
+- [ ] **Each claim is supported by the source cited for it** (not just that the source exists)
+- [ ] **Citations inherited from a Knowledge file were traced to their original source**,
+      or are flagged as unverified secondary citations
 - [ ] My Data references (Figure/Table) match actual files
+- [ ] **Every supplied figure/table is referenced somewhere in the text** (reverse check)
+- [ ] Values read from figure images are marked approximate unless taken from raw data
 - [ ] No fabrication of DOI/URL/year/author
+- [ ] No verbatim sentences carried over from sources without quotation marks
 
 ---
 
@@ -184,7 +252,7 @@ Step 4: Generate verification report (PASS / ISSUES FOUND status + issue list)
 
 > **Detailed template**: Refer to the "Output Format Details" section in `references/writing_template.md`.
 
-All output consists of the following 6 sections:
+All output consists of the following 7 sections:
 
 | Section | Content |
 |---------|---------|
@@ -192,8 +260,17 @@ All output consists of the following 6 sections:
 | B) Source Summary | Summary by source type + gap report |
 | C) Main Text | English paragraphs + Korean translation |
 | D) References | APA 7, single alphabetical list (no source-type grouping/markers) |
-| E) Self-Assessment | Quality checklist |
+| E) Self-Assessment | Quality checklist (self-reported — not quality assurance) |
 | F) Verification Report | Reference verification report |
+| G) AI Assistance Log | What this skill did and did not do + disclosure draft |
+
+**C) Main Text is a draft, not a finished section.** Label it as such. The author decides
+the argument, validates the interpretation, and owns the final wording. Where a sentence
+rests on an interpretive judgement the sources do not settle, flag it inline for the author.
+
+**E) and F) are self-reports.** A `✅ PASS` means the checks in this run found no issues,
+not that the text is correct. State that alongside the verdict, and cite the file or item
+that each check was verified against rather than asserting quality in the abstract.
 
 ---
 
@@ -250,16 +327,36 @@ Claim + Citation 쌍을 추출하세요.
 - Absolutely no fabrication of DOI/URL/year/author
 - Uncertain fields: Mark as `[missing: field]`
 - Web search results must include source and access date
+- **Secondary citations**: Claim-Citation pairs harvested from a Knowledge markdown are
+  secondhand — the Knowledge file reports what some other paper said. Before citing that
+  original author, confirm the claim against the original work. If the original is not
+  available, either cite it as reported (`as reported in [Knowledge source]`) or mark the
+  pair `[unverified secondary citation]`. Never present an unchecked secondhand citation
+  as if the original had been read.
+
+### Interpretation Boundary
+- Every causal or mechanistic statement must map to a specific Knowledge claim. Do not
+  generate explanations that no source supports.
+- Where an interpretation is needed but no source covers it, do not invent one. Write
+  `[interpretation needed — no supporting source]` and let the author supply it.
+- Do not strengthen a source's claim. Preserve its hedging level (see section_guides.md
+  hedging table).
 
 ### Quality Standards
 - Minimum 3 Knowledge citations per paragraph
 - No over-reliance on a single source
 - Mix different source types when possible
+- Cite selectively — support the claims that carry the argument. Do not pile on citations
+  for their own sake, and do not cite for statements the field treats as self-evident
 
 ### My Data Handling
 - Do not cite original data as if it were prior literature
 - Maintain accurate Figure/Table numbers
 - Do not arbitrarily alter data values
+- **Values read off a figure image are approximations.** If raw data (CSV/Excel) exists,
+  take numbers from it. Numbers read only from an image are written with `~` and must be
+  confirmed by the author before they stand as reported values. If axis labels, units, or
+  the legend are unclear, ask — do not estimate.
 
 ---
 
@@ -268,9 +365,9 @@ Claim + Citation 쌍을 추출하세요.
 | File | When to Reference | Content |
 |------|-------------------|---------|
 | `references/writing_template.md` | Phase 2-3 | 5-Loop detailed procedure, source-specific handling, output format details |
-| `references/section_guides.md` | Phase 3 | IMRaD section-specific structure, transitions, examples, figure/table interpretation |
-| `references/citation-and-verification.md` | Phase 4 | Citation formatting, APA 7, verification procedure, report template |
+| `references/section_guides.md` | Phase 3, 3.5 | IMRaD section-specific structure, transitions, examples, figure/table interpretation |
+| `references/citation-and-verification.md` | Phase 4 | Citation formatting, APA 7, claim-source fidelity, verification procedure, report template |
 
 ---
 
-**Version**: 1.0.1
+**Version**: 1.1.0

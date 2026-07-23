@@ -58,6 +58,23 @@ particularly in [conditions where gap exists].
 분야]에서 유용함이 입증되었다(Author3, Year). 그러나 [통합적/새로운
 접근법]은 [특정 맥락]에서, 특히 [갭이 존재하는 조건]에서 여전히 제한적이다.
 
+### Introduction 작성 규칙
+
+- **첫 1-2문장은 인접 분야 밖 독자도 이해할 수 있어야 한다.** 도입부에 전문 용어를
+  쌓지 말고, 좁히는 것은 두 번째 단락부터 한다.
+- **갭 진술은 "remains unclear"로 끝내지 않는다.** 위 전환어 표의 표현은 갭을 *여는*
+  말일 뿐이다. 무엇이 왜 불충분한지, 그 결과 어떤 문제가 생기는지를 덧붙이고 근거를
+  인용한다.
+  - 약함: "The effect of X remains unclear."
+  - 강함: "Reported X effects diverge by an order of magnitude across settings
+    (Author1, Year; Author2, Year), so current estimates cannot constrain Y."
+- **선행연구 단락은 본격 개관이 아니다.** 이 연구의 갭을 세우는 데 필요한 만큼만 쓴다.
+  문헌을 나열하지 말고 아이디어 단위로 묶어 "무엇이 밝혀졌고 무엇이 비었는가"로 종합한다.
+- **연구 질문 또는 가설을 문장으로 명시한다.** 독자가 추측하게 두지 않는다. 목적 진술은
+  측정할 대상과 그 수단을 포함하며, "우리가 한 일을 기술한다" 식의 동어반복을 피한다.
+- 목적 진술에 쓴 표현은 Discussion·Abstract에서 같은 문구로 반복한다. 반복은 결함이
+  아니라 일관성이다.
+
 ---
 
 ## 2. Methods
@@ -103,6 +120,21 @@ particularly in [conditions where gap exists].
 | 표준/기준 | "calibrated against [표준물질/기준]" |
 | 시료/데이터 수 | "A total of [N] samples/observations were collected" |
 
+### Methods 작성 규칙
+
+- **기준은 재현가능성이다.** 같은 자원을 가진 독자가 연구를 반복할 수 있을 만큼 무엇을
+  어떻게 했는지 쓴다. 반대로 분야에서 자명한 절차까지 늘어놓지 않는다.
+- **연구 설계를 먼저 명시한다** (관측/실험, 횡단/시계열, 대조군 유무 등).
+- **관례에서 벗어난 방법 선택은 반드시 정당화한다** — 인용이나 지침, 또는 그 선택을
+  요구한 구체적 맥락으로. 정당화 근거가 소스에 없으면 지어내지 말고
+  `[justification needed]`로 표시한다.
+- **통계 단락에 반드시 들어갈 것**: 데이터 제시 형식(평균±SD / 중앙값[IQR] / n(%)),
+  변수 유형별로 사용한 검정, 유의수준, 사용 소프트웨어와 버전.
+- **Results에 나올 모든 항목에는 대응하는 방법 기술이 있어야 한다.** 방법에 없는 분석의
+  결과를 제시하지 않는다. 이미 출판된 절차는 요약 + 인용으로 갈음한다.
+- 윤리 승인 번호·동의 취득·등록번호 같은 **사실 정보는 절대 생성하지 않는다.** 사용자가
+  제공하지 않았으면 `[missing: ethics approval]` 형태로 남기고 요청한다.
+
 ---
 
 ## 3. Results
@@ -123,11 +155,15 @@ particularly in [conditions where gap exists].
   - My Data: 공간적/시간적 패턴
   - Knowledge: 비교용 선행연구 데이터
 
-단락 3: 선행연구와 비교
-  - My Data vs Knowledge: 유사점과 차이점
-  - Knowledge: 가능한 원인 참조
+단락 3: 선행연구와 비교  ← results_style: with-comparison 일 때만
+  - My Data vs Knowledge: 유사점과 차이점 (사실 대조까지만)
+  - 원인·메커니즘 해석은 넣지 않는다 → Discussion 소관
   - Knowledge 카테고리: Empirical Precedents
 ```
+
+> **results_style 분기**: `data-only`이면 단락 3을 생략하고 비교 문장 전체를 Discussion으로
+> 넘긴다. `with-comparison`(기본)이면 단락 3을 쓰되 **사실 대조에서 멈춘다** — "무엇이
+> 비슷하고 무엇이 다른가"까지가 Results, "왜 그런가"는 어느 설정에서도 Discussion이다.
 
 ### My Data → Knowledge 비교 패턴
 
@@ -143,9 +179,12 @@ those reported by [Author] ([Year]) in similar settings ([range])."
 the present study showed [different finding]."
 
 패턴 3: 새로운 패턴 발견
-"Notably, [novel pattern] was identified (Figure N), which has
+"[Novel pattern] was identified (Figure N), which has
 not been previously reported in [relevant domain/context]."
 ```
+
+> "Notably", "Surprisingly", "Interestingly" 같은 평가어는 Results에 쓰지 않는다.
+> 무엇이 주목할 만한지는 Discussion에서 근거와 함께 논한다.
 
 ### 전환어
 
@@ -168,6 +207,21 @@ not been previously reported in [relevant domain/context]."
 | 새로운 패턴 | "not previously reported" | "이전에 보고된 바 없다" |
 | 추세 일치 | "in agreement with", "corroborating" | "~를 뒷받침한다" |
 | 추세 불일치 | "in contrast to", "contrary to" | "~와 대조적으로" |
+
+### Results 작성 규칙
+
+- **관찰한 것을 기술한다. 해석·논평은 하지 않는다.** 방법을 다시 설명하지 않는다.
+- **표·그림에 이미 실린 값을 본문에서 되풀이하지 않는다.** 표 전체를 산문으로 재서술하는
+  것은 금지다. 다만 비교나 논지 전개에 필요한 **핵심 수치 1-2개**는 본문에 인용해도 된다.
+  판단 기준: 그 수치를 빼면 문장의 논지가 성립하지 않는가, 아니면 표를 보라고 하면 되는가?
+  - 나쁨: "Site A was 12.3, Site B was 14.1, Site C was 11.8, and Site D was 15.2 (Table 1)."
+  - 좋음: "Values were highest at Site D and lowest at Site C (Table 1), a 1.3-fold spread."
+- **방법에 기술한 모든 항목에 결과를 제시하고, 방법과 같은 순서로 배열한다.**
+- **불리하거나 유의하지 않은 결과도 축소·완곡화하지 않는다.** 기대와 다른 결과도 그대로
+  보고한다.
+- **선택적 보고를 하지 않는다.** 수치를 제시할 때 n과 산포(SD/IQR)를 함께 쓰고, p값을
+  쓰면 효과크기나 신뢰구간을 동반한다.
+- **연구 질문과 무관한 결과를 나열하지 않는다.** 데이터가 많다는 것을 과시하지 않는다.
 
 ---
 
@@ -217,6 +271,25 @@ not been previously reported in [relevant domain/context]."
 | 강함 | demonstrates, shows | 보여준다, 입증한다 |
 | 중간 | suggests, indicates | 시사한다, 나타낸다 |
 | 약함 | may, might, could | ~일 수 있다, ~일 가능성이 있다 |
+
+### Discussion 작성 규칙
+
+- **첫 단락은 연구 질문에 대한 답으로 시작한다.** 결과의 재나열이 아니라, Introduction에서
+  던진 질문에 대한 답을 Introduction과 **같은 문구**로 진술한다.
+- **서론에서 주장한 갭을 실제로 메웠는지 되짚는다.** 이 연구가 무엇을 새로 더했는지
+  명시하지 않으면 "흔한 주제의 또 한 편"이 된다.
+- **과잉 해석 금지 — 특히 범위 이동에 주의한다.** 표본에서 관찰한 것을 모집단 진술로 슬쩍
+  바꾸지 않는다. "25개 중 20개에서 관찰됨"은 "80%가 그렇다"가 아니다.
+- **개별 결과 나열을 넘어 종합적 의미를 설명한다.** 모든 분석을 함께 놓았을 때 무엇이
+  보이는가.
+- **선행연구 비판은 외교적으로.** 타인 연구의 약점을 직접 지적하는 대신 자기 연구의 강점을
+  진술해 함의로 전달한다.
+  - 피함: "Smith's study was underpowered."
+  - 권함: "Our design provided sufficient power to detect [effect]."
+- **한계는 감추지 않되 방어와 함께 쓴다.** 한계를 스스로 열거하면 심사자에게 자각을 보이고,
+  그 한계가 결론을 무너뜨리지 않는 이유를 밝힐 기회가 된다.
+- **모든 인과·기전 진술은 인용된 근거에 매핑되어야 한다.** 근거 없는 메커니즘을 만들어내지
+  말고 `[interpretation needed — no supporting source]`로 남긴다.
 
 ---
 
@@ -360,12 +433,31 @@ values] in [different context]."
 | Our results show | 결과는 ~을 보여주었다 | 핵심 결과 |
 | These findings suggest | 이 결과는 ~을 시사한다 | 결론/함의 |
 
+### Abstract 작성 절차
+
+초록은 백지에서 쓰지 않는다. 이미 쓴 본문에서 조립한다.
+
+```
+1. 배경   ← Introduction 단락 1에서 1-2문장을 가져와 압축
+2. 목적   ← Introduction의 목적 진술을 같은 문구로 재사용
+3. 방법   ← Methods에서 핵심 설계·기법만 (파라미터 수준 세부 제외)
+4. 결과   ← Results에서 핵심 수치 2-3개, 주요 결과부터 순서대로
+5. 결론   ← take-home message 한 줄, 목적과 직접 대응
+```
+
+가장 어려운 작업은 새로 쓰는 것이 아니라 **저널 단어수 제한에 맞춰 줄이는 것**이다.
+
 ### Abstract 작성 규칙
 
+- **독립성**: 본문을 보지 않고도 이해되어야 한다. 서지 DB에서 단독으로 유통되기 때문이다.
+  따라서 **본문을 가리키는 표현을 쓰지 않는다** — "as shown in Figure 2", "in this paper
+  we describe", "아래에서 논의하듯이" 등은 모두 금지. 그림·표·참고문헌도 넣지 않는다.
 - 인용 없음 (일반적으로 Abstract에는 인용하지 않음)
 - 약어 최소화 (첫 등장 시 풀어쓰기)
 - 구체적 수치 포함 (범위, 주요 값)
 - 과대 표현 금지 ("first ever", "groundbreaking" 등)
+- 평가적 진술 금지 ("Surprisingly, we observed…") — 판단은 Discussion 소관
+- 첫 1-2문장은 인접 분야 밖 독자도 이해할 수 있어야 한다
 
 ---
 
@@ -431,11 +523,48 @@ values] in [different context]."
 | Results (선행연구 비교) | 현재완료/과거 | "have reported", "documented" |
 | Discussion | 현재/과거 | "suggests", "may indicate" |
 
+### 태(Voice) 정책
+
+섹션마다 다르다. 일괄 적용하지 않는다.
+
+| 섹션 | 기본 태 | 이유 |
+|------|---------|------|
+| Methods | 수동 유지 | 행위자가 아니라 절차가 초점 ("samples were collected") |
+| Abstract 방법 요약 | 수동 유지 | 압축 서술에 적합 |
+| Results | **능동 권장** | "Concentrations increased with depth"가 "An increase was observed"보다 짧고 명확 |
+| Discussion | **능동 권장** | 해석의 주체와 논리가 드러남 |
+| Introduction | 혼용 | 선행연구 서술은 수동·현재완료가 자연스러움 |
+
+수동태를 쓰더라도 행위자가 중요한 문장에서 행위자를 숨기지 않는다.
+
+### Reporting verb 선택
+
+인용 문장을 대량 생성하므로 동사가 단조로워지기 쉽다. **원저자가 실제로 한 일**에 맞춰
+고르고, 연속된 인용에서 같은 동사를 반복하지 않는다.
+
+| 원저자가 한 일 | 동사 |
+|---------------|------|
+| 데이터를 제시함 | reported, documented, measured, observed |
+| 주장·제안함 | proposed, argued, suggested, hypothesized |
+| 입증함 | demonstrated, showed, established |
+| 검토·종합함 | reviewed, synthesized, compiled |
+
+동사의 강도는 원저자의 확신 수준을 넘지 않는다. 제안한 것을 "demonstrated"로 쓰지 않는다.
+
+### 약어
+
+모든 섹션에서 첫 등장 시 풀어쓴다 (Abstract와 본문은 각각 독립적으로 적용).
+분야 표준이 아닌 약어는 3회 미만 등장하면 아예 쓰지 않는다.
+
 ### 피해야 할 표현
 - "I think", "We believe" → "This suggests", "The data indicate"
 - "very", "really" → 구체적 수치 사용
 - "proves" → "supports", "suggests"
 - 비학술적 표현 → 학술적 용어로 대체
+- 똑똑해 보이려는 거창한 어휘 → 평이하고 정확한 단어
+- 뭉뚱그린 일반화("many studies", "it is well known") → 구체적 대상 + 인용
+- 불필요한 jargon → 필요한 경우가 아니면 평이한 표현
+  (단 "has been widely studied", "remains to be determined" 같은 학술 정형구는 허용)
 
 ---
 
@@ -462,6 +591,18 @@ values] in [different context]."
 - Nature / Science 계열
 - 분야별 주요 저널 (사용자 프로젝트에 따라 조정)
 
+### 소스 우선순위
+
+동일 내용을 여러 곳에서 확인할 수 있으면 다음 순으로 택한다.
+
+1. 동료심사 학술지 원저 논문
+2. 동료심사 리뷰 논문
+3. 학술 단행본 (장·쪽수·편저자 명시)
+4. 기관 보고서·공식 가이드
+
+개인 블로그·미출판 자료·개인교신은 가능한 한 피한다. 선택지가 여럿이면 더 최근이거나
+더 신뢰받는 저널의 것을 택하되, 분야의 정초 문헌은 오래되었다는 이유로 배제하지 않는다.
+
 ---
 
-**Version**: 1.0.1
+**Version**: 1.1.0

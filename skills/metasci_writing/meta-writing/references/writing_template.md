@@ -96,8 +96,15 @@
    - 값의 범위 (최소~최대)
    - 주요 그룹별 범위
    - 뚜렷한 패턴
-5. 출력: 패턴 기술 + 수치 정보
+5. 수치의 출처 등급 판정:
+   - 원자료(CSV/Excel)가 있으면 → 반드시 그것에서 수치를 가져온다 (정확값)
+   - 이미지에서만 읽었으면 → 근사값. 본문에 "~" 표기 + 저자 확인 대상으로 표시
+   - 축 라벨·단위·범례가 불명확하면 → 추정하지 말고 사용자에게 질문
+6. 출력: 패턴 기술 + 수치 정보 (각 수치에 정확/근사 등급 부기)
 ```
+
+> 이미지에서 눈으로 읽은 값은 추정치다. 검증 단계에서 그림 번호와 파일 존재만 확인하면
+> 잘못 읽은 수치가 그대로 통과하므로, 여기서 등급을 남겨야 Phase 4가 잡을 수 있다.
 
 **표(Table) 처리:**
 ```
@@ -221,6 +228,24 @@
 출력: 최종 글
 ```
 
+### 5-0. 골격 확정 (산문화 이전)
+
+문장을 만들기 전에 단락별 논지를 한 줄씩 확정한다. 이 골격이 Phase 3.5의 판정 기준이 된다.
+
+```
+Core message: [이 글이 관철해야 할 단 하나의 주장]
+
+| 단락 | topic sentence (한 줄) | 근거 소스 | Core message 기여 |
+|------|----------------------|----------|------------------|
+| 1 | [주장] | Figure 1, (Author, Year) | [어떻게 기여하는가] |
+| 2 | [주장] | (Author, Year) x2 | [어떻게 기여하는가] |
+| 3 | [주장] | Table 1, (Author, Year) | [어떻게 기여하는가] |
+```
+
+- Core message 기여를 한 줄로 못 쓰는 단락은 골격 단계에서 뺀다. 쓰고 나서 빼는 것보다 싸다.
+- section_guides.md의 섹션별 "구조" 블록은 *일반 템플릿*이다. 이 표는 *이번 원고*의 논지다.
+- 근거 소스가 비어 있는 단락이 있으면 Loop 4로 돌아가 보완하거나 범위를 줄인다.
+
 ### 5-1. 소스 병합
 
 ```
@@ -339,6 +364,11 @@ Discussion 내 정렬:
 
 영어 + 한국어 이중 출력. (소스 유형은 본문에 표기하지 않는다 — 내부 추적은 B) Source Summary에만 기록.)
 
+> **AI 생성 초안 — 저자 검증·개작 필요.** 논지 선택과 해석의 타당성, 최종 문장은 저자가
+> 결정한다. 소스가 결정해 주지 않는 판단이 들어간 문장에는
+> `[interpretation needed — no supporting source]` 또는 `[author judgement]`를 인라인
+> 표시해 저자가 어디를 봐야 하는지 드러낸다.
+
 ```markdown
 #### Paragraph 1
 
@@ -364,6 +394,46 @@ Furthermore, [PDF 근거 (Author2, Year)].
 ### F) Reference Verification Report
 
 `citation-and-verification.md`의 검증 보고서 템플릿 참조.
+
+### G) AI Assistance Log
+
+투고 시 AI 사용 공개(disclosure)를 요구하는 저널이 늘고 있다. A) Approach Checklist에
+재료가 이미 있으므로 그것을 공개용 형식으로 정리한다.
+
+```markdown
+## G) AI Assistance Log
+
+### 개입 층위
+[ ] 기술 지원 — 서식·인용 정리·번역 수준
+[x] 텍스트 개발 — 단락 초안 생성
+[ ] 전환적 — 해석·논증 구성에 관여
+> 층위가 높을수록 저자 검토 부담이 커집니다.
+
+### 수행한 작업
+- Knowledge 파일 N개에서 Claim-Citation 추출
+- Figure N / Table N 판독 및 기술
+- [섹션명] 초안 단락 N개 생성 (영/한)
+- APA 7 참고문헌 서식 정리
+- 인용-참고문헌 매칭 및 Claim-Source 대조 검증
+
+### 수행하지 않은 작업
+- 데이터 생성·수정 없음
+- 통계 재계산 없음
+- 원자료에 없는 수치 산출 없음
+- 제공되지 않은 문헌의 인용 생성 없음
+
+### 저자 확인이 필요한 항목
+- [근사값으로 표기된 수치 목록]
+- [unverified secondary citation 목록]
+- [interpretation needed 표시 위치]
+
+### 저널 제출용 disclosure 초안
+"During the preparation of this work the author(s) used [tool] to draft and edit
+sections of the manuscript based on author-supplied data and literature. The author(s)
+reviewed and edited the content and take full responsibility for the content of the
+publication."
+> 실제 문구는 투고처 정책에 맞춰 저자가 조정하십시오.
+```
 
 ---
 
@@ -431,7 +501,10 @@ Furthermore, [PDF 근거 (Author2, Year)].
 | Knowledge 부족 + PDF 없음 + Web 불허 | "사용 가능한 소스에서 충분한 근거를 확보하지 못했습니다. Web 검색 허용 또는 추가 자료 제공을 고려해 주세요." |
 | Web 검색 실패 | "Web 검색에서 신뢰할 수 있는 학술 소스를 찾지 못했습니다. 기존 자료로 진행합니다." |
 | 그림/표 번호와 파일 불일치 | 사용자에게 확인 요청 |
+| 그림 축 라벨·단위·범례 판독 불가 | 추정 금지 — 사용자에게 질문 |
+| 해석 근거가 될 소스가 없음 | 지어내지 말고 `[interpretation needed — no supporting source]` 표기 후 보고 |
+| Knowledge의 인용을 원문에서 확인 불가 | `[unverified secondary citation]` 표기 후 보고 |
 
 ---
 
-**Version**: 1.0.1
+**Version**: 1.1.0

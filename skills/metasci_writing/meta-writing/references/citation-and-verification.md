@@ -112,16 +112,54 @@ APA 7 형식 체크:
 □ 필수 필드 완비: Authors, Year, Title, Journal, Volume, Pages, DOI
 ```
 
-### Step 3: 소스별 검증
+### Step 3: Claim-Source 내용 일치 검증 (오귀속 차단)
+
+Step 1-2는 인용이 **존재하고 형식이 맞는지**만 본다. 실재하는 논문을 그 논문이 하지 않은
+주장의 근거로 다는 오귀속(misattribution)은 잡지 못한다. 이 단계가 그것을 잡는다.
 
 ```
-Knowledge 기반: 원본 마크다운 파일과 대조
+작업:
+1. 본문의 각 (주장 ← 인용) 쌍을 나열
+2. 각 쌍에 대해 인용 원본의 해당 대목을 찾아 대조:
+   ✓ 원본이 그 주장을 실제로 하는가?
+   ✓ 범위가 유지되었는가? (표본 → 모집단으로 확대되지 않았는가)
+   ✓ 확신 수준이 유지되었는가? (제안 → 입증으로 강화되지 않았는가)
+3. 판정:
+   - 지지됨 → 유지
+   - 과장됨 → 원본이 지지하는 수준으로 문장을 약화
+   - 확인 불가 → [unverified claim] 표기 후 보고
+   - 원본이 반대로 말함 → 삭제하고 보고
+```
+
+**2차 인용 처리 (이 스킬의 구조적 위험):**
+
+Loop 2가 Knowledge 마크다운에서 뽑는 Claim-Citation 쌍은 **간접 정보**다. Knowledge 파일은
+"다른 논문이 이렇게 말했다"를 기록한 것이지 그 논문 자체가 아니다. 따라서 그 쌍을 그대로
+본문에 옮기면 읽지 않은 문헌을 읽은 것처럼 인용하게 된다.
+
+```
+Knowledge에서 온 인용마다:
+1. 원문(PDF/Web)을 확보할 수 있는가?
+   Yes → 원문에서 해당 주장을 직접 확인 후 원저자 인용
+   No  → 둘 중 하나를 택한다:
+         (a) 간접 인용으로 명시: "as reported in [Knowledge source]"
+         (b) [unverified secondary citation] 표기 후 사용자에게 보고
+2. 어떤 경우에도 미확인 2차 인용을 원문 확인한 것처럼 제시하지 않는다
+```
+
+### Step 4: 소스별 검증
+
+```
+Knowledge 기반: 원본 마크다운 파일과 대조 + 2차 인용 여부 판정 (Step 3 참조)
 PDF 기반: 논문 메타데이터 재확인
 Web 검색: URL 접근 가능 여부 확인 (접근일은 수시 변경 페이지에만 표기)
-My Data: 그림/표 번호와 본문 참조가 일치하는지 확인
+My Data:
+  - 그림/표 번호와 본문 참조가 일치하는지 확인
+  - 제공된 모든 그림·표가 본문에 언급되었는지 역방향 확인
+  - 이미지 판독 수치가 근사(~) 표기되었는지 확인
 ```
 
-### Step 4: 검증 보고서 생성
+### Step 5: 검증 보고서 생성
 
 ```markdown
 ## Reference Verification Report
@@ -141,12 +179,24 @@ My Data: 그림/표 번호와 본문 참조가 일치하는지 확인
 | ❌ Missing | (Park et al., 2022) | [NOT FOUND IN REFERENCES] |
 | ⚠️ Orphan | - | Lee, C., et al. (2021). [NOT CITED] |
 
+### Claim-Source Fidelity
+
+| 상태 | 본문 주장 | 인용 | 대조 결과 |
+|------|----------|------|----------|
+| ✅ | [주장 요약] | (Chen et al., 2024) | 원본 p.5에서 확인 |
+| ⚠️ Overstated | [주장 요약] | (Kim et al., 2023) | 원본은 "suggests" — 문장 약화함 |
+| ⚠️ Unverified | [주장 요약] | (Park et al., 2022) | 원문 미확보 — [unverified claim] 표기 |
+| ⚠️ Secondary | [주장 요약] | (Lee, 2021) | Knowledge 경유, 원문 미확인 |
+| ❌ Contradicted | [주장 요약] | (Cho et al., 2020) | 원본은 반대 결론 — 삭제함 |
+
 ### My Data Reference Check
 
-| 상태 | 본문 참조 | 파일 |
-|------|----------|------|
-| ✅ | Figure 1 | fig1_isotope_scatter.png |
-| ❌ | Figure 3 | [FILE NOT FOUND] |
+| 상태 | 본문 참조 | 파일 | 수치 등급 |
+|------|----------|------|----------|
+| ✅ | Figure 1 | fig1_isotope_scatter.png | 원자료 기반 (정확) |
+| ⚠️ | Figure 2 | fig2_timeseries.png | 이미지 판독 (~근사, 저자 확인 필요) |
+| ❌ | Figure 3 | [FILE NOT FOUND] | - |
+| ⚠️ Unreferenced | - | table2_summary.csv | 제공되었으나 본문에서 미언급 |
 
 ### Format Validation
 
@@ -170,35 +220,54 @@ My Data: 그림/표 번호와 본문 참조가 일치하는지 확인
 ### Verification Status
 **⚠️ ISSUES FOUND** — 2 items to fix (see "Issues to Fix" above)
 모든 항목 통과 시: **✅ PASS** — no issues
+
+> PASS는 **이번 실행의 검사에서 문제를 찾지 못했다**는 뜻이지, 원고가 옳다는 보증이
+> 아니다. 자기 보고이므로 저자 검토가 필요하다.
 ```
 
 ---
 
 ## 4. Self-Assessment Checklist
 
-글쓰기 + 검증 완료 후 최종 품질 점검:
+글쓰기 + 검증 완료 후 최종 품질 점검.
+
+> **이것은 자기 보고이며 품질 보증이 아니다.** 각 ✅에는 무엇을 근거로 확인했는지
+> (파일명·항목·페이지) 병기한다. 근거를 댈 수 없는 항목은 체크하지 않는다.
+> 산출물이 우수하다고 스스로 주장하는 표현은 쓰지 않는다.
 
 **English:**
 - [ ] All in-text citations have matching references
 - [ ] No orphan references (all refs cited in text)
 - [ ] Reference format validated (APA 7)
 - [ ] No missing fields in references
+- [ ] Each claim was checked against the source cited for it (Step 3)
+- [ ] Citations inherited from Knowledge files were traced to the original, or flagged
 - [ ] My Data references (Figure/Table) match actual files
+- [ ] Every supplied figure/table is referenced in the text (reverse check)
+- [ ] Values read from images are marked approximate
 - [ ] In-text citations use one uniform APA 7 form (no * / † source-type markers)
 - [ ] Source types tracked internally only (not in manuscript text or References)
 - [ ] Web search results verified for reliability
 - [ ] No fabricated DOIs, URLs, years, or authors
+- [ ] No verbatim source sentences carried into the manuscript without quotation marks
+- [ ] Every causal/mechanistic statement maps to a cited source
 
 **한국어:**
 - [ ] 모든 본문 인용이 참고문헌에 존재
 - [ ] 고아 참고문헌 없음
 - [ ] 참고문헌 형식 검증됨 (APA 7)
 - [ ] 참고문헌에 누락 필드 없음
+- [ ] 각 주장을 그 인용 원본과 대조함 (Step 3)
+- [ ] Knowledge 경유 인용을 원문 확인했거나 2차 인용으로 표시함
 - [ ] 내 데이터 참조(Figure/Table)가 실제 파일과 일치
+- [ ] 제공된 모든 그림·표가 본문에 언급됨 (역방향 확인)
+- [ ] 이미지에서 읽은 수치를 근사값으로 표기함
 - [ ] 본문 인용이 단일 APA 7 형식 (소스타입 */† 마커 없음)
 - [ ] 소스 유형은 내부 검증용으로만 기록 (본문·References 미표기)
 - [ ] Web 검색 결과 신뢰성 확인
 - [ ] DOI/URL/연도/저자 조작 없음
+- [ ] 소스 원문 문장을 따옴표 없이 그대로 옮긴 곳 없음
+- [ ] 모든 인과·기전 진술이 인용 근거에 매핑됨
 
 ---
 
@@ -216,10 +285,18 @@ My Data: 그림/표 번호와 본문 참조가 일치하는지 확인
 | 누락된 참고문헌 | 제공된 원본에 메타데이터가 있을 때만 추가 제안, 없으면 추가하지 않음 | ✅ (필수) |
 | 고아 참고문헌 | 자동 삭제 금지 — 삭제/인용 추가 중 선택 요청 | ✅ |
 | Figure/Table 번호 불일치 | 자동 변경 금지 — 확인 요청 | ✅ |
+| 주장이 인용 원본보다 강함 (과장) | 원본이 지지하는 수준으로 문장 약화 (자동) | 불필요 (보고는 함) |
+| 주장을 원본에서 확인 불가 | 문장 삭제 금지 — `[unverified claim]` 표기 후 보고 | ✅ |
+| 원본이 주장과 반대로 말함 | 해당 문장 삭제 + 보고 | ✅ |
+| Knowledge 경유 인용의 원문 미확보 | `[unverified secondary citation]` 또는 간접 인용으로 전환 | ✅ |
+| 이미지 판독 수치 | `~` 근사 표기 유지 — 정확값으로 승격 금지 | ✅ (승격 시) |
+| 근거 없는 인과·기전 진술 | 자동 생성 금지 — `[interpretation needed]` 표기 | ✅ |
 
 > 원본 소스가 없는 정보는 **절대 자동으로 추가하지 않는다.** 검증되지 않은
 > 항목은 `[missing]`으로 남기고 사용자에게 보고한다.
+> 마찬가지로 **확인되지 않은 주장을 조용히 삭제하지도 않는다** — 표기하고 보고해
+> 저자가 판단하게 한다.
 
 ---
 
-**Version**: 1.0.1
+**Version**: 1.1.0

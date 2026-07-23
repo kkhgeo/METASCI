@@ -102,5 +102,6 @@ path and how to open it, plus any placeholders left for the user.
 
 ## Reference files (read on demand)
 - `references/voice-and-structure.md` — the quiet-editorial voice, the flexible section arc (+ multi-paper variant), the Korean-only + parenthetical-English convention, AI-tell phrases. **Read before steps 2 and 7.**
+- `references/voice-beatrice.md` — **optional voice mode; not the default.** Read it *instead of* `voice-and-structure.md` at steps 2 and 7 **only when the user explicitly asks for the 베아트리체 / Beatrice voice**. Otherwise ignore this file entirely.
 - `references/STYLE_GUIDE.md` — the brief format spec: HTML skeleton, every component, color/typography tokens, author/field patterns. **Read before step 7.** (Note: it follows the canonical brief's inline-SVG logo; the Mondrian `logo-mondrian.js` mentioned in the original KEI guide is not used.)
 - `assets/` — `brief-template.html` (copy and edit), plus `hero-bg.jpg` and `KEI_Wordmark.svg` (bundled brand assets to copy into each output). Copy, don't recreate.

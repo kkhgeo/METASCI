@@ -39,6 +39,30 @@ contract (원문 → 문제 → 수정안 → 근거 → 발견자). Confidence 
 controls **how much detail** goes into the issue and **which actions**
 are offered — never the visual layout itself.
 
+### Selection Confidence (candidate units)
+
+Candidate units (sentence/paragraph rewrites) do not use aggregate reviewer
+confidence — they carry the judge's `selection_confidence` from Agent J
+(`agents/agent_j.md`). Route by that value instead:
+
+- **HIGH → 추천 우선 뷰.** Present the optimal as the recommendation +
+  1–2 runner-ups, expect a quick decision. The full ranked slate stays
+  one command away (`"대안들 보여줘"`).
+- **MEDIUM → 메뉴 뷰 자동 펼침.** The judge did not settle the choice
+  cleanly, so do not push a single recommendation — show Agent J's full
+  ranked candidate menu (scores + one-line each, ★ on the top-ranked,
+  ORIGINAL included) and let the user pick a number.
+- **LOW → 메뉴 뷰 + 검색 제안.** Show the ranked menu as in MEDIUM, and
+  additionally offer the web-search supplement before the user decides:
+  `"이 표현이 분야 관례상 맞는지 유사 논문에서 확인할까요?"`
+
+This adaptive default is `config/output_format.md` 6b. Regardless of
+confidence, the user can expand the menu with `"대안들 보여줘"` or collapse
+to recommend-first with `"추천만"`.
+
+The rest of this file (issue-level HIGH/MEDIUM/LOW routing) governs the
+ISSUES track.
+
 ### HIGH Confidence Routing
 
 ```

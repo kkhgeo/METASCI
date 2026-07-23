@@ -15,20 +15,31 @@ All reviewers run in **parallel** (multiple Agent tool calls in one response).
 Wait for all to complete. Each returns:
 
 ```
+CANDIDATES: [
+    {
+        unit,
+        set: [ { id, objective, text, rationale, evidence_source, self_score } ],
+        nomination: { best, beats_original, reason }
+    }
+]
 ISSUES: [
     { id, criterion, description, location, severity, confidence }
 ]
 SUGGESTIONS: [
-    {
-        id, issue_id, original,
-        alternatives: [
-            { label, revised, tone, rationale }  // 1-3 items (see agent_reviewer.md Rule 11)
-        ],
-        evidence_source
-    }
+    { id, issue_id, directive, evidence_source }   // non-local issues only
 ]
 CONFIDENCE: HIGH | MEDIUM | LOW (per issue)
 ```
+
+Two tracks flow from here:
+
+- **CANDIDATES** → the Candidate Judge Round (Agent J) selects the optimal
+  rewrite per unit. This is the primary path for wording / logic-flow /
+  hedging. See "Candidate Judge Round" below.
+- **ISSUES / SUGGESTIONS** → the 3-category classification (consensus /
+  unique / conflict) below, feeding Top-N and Agent B. This path handles
+  problems a same-unit rewrite cannot fix (missing citation, misplacement,
+  numeric error, cross-section inconsistency).
 
 ### Step 2: Match and Classify
 
@@ -41,41 +52,42 @@ Two issues "match" when they:
 
 ### Step 3: Classify into Three Categories
 
+This classification governs the **ISSUES track only** — non-local problems
+a same-unit rewrite cannot fix (missing/incorrect citation, wrong
+placement, numeric error, cross-section inconsistency, coverage gap).
+Wording / logic-flow / hedging improvements are NOT classified here; they
+go through the Candidate Judge Round below. An issue carries a **single
+corrective directive** (from SUGGESTIONS), not A/B/C rewrites — the
+directive is usually determinate (one citation to add, one right section).
+
 Each presented issue follows the `config/output_format.md` content
-contract: 원문 → 문제 → 수정안(들) → 근거 → 발견자, in plain Korean.
+contract: 원문 → 문제 → 조치(directive) → 근거 → 발견자, in plain Korean.
 Visual layout is at the model's discretion (standard Markdown).
 
 #### Category 1: Consensus (2+ reviewers agree)
 
-Two or more reviewers flagged the same issue.
-
-- Single alternative when the issue is LOGIC / STRUCTURE / FACTUAL —
-  the correction is determinate.
-- Multiple alternatives (2–3, labeled A/B/C with tone + rationale +
-  recommendation) when the issue is STYLE / HEDGING / TERMINOLOGY /
-  CLUTTER — draw tone-varied alternatives from across the agreeing
-  reviewers (prefer variety over near-duplicates; cap at 3).
+Two or more reviewers flagged the same issue, with a shared directive.
 
 발견자 line: `발견자: R1+R3 합의` (or `R1+R2+R4 합의`).
 
-**User action:** AskUserQuestion options, or typed `"[#] 적용"` /
-`"[#] [A/B/C] 적용"`.
+**User action:** AskUserQuestion options, or typed `"[#] 적용"`.
 
 #### Category 2: Unique Finding (1 reviewer only, with evidence)
 
-Only one reviewer flagged it, but provides a rationale.
-Single or multiple alternatives per `agents/agent_reviewer.md` Rule 11.
+Only one reviewer flagged it, but provides a rationale and directive.
 
 발견자 line: `발견자: R1 단독` (replace with the actual reviewer ID).
 
 **User action:** AskUserQuestion options, or typed `"[#] 적용"` /
-`"[#] [A/B/C] 적용"` / `"[#] 무시"`.
+`"[#] 무시"`.
 
 #### Category 3: Conflict (reviewers disagree)
 
-Reviewers propose contradictory changes to the same text.
-Show each reviewer's suggestion and rationale in its own labeled
-sub-section, plus a one-line explanation of why they disagree.
+Reviewers propose contradictory directives, or disagree on whether it is
+a problem at all. Show each reviewer's position and rationale in its own
+labeled sub-section, plus a one-line explanation of why they disagree.
+(Disagreement over how to *reword* a unit is not a conflict here — the
+judge resolves that by selecting the optimal candidate.)
 
 발견자 line: `의견 충돌: R1 ↔ R4`.
 
@@ -84,13 +96,47 @@ sub-section, plus a one-line explanation of why they disagree.
 
 ---
 
+## Candidate Judge Round (Agent J)
+
+The CANDIDATES track does NOT go through consensus/unique/conflict
+classification — candidates are not "issues," they are competing rewrites.
+Instead, run the dedicated judge:
+
+1. **Pool** all candidate sets across reviewers, grouped by unit. Merge
+   the ORIGINAL as the baseline for each unit. Drop exact-duplicate texts.
+2. **Launch Agent J** (`agents/agent_j.md`) — one call per paragraph
+   (Mode 3) or per section (Mode 2). Pass the original unit(s), the
+   confirmed intent, the pooled candidates, and the writing-manual rubric.
+3. **Receive `SELECTIONS[]`** — per unit: the optimal (candidate /
+   ORIGINAL / SYNTHESIZED), 1–2 runner-ups, disqualified candidates, and a
+   `selection_confidence`.
+4. The orchestrator presents each unit as: 원문 → 최적안(추천) →
+   대안(1–2) → 근거 → 선정 신뢰도, per `config/output_format.md`. When the
+   optimal is ORIGINAL, say "원문이 최적 — 수정 불필요" and still show the
+   strongest explored alternative for transparency.
+5. If `selection_confidence` is LOW, offer the web-search supplement
+   (`harness/confidence_routing.md`) before the user decides.
+
+The judge round and the ISSUES classification run over the same reviewer
+output; present candidate selections at the point of each unit's
+walkthrough (Mode 3, SKILL.md 7c) and fold ISSUES into the Top-N block and
+Agent B.
+
+---
+
 ## Presentation Order
 
-1. **Consensus issues** first (most reliable)
-2. **Unique findings** next (may catch things consensus missed)
+1. **Consensus issues** first (hardest to miss — not necessarily most important)
+2. **Unique findings** next (often the highest-value findings; see below)
 3. **Conflicts** last (require user judgment)
 
 Within each category, order by severity (HIGH > MEDIUM > LOW).
+
+Consensus comes first because it is the safest place to start reading, not
+because it carries more evidential weight. Since all reviewers share one
+model and one instruction set, consensus measures *salience*, not *truth*.
+A HIGH finding raised by one reviewer outranks a LOW finding raised by
+five — order within severity, never across it.
 
 ---
 
@@ -138,19 +184,26 @@ Deliberation compares: which paragraphs need attention?
 
 Output: paragraph-level issue map.
 
-### Mode 3: Paragraph — Single-round deliberation, grouped by sentence
+### Mode 3: Paragraph — Single reviewer round, then one judge round
 
-Reviewers return paragraph-level AND sentence-level findings from ONE
-panel round (see SKILL.md 7b). Deliberation also runs once:
+Reviewers return, from ONE panel round (see SKILL.md 7b): CANDIDATE sets
+(paragraph-whole + every sentence), ISSUES, and SUGGESTIONS. Synthesis
+runs once:
 
-1. Group all findings — paragraph-level findings (`"Paragraph N
-   (whole)"`) form one group; sentence-level findings group by
-   sentence number.
-2. Within each group, run the standard 3-category classification
-   (consensus / unique / conflict).
-3. The orchestrator then presents paragraph-level results first and
-   walks through flagged sentences one at a time (SKILL.md 7c) —
-   no further reviewer calls are needed during the walkthrough.
+1. **Judge round.** Launch Agent J once for the paragraph (see "Candidate
+   Judge Round" above). It returns the optimal rewrite + runner-ups for
+   the paragraph-whole unit and each sentence.
+2. **Issue classification.** Group ISSUES/SUGGESTIONS — paragraph-level
+   (`"Paragraph N (whole)"`) as one group, sentence-level by sentence
+   number — and run the 3-category classification (consensus / unique /
+   conflict) on each group.
+3. **Present.** The orchestrator presents the paragraph-whole result
+   first (judge selection + any paragraph-level issues), then walks
+   through each sentence (SKILL.md 7c): the judge's optimal + alternatives
+   for that sentence, plus any issues classified for it. No further
+   reviewer or judge calls are needed during the walkthrough.
+4. Sentences whose judge selection is ORIGINAL and that carry no issues
+   are summarized in one line, not stepped through individually.
 
 ---
 
@@ -184,9 +237,29 @@ combination of severity, agreement, and category weight:
 ```
 impact_score =
     severity_weight (CRITICAL=4, HIGH=3, MEDIUM=2, LOW=1)
-  + reviewer_agreement (count of reviewers flagging it, max 5)
+  + reviewer_agreement (count of reviewers flagging it, capped at 2)
   + category_weight
 ```
+
+**Why agreement is capped at 2.** R1–R5 run the same model on identical
+instructions; only their knowledge allocation and persona differ. Their
+agreement is therefore repeated sampling from one prior, not independent
+corroboration — five reviewers converging tells you the issue is *hard to
+miss*, not that it is *important*. Uncapped, agreement could contribute
+more than severity itself (max 5 vs max 4), letting five reviewers agreeing
+on a trivial polish item outrank a single reviewer catching a fatal flaw.
+Severity and category must dominate; agreement is a tiebreaker.
+
+This matches how the CANDIDATES track already reasons — see
+`agents/agent_j.md` Rule 5, "Merit, not popularity. A single reviewer's
+candidate can beat a consensus one." The two tracks now use the same
+epistemology.
+
+**Corollary for unique findings.** An issue raised by one reviewer is not
+weaker evidence than a consensus issue; it is often the opposite, since the
+reviewers most likely to see something alone are R5 (outside-subfield
+reader) and whichever reviewer holds the relevant knowledge file. Do not
+bury single-reviewer CRITICAL/HIGH findings beneath consensus LOW ones.
 
 Note on CRITICAL: reviewers (R1–R5) only emit HIGH/MEDIUM/LOW (see
 `agents/agent_reviewer.md` output schema). CRITICAL enters the pool
@@ -263,6 +336,14 @@ deliberation_stats = {
     user_accepted_unique: int,       // user accepted unique finding
     user_resolved_conflict: int,     // user resolved a conflict
     user_rejected: int,              // user rejected a suggestion
+    // Candidate/judge counters (Agent J, see agents/agent_j.md):
+    units_with_candidates: int,      // units that went through the judge round
+    judge_optimal_not_original: int, // units where a rewrite beat the original
+    judge_original_kept: int,        // units where ORIGINAL was optimal
+    judge_synthesized: int,          // units where the judge merged a new best
+    user_applied_optimal: int,       // user took the judge's optimal
+    user_applied_runner_up: int,     // user took a runner-up instead
+    user_kept_original: int,         // user overrode to keep the original
     // Integrity counters from Agent B (see agents/agent_b.md):
     ref_not_found: int,              // citation existence failures
     numeric_inconsistencies: int,    // N/percentage/sig-fig conflicts

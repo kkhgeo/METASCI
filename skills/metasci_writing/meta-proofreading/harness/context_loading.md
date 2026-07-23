@@ -42,7 +42,10 @@ section's routing row (the remaining ones load in Mode 3).
 **Goal:** One paragraph deeply, then sentence-by-sentence.
 
 Mode 3 runs ONE reviewer round covering both paragraph and sentence
-levels (SKILL.md 7b), so everything loads at Mode 3 entry:
+levels (SKILL.md 7b), so everything loads at Mode 3 entry. The judge
+round (Agent J, SKILL.md 7c) needs no new file loads — it reuses the
+already-loaded writing-manual + paragraph context plus the in-session
+candidate pool.
 
 | Load | Source | Why |
 |---|---|---|

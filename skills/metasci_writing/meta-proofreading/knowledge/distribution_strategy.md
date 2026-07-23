@@ -23,6 +23,17 @@ in the prompt. R4 and R5 receive the same (empty) knowledge but different
 persona directives — R4 evaluates as a generic reviewer, R5 as an
 expert scientist from outside this subfield.
 
+> **What this design does and does not buy.** Differing knowledge and personas
+> genuinely widen coverage — each reviewer notices things the others cannot see.
+> But they run one model on one instruction set, so their **errors correlate**:
+> a blind spot in the underlying model is a blind spot in all five, and agreement
+> among them is repeated sampling from one prior rather than independent
+> corroboration. Treat consensus as evidence that an issue is hard to miss, not
+> that it is correct or important. This is why `harness/deliberation.md` caps the
+> agreement bonus at 2 and why `agents/agent_j.md` Rule 5 judges candidates on
+> merit rather than on how many reviewers proposed them. The panel is a coverage
+> device, not a verification device.
+
 ---
 
 ## Grouping Algorithm

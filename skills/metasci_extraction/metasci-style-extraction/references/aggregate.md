@@ -27,6 +27,19 @@ treat counts as descriptive, not authoritative.
 5. Distill Section Guidance: for each section, the convergent norms as defaults + a note where
    a divergence leaves a choice.
 
+**Measure vocabulary convergence, don't vote it.** For V-lens items and frame anchors, the
+agreement count is a measurable Range — run one count over all exemplars instead of comparing
+cards by eye:
+
+```bash
+python scripts/quant_check.py --strip-refs count --items shared_items.txt --per-file paper1.pdf paper2.pdf paper3.pdf paper4.pdf
+```
+
+The `range` column IS the convergence count (`4/4`, `3/4`…). Card-level judgments still decide
+*qualitative* dimensions (tense, person, citation habit); the script decides *lexical* ones.
+P-lens numeric rows (hedges/1k, avg sentence length, passive/1k) can be lined up directly from
+the measured card values — report the spread (min-max), not an average.
+
 ## Output — `Style_{destination}/style_profile.md`
 
 ```markdown

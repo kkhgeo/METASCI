@@ -72,6 +72,11 @@ Phase 4: Cross-Section Vocabulary Analysis
   → Section-exclusive vocabulary
   → Technical term density per section
 
+Phase 4.5: Quantitative Verification (scripts/quant_check.py)
+  → Verify LLM frequency counts against actual corpus counts
+  → Add NormFreq (per 1k tokens) to summary tables
+  → Compute top collocates for key technical terms
+
 Phase 5: Save
   → Save to Vocab_{topic}/ folder as markdown
 ```
@@ -145,6 +150,13 @@ User: "Analyze vocabulary of these 3 papers"
 → cross_paper_vocabulary.md for shared/unique term comparison
 ```
 
+For cross-paper comparison, every shared item gets a **Range** column (number of papers
+containing it), measured with:
+```bash
+python scripts/quant_check.py --strip-refs count --items terms.txt --per-file paper1.pdf paper2.pdf paper3.pdf
+```
+A term counts as "shared vocabulary" only when Range ≥ 2 (AntConc Min. Range principle).
+
 ---
 
 ## Quality Standards
@@ -153,6 +165,7 @@ User: "Analyze vocabulary of these 3 papers"
 2. **Accuracy**: Correct POS tagging, correct technical term flagging
 3. **Traceability**: Every word linked to at least one context sentence with `[P#-S#]` source
 4. **Completeness**: Multi-word technical terms captured as units, not split
+5. **Verified counts**: Frequencies in final tables come from `scripts/quant_check.py` (Phase 4.5), not from reading impressions
 
 ---
 
@@ -201,5 +214,5 @@ Combined workflow:
 
 ---
 
-**Version**: 1.0.0
+**Version**: 1.1.0 (AntConc-style quantitative verification added)
 **Skill**: Meta_researcher / extraction-vocab

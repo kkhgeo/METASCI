@@ -28,19 +28,41 @@ granularity that is actually useful (a ratio band, a low/med/high level).
   every token. If unsure between two levels, pick one and note it's approximate.
 - Keep it to indicators — no word lists, no frame templates (those are V and L).
 
+### Measured indicators (AntConc-style — REQUIRED where the script can count)
+
+Three P dimensions are cheap to measure exactly — measure them, don't estimate:
+
+```bash
+python scripts/quant_check.py --strip-refs profile paper.pdf
+# → tokens, sentences, avg_sent_len, hedges_per_1k, passive_per_1k
+```
+
+`--strip-refs` removes the reference list (which otherwise distorts sentence statistics).
+If the paper embeds large tables or verbatim boxes, profile a body-prose-only `.txt`
+instead of the raw PDF and say so on the card.
+
+- **sentence length** → report the measured `avg_sent_len`.
+- **hedging density** → report the measured `hedges_per_1k` AND its band
+  (rough bands: <8 low · 8-15 medium · >15 high), e.g. `medium (11.2/1k)`.
+- **voice** → use `passive_per_1k` as a cross-paper comparable anchor alongside your
+  read estimate (the regex detector is approximate; do not report it as an exact %).
+
+Everything else (tense, person, claim strength, citation integration, absences,
+distinctive moves) stays a reading judgment — the script cannot see those.
+
 ## Output (the P section of the Style Card)
 
 ```markdown
 ## P. Profile
 | dim | value |
 |-----|-------|
-| voice | active __% (Methods more passive) |
+| voice | active-dominant (passive __/1k measured; Methods more passive) |
 | tense (Intro/Meth/Res/Disc) | present/past/past/mixed |
 | person | impersonal-passive |
-| hedging density | medium (concentrated in Discussion) |
+| hedging density | medium (__._/1k measured; concentrated in Discussion) |
 | claim strength | tentative-leaning |
 | citation | non-integral __% / integral __% |
-| sentence length | ~__ words, complex |
+| sentence length | __._ words (measured), complex |
 | math/quant density | low |
 | display-item ref | "Fig."; "(Fig. 2)"; captions past tense, telegraphic |
 | does NOT do | <absent patterns> |

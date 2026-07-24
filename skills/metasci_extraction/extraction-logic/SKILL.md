@@ -75,7 +75,9 @@ Phase 4: Sentence Frame Extraction
   → Extract the rhetorical frame of every sentence
   → Abstract specific content into [SLOT] placeholders
   → Collect ALL frames: reference taxonomy + uncategorized
-  → Output: Sentence frame catalog per section
+  → Validate frame recurrence: count each frame's fixed lexical anchor
+    with scripts/quant_check.py; mark Recurrent (Freq ≥ 2) vs Singleton
+  → Output: Sentence frame catalog per section (with Freq/Status columns)
 
 Phase 5: Synthesis & Save
   → Summarize overall logic structure
@@ -158,6 +160,14 @@ User: "Analyze logic structure of these 3 papers"
 → cross_paper_patterns.md for pattern comparison
 ```
 
+In cross_paper_patterns.md, each shared frame gets a **Range** (papers whose text contains
+its anchor), measured once over all PDFs:
+```bash
+python scripts/quant_check.py --strip-refs count --items anchors.txt --per-file paper1.pdf paper2.pdf paper3.pdf
+```
+Only frames with Range ≥ 2 are reported as cross-paper patterns; the rest are per-paper
+distinctive moves.
+
 ---
 
 ## Quality Standards
@@ -166,6 +176,9 @@ User: "Analyze logic structure of these 3 papers"
 2. **Accuracy**: Original text quoted verbatim, logical relations correctly classified
 3. **Traceability**: Every item tagged with `[P#-S#]` (paragraph number - sentence number)
 4. **Comprehensiveness**: Sentence frames are NOT a closed list — collect ALL forms found
+5. **Recurrence evidence**: Every frame carries a measured anchor Freq and a
+   Recurrent/Singleton status from `scripts/quant_check.py` — a frame seen once is
+   never presented as a recurring template
 
 ---
 
@@ -212,5 +225,5 @@ Combined workflow:
 
 ---
 
-**Version**: 1.0.0
+**Version**: 1.1.0 (AntConc-style frame recurrence validation added)
 **Skill**: Meta_researcher / extraction-logic

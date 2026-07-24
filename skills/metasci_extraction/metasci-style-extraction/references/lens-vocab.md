@@ -33,14 +33,40 @@ For each of Introduction / Methods / Results / Discussion, gather the *character
 - When a word is distinctive, keep one short verbatim host phrase so its usage is clear, e.g.
   `suggest — "These results suggest that denitrification…"`.
 
+## Evidence gate (AntConc-style — REQUIRED)
+
+"Characteristic" is a measurable claim, not an impression. Before an item enters the card:
+
+1. Collect your candidate items into a list file (one per line; `suggest*` covers inflections).
+2. Count them against the paper's authorial prose:
+   `python scripts/quant_check.py --strip-refs count --items cand.txt paper.pdf`
+   If the paper contains large non-prose blocks (data tables, verbatim boxes, appendices),
+   save a body-prose-only `.txt` and count against that instead; annotate any count you
+   know is inflated by non-authorial text, e.g. `explicitly (11, mostly box text)`.
+3. Keep an item only if measured **Freq ≥ 2** (a word used once is not this paper's
+   register). Exception: an item may stay at Freq 1 if flagged `(rare-but-marked)` — a
+   genuinely unusual move worth noting — but never more than 1-2 such items per card.
+   **Caption verbs are exempt from the gate** (a paper with two display items cannot
+   produce Freq ≥ 2 caption verbs); list them with whatever freq they have.
+4. Record the measured freq next to each item on the card: `suggest (7)`.
+
+**The measurement wins.** If the script returns 0 for a word you are sure you read, grep the
+extracted text before claiming a counting artifact — in testing, such disputes are usually
+the reading impression being wrong, not the count. Never restore a gated-out item from memory.
+
+Optional, for "this paper vs the other exemplars" distinctiveness:
+`python scripts/quant_check.py keyness --target paper1.pdf --reference paper2.pdf paper3.pdf`
+To verify a section-skew claim ("Results favors *showed*"), split the prose into per-section
+`.txt` files and run `count --per-file` over them.
+
 ## Output (the V section of the Style Card)
 
 ```markdown
 ## V. Vocabulary (characteristic, by section)
-- Reporting: <verbs; note section skew>
-- Hedging: <words>
-- Stance/Transition: <words; note position>
-- Register markers: <handful of signature phrases>
+- Reporting: <verbs with measured freq, e.g. suggest (7), observe (5); note section skew>
+- Hedging: <words with freq>
+- Stance/Transition: <words with freq; note position>
+- Register markers: <handful of signature phrases with freq>
 - Caption verbs: <verbs>
 ```
 

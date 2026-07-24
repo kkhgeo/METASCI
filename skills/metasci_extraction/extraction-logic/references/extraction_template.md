@@ -501,6 +501,38 @@ Unique sentence forms that do not fit categories A–L.
 [Same format]
 ```
 
+### Frame Recurrence Validation (REQUIRED — AntConc-style)
+
+An abstracted template observed once is a *sentence*, not a *template*. Before the catalog
+is final, measure how often each frame actually recurs:
+
+```
+1. For each extracted frame, identify its FIXED LEXICAL ANCHOR — the invariant words that
+   remain after [SLOT] removal (e.g., frame "Despite [X], [Y] remains poorly understood."
+   → anchor "remains poorly understood"; frame "Here, we [ACTION] to [PURPOSE]."
+   → anchor "here we").
+2. Write all anchors to a list file (one per line; use * for inflection: suggest* that).
+3. Count them against the source text(s):
+   python scripts/quant_check.py --strip-refs count --items anchors.txt paper.pdf
+   (for multi-paper analyses, pass all PDFs and read the range column;
+   --strip-refs excludes the reference list from counting)
+4. Add the measured values to the catalog:
+   - Freq  = anchor occurrences in this paper
+   - Status = "Recurrent" (Freq ≥ 2) or "Singleton" (Freq = 1)
+5. Anchors that are pure function-word strings ("here we") can over-match; if a count looks
+   inflated, tighten the anchor with one more content word and re-run.
+```
+
+Singleton frames stay in the catalog (they may still be distinctive moves) but MUST carry
+the `Singleton` status so downstream skills do not treat them as recurring templates.
+
+The catalog table gains two columns:
+
+| # | Frame Type | Abstracted Template | Anchor | Freq | Status | Original Sentence | Source |
+|---|-----------|---------------------|--------|------|--------|-------------------|--------|
+| 1 | C1 Concessive-Gap | "Although [PRIOR_WORK], [GAP]." | although / remain* | 4 | Recurrent | "Although extensive monitoring..." | [P3-S1] |
+| 2 | D1 Here-We | "Here, we [ACTION] to [PURPOSE]." | here we | 1 | Singleton | "Here, we combine..." | [P5-S1] |
+
 ### Additional Output: Frame Distribution Summary
 
 ```markdown
@@ -623,7 +655,9 @@ Verify before saving:
 - [ ] Every item has a `[P#-S#]` source tag
 - [ ] Distribution summary table totals match actual sentence counts
 - [ ] Structure tree paragraph ranges match actuals
+- [ ] Frame Recurrence Validation ran: every frame has Anchor, measured Freq,
+      and Recurrent/Singleton status from quant_check.py
 
 ---
 
-**Template Version**: 1.0.0
+**Template Version**: 1.1.0 (frame recurrence validation added)

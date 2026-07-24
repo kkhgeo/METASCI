@@ -206,18 +206,18 @@ A word or phrase is technical if ANY of the following apply:
 ```markdown
 ## D. Technical Term Glossary
 
-| # | Term | Type | POS | Definition (inferred from context) | Sections | Freq | Source |
-|---|------|------|-----|-----------------------------------|----------|------|--------|
-| 1 | aquifer | Domain | N | Underground geological formation that stores and transmits groundwater | I,M,R,D | 18 | [P1-S2] |
-| 2 | δ¹⁸O | Chemical | N | Ratio of stable oxygen isotopes (¹⁸O/¹⁶O) relative to a standard | I,M,R,D | 31 | [P1-S4] |
-| 3 | ICP-MS | Methodological | N | Inductively coupled plasma mass spectrometry; analytical technique for trace element measurement | M | 6 | [P11-S2] |
-| 4 | dissolved organic carbon | Chemical | NP | Organic carbon fraction that passes through a 0.45 μm filter | M,R | 8 | [P9-S3] |
-| 5 | principal component analysis | Statistical | NP | Multivariate statistical method for dimensionality reduction | M,R | 4 | [P14-S1] |
-| 6 | baseflow | Domain | N | Portion of streamflow derived from groundwater discharge | I,D | 5 | [P1-S5] |
-| 7 | recharge zone | Domain | NP | Area where water infiltrates to replenish an aquifer | I,M,R,D | 9 | [P3-S2] |
-| 8 | ANOVA | Statistical | N | Analysis of variance; statistical test comparing group means | M,R | 3 | [P14-S3] |
-| 9 | Quaternary alluvium | Taxonomic | NP | Geological deposits from the Quaternary period | M | 2 | [P6-S4] |
-| ... | | | | | | | |
+| # | Term | Type | POS | Definition (inferred from context) | Sections | Freq | Top Collocates | Source |
+|---|------|------|-----|-----------------------------------|----------|------|----------------|--------|
+| 1 | aquifer | Domain | N | Underground geological formation that stores and transmits groundwater | I,M,R,D | 18 | shallow, recharge, coastal | [P1-S2] |
+| 2 | δ¹⁸O | Chemical | N | Ratio of stable oxygen isotopes (¹⁸O/¹⁶O) relative to a standard | I,M,R,D | 31 | values, depleted, enriched | [P1-S4] |
+| 3 | ICP-MS | Methodological | N | Inductively coupled plasma mass spectrometry; analytical technique for trace element measurement | M | 6 | — | [P11-S2] |
+| 4 | dissolved organic carbon | Chemical | NP | Organic carbon fraction that passes through a 0.45 μm filter | M,R | 8 | concentrations, elevated | [P9-S3] |
+| 5 | principal component analysis | Statistical | NP | Multivariate statistical method for dimensionality reduction | M,R | 4 | — | [P14-S1] |
+| 6 | baseflow | Domain | N | Portion of streamflow derived from groundwater discharge | I,D | 5 | contribution, dominated | [P1-S5] |
+| 7 | recharge zone | Domain | NP | Area where water infiltrates to replenish an aquifer | I,M,R,D | 9 | upstream, mountain | [P3-S2] |
+| 8 | ANOVA | Statistical | N | Analysis of variance; statistical test comparing group means | M,R | 3 | — | [P14-S3] |
+| 9 | Quaternary alluvium | Taxonomic | NP | Geological deposits from the Quaternary period | M | 2 | — | [P6-S4] |
+| ... | | | | | | | | |
 ```
 
 **POS codes for glossary:**
@@ -281,6 +281,52 @@ Words that appear **only** in one section.
 | Results | 1,200 | 15 | 1.3% |
 | Discussion | 1,400 | 18 | 1.3% |
 ```
+
+---
+
+## PHASE 4.5: Quantitative Verification (REQUIRED)
+
+### Purpose
+
+LLM frequency counts from reading are estimates. Before saving, verify them against
+actual corpus counts with `scripts/quant_check.py` (AntConc-style: Freq + NormFreq + Range).
+
+### Procedure
+
+```bash
+# 1. Write the extracted lemmas/terms to a plain list (one per line).
+#    Use suffix wildcard for lemma families: demonstrat* covers demonstrate/demonstrated/...
+#    Multi-word terms go in as-is: dissolved organic carbon
+
+# 2. Verify counts against the paper's authorial prose (--strip-refs cuts the
+#    reference list; PDF text is dehyphenated automatically):
+python scripts/quant_check.py --strip-refs count --items items.txt paper.pdf
+
+# 3. For the top 10-20 technical terms, compute collocates (window ±4):
+python scripts/quant_check.py --strip-refs collocates --node "aquifer" --window 4 paper.pdf
+```
+
+### How to apply the results
+
+- **Correct the Freq columns** in Phases 2-4 where script counts differ from reading counts.
+  The script count wins for total frequency; keep per-section splits from reading but ensure
+  they sum to the verified total (adjust and note if they cannot be reconciled).
+- **Add NormFreq (per 1k tokens)** to the Summary Statistics (Section F) for the top-30 words
+  so papers of different lengths stay comparable.
+- **Add a `Top Collocates` column** to the Technical Term Glossary (Section D) for key terms:
+  the 3-5 highest log-likelihood collocates, e.g. `aquifer → shallow, recharge, coastal`.
+  This records how the term is actually used in combination, for downstream writing skills.
+
+### Caveats
+
+- **The measurement wins.** When the script count disagrees with the reading count, the
+  script is usually right — verify by grepping the extracted text before overriding it.
+  Testing showed reading impressions inventing occurrences of words that were not in the
+  paper at all.
+- If the paper contains large non-prose blocks (data tables, verbatim boxes), counts for
+  words appearing there are inflated relative to authorial prose — annotate such rows.
+- Symbols and formulas (δ¹⁸O, Ca²⁺) may not survive PDF text extraction — for these,
+  keep the reading count and mark it `(reading count)` in the table.
 
 ### 4d. POS Distribution by Section
 
@@ -376,7 +422,9 @@ Verify before saving:
 - [ ] Cross-section analysis includes frequency matrix, exclusive words, and density
 - [ ] No function words (articles, prepositions, conjunctions, pronouns) in POS tables
 - [ ] Summary statistics totals are consistent with table contents
+- [ ] Phase 4.5 ran: frequencies verified with quant_check.py; NormFreq added for top-30;
+      key technical terms have collocates
 
 ---
 
-**Template Version**: 1.0.0
+**Template Version**: 1.1.0 (Phase 4.5 quantitative verification added)

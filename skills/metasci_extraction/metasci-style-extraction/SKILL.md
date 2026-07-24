@@ -47,9 +47,12 @@ instead — those serve proofreading. This skill serves *style reuse*.
 
 1. **Accept & validate.** Confirm the source list. Check each yields real text; scan → warn/stop.
 2. **Per-paper extraction.** For each paper, run the three lenses and write one Style Card:
-   - V lens → read `references/lens-vocab.md`
+   - V lens → read `references/lens-vocab.md` (includes the REQUIRED evidence gate:
+     candidate items are counted with `scripts/quant_check.py count` and kept only at
+     measured Freq ≥ 2)
    - L lens → read `references/lens-logic.md`
-   - P lens → read `references/lens-profile.md`
+   - P lens → read `references/lens-profile.md` (sentence length / hedging density /
+     passive rate come measured from `scripts/quant_check.py profile`, not estimated)
    - Write `Style_{destination}/cards/<slug>_style.md` (template below).
    - With 3+ papers you may dispatch one subagent per paper (Task) to parallelize; each
      subagent reads the three lens files and returns its card.
@@ -81,9 +84,9 @@ Write to `Style_{destination}/cards/<slug>_style.md`. Slug = ASCII lowercase-hyp
 # Style Card: <Author><Year> · <Journal>
 
 ## V. Vocabulary (characteristic, by section)
-- Reporting: <verbs>
-- Hedging: <words>
-- Stance/Transition: <words>
+- Reporting: <verbs with measured freq, e.g. suggest (7)>
+- Hedging: <words with freq>
+- Stance/Transition: <words with freq>
 - Caption verbs: shows, summarizes, illustrates …
 
 ## L. Frames & Structure
@@ -95,11 +98,11 @@ Write to `Style_{destination}/cards/<slug>_style.md`. Slug = ASCII lowercase-hyp
 ## P. Profile
 | dim | value |
 |-----|-------|
-| voice | active __% |
+| voice | active-dominant (passive __/1k measured) |
 | tense (Intro/Meth/Res/Disc) | … |
-| hedging density | low/med/high |
+| hedging density | low/med/high (__._/1k measured) |
 | citation | integral __% / non-integral __% |
-| sentence length (avg) | __ words |
+| sentence length (avg) | __._ words (measured) |
 | display-item ref | "Fig." / "(Fig. 2)"; caption tense, telegraphic? |
 | does NOT do | <absent patterns> |
 | distinctive moves | <1-3 notable moves> |

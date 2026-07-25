@@ -35,6 +35,9 @@ instead — those serve proofreading. This skill serves *style reuse*.
 ## Inputs
 
 - **Sources:** the reference papers (typically 3-4 style exemplars). PDF, Markdown, or text.
+- **Korean documents (EXPERIMENTAL):** supported — read `references/lens-korean.md`
+  ON TOP OF the three lens files; it redefines what each lens collects for formal
+  Korean. Never mix Korean and English sources in one profile.
 - **Reading:** read each source directly — the Read tool reads PDFs natively. No conversion
   engine. **If a PDF has almost no text layer (a scan), STOP and warn the user** — caption and
   sentence style cannot be read from an image, and fabricating it would corrupt the profile.

@@ -26,7 +26,14 @@ Notes:
   For per-section counts, split the prose into per-section .txt files and pass them
   with `count --per-file`.
 
-Version: 1.1.0 (shared across extraction-vocab / extraction-logic / metasci-style-extraction)
+Korean mode (EXPERIMENTAL): files whose text is predominantly Hangul are detected
+automatically. Tokens are eojeol chunks; sentences split on formal endings (…다. /
+…함. / …음.); `profile` uses a Korean hedging inventory and a 되다/어지다-family
+passive approximation. Hangul items in `count` match with attached particles
+(prefix match: "평가" also counts "평가는", "평가를").
+
+Version: 1.2.0 (shared across extraction-vocab / extraction-logic /
+metasci-style-extraction / meta-styling)
 """
 import argparse
 import math
@@ -38,7 +45,9 @@ from pathlib import Path
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stderr.reconfigure(encoding="utf-8")
 
-TOKEN_RE = re.compile(r"[A-Za-zÀ-ɏ][A-Za-zÀ-ɏ'\-]*")
+TOKEN_RE = re.compile(r"[A-Za-zÀ-ɏ][A-Za-zÀ-ɏ'\-]*|[가-힣][가-힣]*")
+
+HANGUL_RE = re.compile(r"[가-힣]")
 
 # Finite hedging inventory (Hyland-style core; used by `profile`)
 HEDGES = [
@@ -56,7 +65,30 @@ PASSIVE_RE = re.compile(
     re.IGNORECASE,
 )
 
-SENT_SPLIT_RE = re.compile(r"(?<=[.!?])\s+(?=[A-ZÀ-ɏ(])")
+SENT_SPLIT_RE = re.compile(r"(?<=[.!?])\s+(?=[A-ZÀ-ɏ(가-힣])")
+
+# --- Korean (EXPERIMENTAL) -------------------------------------------------
+# Formal-register hedging inventory (institutional/academic Korean)
+HEDGES_KO = [
+    "것으로 보인다", "것으로 보이며", "것으로 판단된다", "것으로 판단되며",
+    "것으로 사료된다", "것으로 예상된다", "것으로 추정된다", "것으로 전망된다",
+    "수 있다", "수 있으며", "수 있을", "수 있는",
+    "가능성", "추정", "예상되", "전망되",
+    "다소", "대체로", "일반적으로", "상대적으로", "비교적",
+    "약 ", "정도", "수준으로 보",
+]
+# Passive/causative-passive approximation: 되다 / 어지다 families
+PASSIVE_KO_RE = re.compile(
+    r"[가-힣]+(된다|되었다|되며|되었으며|되어|되고|됨|어진다|어졌다|어지는|어지고)\b"
+)
+
+
+def is_korean(text: str) -> bool:
+    """Predominantly-Hangul detection: Hangul chars vs Latin letters."""
+    hangul = len(HANGUL_RE.findall(text))
+    latin = len(re.findall(r"[A-Za-z]", text))
+    return hangul > 0 and hangul >= latin * 0.5
+# ---------------------------------------------------------------------------
 
 
 def dehyphenate(text: str) -> str:
@@ -64,9 +96,9 @@ def dehyphenate(text: str) -> str:
     Handles 'sug-\\ngests', 'sug- gests', and pypdf's 'sug - gests' artifacts.
     Only joins lowercase fragments so genuine hyphenated compounds written
     without spaces (large-scale) are untouched."""
-    text = re.sub(r"([a-z])-\s*\n\s*([a-z])", r"\1\2", text)   # sug-\ngests
-    text = re.sub(r"([a-z])- +([a-z])", r"\1\2", text)          # sug- gests
-    text = re.sub(r"([a-z]) +- +([a-z])", r"\1\2", text)        # sug - gests
+    text = re.sub(r"([a-z]) *-[ \t]*\n\s*([a-z])", r"\1\2", text)  # sug-\ngests, sug -\ngests
+    text = re.sub(r"([a-z])- +([a-z])", r"\1\2", text)             # sug- gests
+    text = re.sub(r"([a-z]) +- +([a-z])", r"\1\2", text)           # sug - gests
     return text
 
 
@@ -105,15 +137,21 @@ def tokenize(text: str):
 def item_to_regex(item: str) -> re.Pattern:
     """Build a word-boundary, case-insensitive regex for a word/phrase item.
     Trailing '*' on any word = suffix wildcard. Whitespace in phrases matches
-    any whitespace run (so line-wrapped phrases still match)."""
+    any whitespace run (so line-wrapped phrases still match).
+    Hangul items match with attached particles: leading boundary only
+    ("평가" also matches "평가는" but not "재평가")."""
     words = item.strip().split()
+    korean = bool(HANGUL_RE.search(item))
     parts = []
     for w in words:
         if w.endswith("*"):
-            parts.append(re.escape(w[:-1]) + r"[a-z'\-]*")
+            parts.append(re.escape(w[:-1]) + (r"[가-힣]*" if korean else r"[a-z'\-]*"))
         else:
             parts.append(re.escape(w))
-    pattern = r"\b" + r"\s+".join(parts) + r"\b"
+    if korean:
+        pattern = r"(?<![가-힣])" + r"\s+".join(parts)
+    else:
+        pattern = r"\b" + r"\s+".join(parts) + r"\b"
     return re.compile(pattern, re.IGNORECASE)
 
 
@@ -203,17 +241,24 @@ def cmd_collocates(args):
 
 def cmd_profile(args):
     files = [Path(f) for f in args.files]
-    hedge_rx = [item_to_regex(h) for h in HEDGES]
-    print("file\ttokens\tsentences\tavg_sent_len\thedges_per_1k\tpassive_per_1k")
+    hedge_rx_en = [item_to_regex(h) for h in HEDGES]
+    hedge_rx_ko = [item_to_regex(h) for h in HEDGES_KO]
+    print("file\tlang\ttokens\tsentences\tavg_sent_len\thedges_per_1k\tpassive_per_1k")
     for f in files:
         text = read_text(f)
+        ko = is_korean(text)
         tokens = tokenize(text)
         n_tok = len(tokens) or 1
         sents = [s for s in SENT_SPLIT_RE.split(text) if len(s.split()) > 2]
         n_sent = len(sents) or 1
-        hedge_n = sum(len(rx.findall(text)) for rx in hedge_rx)
-        passive_n = len(PASSIVE_RE.findall(text))
-        print(f"{f.name}\t{n_tok}\t{n_sent}\t{n_tok / n_sent:.1f}"
+        if ko:
+            hedge_n = sum(len(rx.findall(text)) for rx in hedge_rx_ko)
+            passive_n = len(PASSIVE_KO_RE.findall(text))
+        else:
+            hedge_n = sum(len(rx.findall(text)) for rx in hedge_rx_en)
+            passive_n = len(PASSIVE_RE.findall(text))
+        lang = "ko" if ko else "en"
+        print(f"{f.name}\t{lang}\t{n_tok}\t{n_sent}\t{n_tok / n_sent:.1f}"
               f"\t{1000 * hedge_n / n_tok:.1f}\t{1000 * passive_n / n_tok:.1f}")
 
 

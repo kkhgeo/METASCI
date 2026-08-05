@@ -71,7 +71,7 @@ Display:
   - Brief Korean explanation (≤1 sentence in 문제)
   - Evidence source (if any) in 근거
 
-User interaction (a numbered decision prompt options or typed):
+User interaction (AskUserQuestion options or typed):
   - Expect quick decision: "적용" / "다음" / "건너뛰기"
   - No automatic expansion
 ```
@@ -86,7 +86,7 @@ Display:
   - Evidence source with context in 근거
   - 발견자 line notes which reviewers flagged it
 
-User interaction (a numbered decision prompt options or typed):
+User interaction (AskUserQuestion options or typed):
   - "적용" / "수정해서 적용" / "건너뛰기" / "자세히"
 ```
 
@@ -103,7 +103,7 @@ Automatic action:
   - If user agrees → run targeted web search
   - Present search results alongside reviewer suggestions
 
-User interaction (a numbered decision prompt options or typed):
+User interaction (AskUserQuestion options or typed):
   - "검색해봐" / "이대로 괜찮아" / "건너뛰기" / "직접 수정"
 ```
 

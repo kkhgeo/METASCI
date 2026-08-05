@@ -99,7 +99,7 @@ The user can skip steps:
 
 ## Sentence-Level Actions
 
-Decisions are normally offered as a numbered decision prompt options; these typed
+Decisions are normally offered as AskUserQuestion options; these typed
 commands are always honored as well:
 
 | User says | Action |

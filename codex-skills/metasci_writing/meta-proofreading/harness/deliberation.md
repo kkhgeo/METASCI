@@ -70,7 +70,7 @@ Two or more reviewers flagged the same issue, with a shared directive.
 
 발견자 line: `발견자: R1+R3 합의` (or `R1+R2+R4 합의`).
 
-**User action:** a numbered decision prompt options, or typed `"[#] 적용"`.
+**User action:** AskUserQuestion options, or typed `"[#] 적용"`.
 
 #### Category 2: Unique Finding (1 reviewer only, with evidence)
 
@@ -78,7 +78,7 @@ Only one reviewer flagged it, but provides a rationale and directive.
 
 발견자 line: `발견자: R1 단독` (replace with the actual reviewer ID).
 
-**User action:** a numbered decision prompt options, or typed `"[#] 적용"` /
+**User action:** AskUserQuestion options, or typed `"[#] 적용"` /
 `"[#] 무시"`.
 
 #### Category 3: Conflict (reviewers disagree)
@@ -91,7 +91,7 @@ judge resolves that by selecting the optimal candidate.)
 
 발견자 line: `의견 충돌: R1 ↔ R4`.
 
-**User action:** a numbered decision prompt (options: `R1 따름` / `R4 따름` /
+**User action:** AskUserQuestion (options: `R1 따름` / `R4 따름` /
 `직접 입력` / `건너뛰기`).
 
 ---

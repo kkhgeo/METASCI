@@ -56,7 +56,7 @@ Use native Markdown primitives and let the renderer align them.
         the trade-off — what you gain and what you give up. A few
         sentences, not a single clause. Terse one-liners are a defect
         here; the user has told us sparse explanation makes choosing hard.
-   All of this lives in the MESSAGE BODY. a numbered decision prompt is only the
+   All of this lives in the MESSAGE BODY. AskUserQuestion is only the
    decision mechanism: its option labels/descriptions are short pointers
    (`"1번"`, `"원문 유지"`, `"직접 수정"`), NEVER the place the candidate
    text or its reasoning is conveyed.
@@ -65,14 +65,14 @@ Use native Markdown primitives and let the renderer align them.
      **최적안(추천)**: 전문 + 무엇이 바뀌나 + 왜 최적인지 + 트레이드오프 →
      대안 1–2개: 각 전문 + 설명 → 근거(writing-manual / 지식 / 판단) →
      선정 신뢰도.
-     a numbered decision prompt: `"최적안 적용"` / `"대안들 보여줘"` / `"원문 유지"` /
+     AskUserQuestion: `"최적안 적용"` / `"대안들 보여줘"` / `"원문 유지"` /
      `"직접 수정"`.
    - **MEDIUM / LOW → 메뉴 뷰 (자동 펼침).** 이전 문장(맥락) → 원문(전문 +
      번역) → 심사관이 순위 매긴 **전체 후보 목록**: 각 항목마다 점수 +
      ★(최적 표시) + **후보 전문** + 무엇이 바뀌나·트레이드오프 설명 +
      (의미가 바뀌면) 번역, 원문도 한 항목으로 포함 → 왜 신뢰도가 낮은지 +
      심사관 종합 한두 문장.
-     a numbered decision prompt으로 번호 선택: `"N번 적용"` / `"원문 유지"` /
+     AskUserQuestion으로 번호 선택: `"N번 적용"` / `"원문 유지"` /
      `"직접 수정"` (LOW면 `"검색해봐"` 포함).
    Any confidence: `"대안들 보여줘"` / `"후보 전부"` expands the full ranked
    menu; `"추천만"` collapses back to the recommend-first view. When the
@@ -80,12 +80,12 @@ Use native Markdown primitives and let the renderer align them.
    the strongest explored alternative in full for transparency.
 7. **Navigation** — every screen ends with one line listing the next
    actions the user can take.
-8. **Decision points use the a numbered decision prompt tool** (2-4 options;
+8. **Decision points use the AskUserQuestion tool** (2-4 options;
    free-text alternatives remain available via the built-in "Other").
    Use it for: knowledge-distribution approval, intent confirmation,
    per-sentence apply decisions, conflict resolution. Typed commands
    from `config/navigation.md` must still be honored when the user
-   prefers typing. a numbered decision prompt carries the DECISION, not the
+   prefers typing. AskUserQuestion carries the DECISION, not the
    information: never rely on its option labels to convey the text under
    review or the reasoning — those belong in the message body.
 9. **No truncation of anything the user judges from.** Never replace part

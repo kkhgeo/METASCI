@@ -12,10 +12,14 @@ of them is written by a person.
 |---|---|
 | `Agent tool` / `Task tool` | `spawn_agent` |
 | `WebSearch` / `WebFetch` | web search / HTTP fetch |
-| `AskUserQuestion` | a numbered decision prompt |
 | `Claude Code` | Codex CLI |
 | `allowed-tools:` frontmatter | removed (Claude-only key) |
 | no `agents/openai.yaml` | one is generated |
+
+`AskUserQuestion` is **not** substituted. It reads as a proper noun in the source,
+so swapping in a noun phrase breaks the sentences around it. Instead each SKILL.md
+gets a short "Codex runtime notes" block after its frontmatter explaining what to do
+in its place.
 
 ## Real runtime differences
 

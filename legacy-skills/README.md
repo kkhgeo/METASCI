@@ -3,7 +3,9 @@
 Retired skills. Kept for reference, **not loaded by anything** — this folder is
 deliberately absent from `.claude-plugin/plugin.json`, so Claude Code ignores it.
 
-These were the `skills/writing/` pack before the `metasci_*` packs replaced it.
+These were the `skills/writing/` and `skills/research/` packs.
+
+From `writing/` — the `metasci_*` packs replaced it:
 
 | skill | status |
 |---|---|
@@ -14,6 +16,16 @@ These were the `skills/writing/` pack before the `metasci_*` packs replaced it.
 | `meta-rewriting-loop` | no successor — Monte Carlo multi-reference rewriting |
 | `paper-proofreader` | superseded by `skills/metasci_writing/meta-proofreading` |
 | `paper-proofreader_evidence` | superseded by `skills/metasci_writing/meta-proofreading-evidence` |
+
+From `research/`:
+
+| skill | status |
+|---|---|
+| `agentic-research` | retired — autonomous data-driven research loop |
+
+`agentic-research` also has unresolved internal references
+(`references/domain_materials.md`, `references/domain_omics.md`,
+`scripts/validate_claims.py`), so it would not have run end to end as shipped.
 
 The first two share a name with their successors. Anything that flattens packs
 into one directory must prefer the `skills/` copy — that is why this folder sits

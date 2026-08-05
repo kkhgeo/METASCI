@@ -4,7 +4,7 @@ A personal Claude Code skill collection in two domains: **academic research** (p
 
 ## Structure
 
-Skills in use are organized into five packs under `skills/`:
+Skills in use are organized into four packs under `skills/`:
 
 ```
 skills/
@@ -13,14 +13,14 @@ skills/
 │                        meta-rewriting · meta-proofreading · meta-proofreading-codex · meta-proofreading-evidence
 ├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
 │                        metasci-style-extraction · meta-styling
-├── metasci_slide/       meta-slide-content · meta-slide-design
-└── research/            agentic-research
+└── metasci_slide/       meta-slide-content · meta-slide-design
 
 legacy-skills/           superseded — kept for reference, not loaded by the plugin
 ```
 
-`legacy-skills/` holds the earlier `writing/` pack. Where a skill was carried
-forward, the `metasci_*` version is the current one; see `legacy-skills/README.md`.
+`legacy-skills/` holds the earlier `writing/` and `research/` packs. Where a skill
+was carried forward, the `metasci_*` version is the current one; see
+`legacy-skills/README.md`.
 
 The detailed sections below document the academic-research skills; the persona skills are summarized under "Persona skills".
 

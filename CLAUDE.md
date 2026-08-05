@@ -10,7 +10,7 @@ Distributed as a Claude Code plugin named `metasci` (see `.claude-plugin/plugin.
 
 ## Skill Architecture
 
-Skills live under `skills/` in five packs. Each skill is a directory with `SKILL.md` plus optional `references/`, `scripts/`, `templates/`.
+Skills live under `skills/` in four packs. Each skill is a directory with `SKILL.md` plus optional `references/`, `scripts/`, `templates/`.
 
 ```
 skills/
@@ -36,16 +36,14 @@ skills/
 │   ├── extraction-vocab/
 │   ├── metasci-style-extraction/
 │   └── meta-styling/
-├── metasci_slide/       # talk narrative → house-style deck
-│   ├── meta-slide-content/
-│   └── meta-slide-design/
-└── research/            # autonomous data-driven research
-    └── agentic-research/
+└── metasci_slide/       # talk narrative → house-style deck
+    ├── meta-slide-content/
+    └── meta-slide-design/
 
 legacy-skills/           # superseded; NOT in the manifest, never loaded
 ```
 
-The plugin manifest registers the five `skills/` packs in its `skills` array, so each skill loads as `skills/<pack>/<name>/SKILL.md`. `legacy-skills/` is deliberately outside that array — moving a folder there retires it without deleting it.
+The plugin manifest registers the four `skills/` packs in its `skills` array, so each skill loads as `skills/<pack>/<name>/SKILL.md`. `legacy-skills/` is deliberately outside that array — moving a folder there retires it without deleting it.
 
 ## Key Conventions
 

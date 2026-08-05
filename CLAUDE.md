@@ -10,35 +10,42 @@ Distributed as a Claude Code plugin named `metasci` (see `.claude-plugin/plugin.
 
 ## Skill Architecture
 
-Skills live under `skills/` in four category folders. Each skill is a directory with `SKILL.md` plus optional `references/`, `scripts/`, `templates/`.
+Skills live under `skills/` in five packs. Each skill is a directory with `SKILL.md` plus optional `references/`, `scripts/`, `templates/`.
 
 ```
 skills/
-├── persona/        # dialogue / explanation personas
-│   ├── virgil/         # adaptive incremental explanation (segment-by-segment)
-│   ├── beatrice/       # one-shot complete explanation (sister to virgil)
-│   ├── socrates/       # Socratic maieutic dialogue
-│   ├── picasso/        # visual director → image-generation prompts
-│   └── feynman-digest/ # Teach-Back comprehension digest
-├── writing/        # academic writing, style transfer, review & proofreading
+├── persona/             # dialogue / explanation personas
+│   ├── virgil/              # adaptive incremental explanation (segment-by-segment)
+│   ├── beatrice/            # one-shot complete explanation (sister to virgil)
+│   ├── socrates/            # Socratic maieutic dialogue
+│   ├── picasso/             # visual director → image-generation prompts
+│   └── feynman-digest/      # Teach-Back comprehension digest
+├── metasci_writing/     # academic writing, rewriting, multi-reviewer proofreading
 │   ├── meta-writing/
+│   ├── meta-writing-mapping/
+│   ├── meta-writing-blog/
+│   ├── meta-mywriting-korean/
 │   ├── meta-rewriting/
-│   ├── meta-rewriting-antiai/
-│   ├── meta-rewriting-loop/
-│   ├── meta-styling/
-│   ├── meta-review/
-│   ├── paper-proofreader/
-│   ├── paper-proofreader-v2/
-│   └── paper-proofreader_evidence/
-├── extraction/     # PDF → structured analysis layers
+│   ├── meta-proofreading/
+│   ├── meta-proofreading-codex/   # Codex-runtime variant; frontmatter name is
+│   │                              # `meta-proofreading`, so key it by folder
+│   └── meta-proofreading-evidence/
+├── metasci_extraction/  # PDF → structured analysis layers, style transfer
 │   ├── extraction-knowledge/
 │   ├── extraction-logic/
-│   └── extraction-vocab/
-└── research/       # autonomous data-driven research
+│   ├── extraction-vocab/
+│   ├── metasci-style-extraction/
+│   └── meta-styling/
+├── metasci_slide/       # talk narrative → house-style deck
+│   ├── meta-slide-content/
+│   └── meta-slide-design/
+└── research/            # autonomous data-driven research
     └── agentic-research/
+
+legacy-skills/           # superseded; NOT in the manifest, never loaded
 ```
 
-The plugin manifest registers these four category folders in its `skills` array, so each skill loads as `skills/<category>/<name>/SKILL.md`.
+The plugin manifest registers the five `skills/` packs in its `skills` array, so each skill loads as `skills/<pack>/<name>/SKILL.md`. `legacy-skills/` is deliberately outside that array — moving a folder there retires it without deleting it.
 
 ## Key Conventions
 

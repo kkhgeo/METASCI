@@ -4,15 +4,23 @@ A personal Claude Code skill collection in two domains: **academic research** (p
 
 ## Structure
 
-Skills are organized into five categories under `skills/`:
+Skills in use are organized into five packs under `skills/`:
 
 ```
 skills/
-├── persona/      virgil · beatrice · socrates · picasso · feynman-digest
-├── writing/      meta-writing · meta-rewriting · meta-rewriting-antiai · meta-rewriting-loop · meta-styling · meta-review · paper-proofreader · paper-proofreader-v2 · paper-proofreader_evidence
-├── extraction/   extraction-knowledge · extraction-logic · extraction-vocab
-└── research/     agentic-research
+├── persona/             virgil · beatrice · socrates · picasso · feynman-digest
+├── metasci_writing/     meta-writing · meta-writing-mapping · meta-writing-blog · meta-mywriting-korean ·
+│                        meta-rewriting · meta-proofreading · meta-proofreading-codex · meta-proofreading-evidence
+├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
+│                        metasci-style-extraction · meta-styling
+├── metasci_slide/       meta-slide-content · meta-slide-design
+└── research/            agentic-research
+
+legacy-skills/           superseded — kept for reference, not loaded by the plugin
 ```
+
+`legacy-skills/` holds the earlier `writing/` pack. Where a skill was carried
+forward, the `metasci_*` version is the current one; see `legacy-skills/README.md`.
 
 The detailed sections below document the academic-research skills; the persona skills are summarized under "Persona skills".
 

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Writing"
+  short_description: "Multi-source academic paper section writing skill"
+  default_prompt: "Use $meta-writing for this task."

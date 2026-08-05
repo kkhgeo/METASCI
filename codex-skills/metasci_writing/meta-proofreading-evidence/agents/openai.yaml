@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Proofreading Evidence"
+  short_description: "Phrase-attestation checker for academic writing"
+  default_prompt: "Use $meta-proofreading-evidence for this task."

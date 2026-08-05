@@ -1,0 +1,4 @@
+interface:
+  display_name: "Beatrice"
+  short_description: "One-shot complete explanation in Virgil's eloquent prose voice — the whole truth at once, not step-by-step"
+  default_prompt: "Use $beatrice for this task."

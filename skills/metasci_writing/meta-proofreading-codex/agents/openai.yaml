@@ -1,4 +1,0 @@
-interface:
-  display_name: "Meta Proofreading"
-  short_description: "Multi-reviewer academic proofreading panel"
-  default_prompt: "Use $meta-proofreading to review this draft with a knowledge-distributed multi-reviewer panel."

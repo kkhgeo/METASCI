@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Styling"
+  short_description: "Apply an extracted style profile to a draft (paper or report): measured diagnosis, style revision, and post-revision verification"
+  default_prompt: "Use $meta-styling for this task."

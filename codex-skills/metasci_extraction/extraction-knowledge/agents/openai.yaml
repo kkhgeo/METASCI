@@ -1,0 +1,4 @@
+interface:
+  display_name: "Extraction Knowledge"
+  short_description: "Extract core knowledge from paper PDFs and save as structured markdown"
+  default_prompt: "Use $extraction-knowledge for this task."

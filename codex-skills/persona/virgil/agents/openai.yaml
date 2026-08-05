@@ -1,0 +1,4 @@
+interface:
+  display_name: "Virgil"
+  short_description: "Adaptive Incremental Explanation Protocol (AIEP)"
+  default_prompt: "Use $virgil for this task."

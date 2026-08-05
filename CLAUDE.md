@@ -27,8 +27,6 @@ skills/
 │   ├── meta-mywriting-korean/
 │   ├── meta-rewriting/
 │   ├── meta-proofreading/
-│   ├── meta-proofreading-codex/   # Codex-runtime variant; frontmatter name is
-│   │                              # `meta-proofreading`, so key it by folder
 │   └── meta-proofreading-evidence/
 ├── metasci_extraction/  # PDF → structured analysis layers, style transfer
 │   ├── extraction-knowledge/
@@ -40,10 +38,27 @@ skills/
     ├── meta-slide-content/
     └── meta-slide-design/
 
+codex-skills/            # GENERATED Codex build of the four packs — do not hand-edit
+codex-overrides/         # the few places the Codex build must differ beyond vocabulary
 legacy-skills/           # superseded; NOT in the manifest, never loaded
 ```
 
-The plugin manifest registers the four `skills/` packs in its `skills` array, so each skill loads as `skills/<pack>/<name>/SKILL.md`. `legacy-skills/` is deliberately outside that array — moving a folder there retires it without deleting it.
+The plugin manifest registers the four `skills/` packs in its `skills` array, so each skill loads as `skills/<pack>/<name>/SKILL.md`. `legacy-skills/` and `codex-skills/` are deliberately outside that array.
+
+## Codex build
+
+`skills/` is the only hand-written copy. `codex-skills/` is produced from it:
+
+```
+node tools/build-codex-skills.mjs           rebuild
+node tools/build-codex-skills.mjs --check   exit 1 if the committed build is stale
+```
+
+The build translates runtime vocabulary (`Agent tool` → `spawn_agent`, `WebSearch` → web search, `AskUserQuestion` → a numbered decision prompt, `Claude Code` → Codex CLI), drops the Claude-only `allowed-tools` frontmatter key, and generates `agents/openai.yaml` where a skill has none.
+
+This replaced a hand-maintained `meta-proofreading-codex`. Comparing that fork against its source found 18 differing files of which only 2 differed for runtime reasons — the rest had simply gone stale, and the fork was missing `agents/agent_j.md` (the judge) and a whole writing-manual chapter. Generation is what keeps that from recurring.
+
+Anything the vocabulary table cannot express belongs in `codex-overrides/<skill>/<file>.replace.json` as `[{from, to}]`. Each `from` must match exactly once or the build fails, so an override cannot rot silently when the source moves on.
 
 ## Key Conventions
 

@@ -1,0 +1,223 @@
+// skills/ (Claude 정본) → codex-skills/ (Codex 판) 생성기.
+//
+//   node tools/build-codex-skills.mjs           생성
+//   node tools/build-codex-skills.mjs --check   커밋된 결과물이 최신인지만 확인 (CI용)
+//
+// 왜 생성인가 —
+// 손으로 갈라놓은 판(meta-proofreading-codex)을 원본과 대조해보니, 달라진 파일 18개 중
+// 런타임 때문에 달라야 했던 것은 2개뿐이었다. 나머지 16개는 그냥 낡은 것이었고
+// 판정자(agent_j)와 매뉴얼 한 챕터가 통째로 빠져 있었다. 정본을 하나로 두고 기계가
+// 옮기면 그 일이 구조적으로 일어나지 않는다.
+//
+// 런타임에 따라 진짜 달라야 하는 부분은 codex-overrides/ 로 지정한다:
+//   codex-overrides/<skill>/<파일경로>.replace.json  → [{from,to}] 부분 치환 (권장)
+//   codex-overrides/<skill>/<파일경로>               → 파일 통째로 교체
+// .replace.json 의 from 이 더 이상 안 맞으면 **빌드를 실패시킨다**. 정본이 바뀌었는데
+// 오버라이드가 낡은 채로 조용히 남는 것이 드리프트의 시작이기 때문이다.
+
+import fs from 'node:fs'
+import path from 'node:path'
+import { fileURLToPath } from 'node:url'
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
+const SRC = path.join(ROOT, 'skills')
+const OUT = path.join(ROOT, 'codex-skills')
+const OVR = path.join(ROOT, 'codex-overrides')
+const CHECK = process.argv.includes('--check')
+
+// 도구 어휘 번역. 긴 것부터 — 짧은 규칙이 긴 문구를 먼저 깨뜨리면 안 된다.
+const SUBS = [
+  // 리뷰어 팬아웃 지시. Codex 의 대응 도구는 spawn_agent 다(codex exec·mcp-server 양쪽에서 확인).
+  [/one \*\*Agent tool\*\* call per reviewer/g, 'one **`spawn_agent`** call per reviewer'],
+  [/\bRead, Glob, Grep, WebSearch, WebFetch, Agent, AskUserQuestion\b/g,
+   'file reading, shell commands, web search, HTTP fetch, `spawn_agent`'],
+  [/\bAgent tool\b/g, '`spawn_agent`'],
+  [/\bTask tool\b/g, '`spawn_agent`'],
+  [/\bWebSearch tool\b/g, 'web search'],
+  [/\bWebFetch tool\b/g, 'HTTP fetch'],
+  [/\bWebSearch\b/g, 'web search'],
+  [/\bWebFetch\b/g, 'HTTP fetch'],
+  // Codex 에는 구조화된 질문 도구가 없다. 번호 붙인 선택지를 내는 것이 대응물이다.
+  [/\bAskUserQuestion\b/g, 'a numbered decision prompt'],
+  [/\bClaude Code\b/g, 'Codex CLI'],
+]
+
+const walk = (dir, rel = '') => {
+  const out = []
+  for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+    const r = rel ? rel + '/' + e.name : e.name
+    if (e.isDirectory()) out.push(...walk(path.join(dir, e.name), r))
+    else out.push(r)
+  }
+  return out
+}
+
+// frontmatter 에서 allowed-tools 를 뺀다 — Claude Code 전용 키라 Codex 에는 뜻이 없다.
+function stripAllowedTools(text) {
+  const m = /^(---\r?\n)([\s\S]*?)(\r?\n---\r?\n?)/.exec(text)
+  if (!m) return text
+  const body = m[2]
+    .split('\n')
+    .filter((l) => !/^allowed-tools\s*:/i.test(l))
+    .join('\n')
+  return m[1] + body + m[3] + text.slice(m[0].length)
+}
+
+function frontmatterField(text, key) {
+  const m = /^---\r?\n([\s\S]*?)\r?\n---/.exec(text)
+  if (!m) return ''
+  const re = new RegExp(`^${key}\\s*:\\s*(.*)$`, 'im')
+  const hit = re.exec(m[1])
+  if (!hit) return ''
+  let v = hit[1].trim()
+  if (v === '|' || v === '>' || v === '>-' || v === '|-') {
+    // 블록 스칼라 — 들여쓰기된 이어지는 줄을 모은다
+    const lines = m[1].split('\n')
+    const at = lines.findIndex((l) => re.test(l))
+    const rest = []
+    for (const l of lines.slice(at + 1)) {
+      if (/^\s+\S/.test(l)) rest.push(l.trim())
+      else break
+    }
+    v = rest.join(' ')
+  }
+  return v.replace(/^["']|["']$/g, '')
+}
+
+const titleCase = (n) =>
+  n.replace(/[-_]+/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())
+
+// Codex 가 스킬을 목록에 띄울 때 쓰는 명세. 이미 있으면 손대지 않는다.
+function makeOpenAiYaml(name, text) {
+  const desc = frontmatterField(text, 'description')
+  const first = (desc.split(/(?<=\.)\s|\. /)[0] || desc).trim().replace(/"/g, "'").slice(0, 160)
+  return (
+    'interface:\n' +
+    `  display_name: "${titleCase(name)}"\n` +
+    `  short_description: "${first || titleCase(name)}"\n` +
+    `  default_prompt: "Use $${name} for this task."\n`
+  )
+}
+
+function applyOverrides(skill, rel, text) {
+  const patch = path.join(OVR, skill, rel + '.replace.json')
+  if (fs.existsSync(patch)) {
+    const rules = JSON.parse(fs.readFileSync(patch, 'utf8'))
+    for (const { from, to } of rules) {
+      const n = text.split(from).length - 1
+      if (n !== 1) {
+        throw new Error(
+          `오버라이드가 정본과 어긋납니다: codex-overrides/${skill}/${rel}.replace.json\n` +
+            `  찾는 문구가 ${n}번 나옵니다 (1번이어야 함): ${JSON.stringify(from.slice(0, 60))}…\n` +
+            `  정본이 바뀌었으면 오버라이드도 고치세요.`
+        )
+      }
+      text = text.replace(from, to)
+    }
+  }
+  const whole = path.join(OVR, skill, rel)
+  if (fs.existsSync(whole) && fs.statSync(whole).isFile()) return fs.readFileSync(whole, 'utf8')
+  return text
+}
+
+const TEXT = /\.(md|ya?ml|json|txt|py)$/i
+
+const generated = new Map() // 상대경로(codex-skills 기준) -> 내용(Buffer)
+
+// 오버라이드가 어긋났을 때 스택 트레이스 대신 무엇을 고쳐야 하는지만 보여준다.
+process.on('uncaughtException', (e) => {
+  console.error('\n' + e.message)
+  process.exit(1)
+})
+
+for (const pack of fs.readdirSync(SRC).sort()) {
+  const packDir = path.join(SRC, pack)
+  if (!fs.statSync(packDir).isDirectory()) continue
+  for (const skill of fs.readdirSync(packDir).sort()) {
+    const skillDir = path.join(packDir, skill)
+    if (!fs.statSync(skillDir).isDirectory()) continue
+    if (!fs.existsSync(path.join(skillDir, 'SKILL.md'))) continue
+
+    let sawOpenAi = false
+    for (const rel of walk(skillDir)) {
+      const abs = path.join(skillDir, rel)
+      const dest = `${pack}/${skill}/${rel}`
+      if (rel === 'agents/openai.yaml') sawOpenAi = true
+      if (!TEXT.test(rel)) {
+        generated.set(dest, fs.readFileSync(abs)) // 이미지·폰트 등은 그대로
+        continue
+      }
+      let text = fs.readFileSync(abs, 'utf8')
+      for (const [re, to] of SUBS) text = text.replace(re, to)
+      if (rel === 'SKILL.md') text = stripAllowedTools(text)
+      text = applyOverrides(skill, rel, text)
+      generated.set(dest, Buffer.from(text, 'utf8'))
+    }
+    if (!sawOpenAi) {
+      const skillMd = fs.readFileSync(path.join(skillDir, 'SKILL.md'), 'utf8')
+      const yaml = applyOverrides(skill, 'agents/openai.yaml', makeOpenAiYaml(skill, skillMd))
+      generated.set(`${pack}/${skill}/agents/openai.yaml`, Buffer.from(yaml, 'utf8'))
+    }
+  }
+}
+
+const README =
+  `# codex-skills\n\n` +
+  `**Generated — do not edit by hand.** Every file here comes from \`skills/\` via\n` +
+  `\`node tools/build-codex-skills.mjs\`. Edit the skill in \`skills/\`, then rebuild.\n\n` +
+  `Claude Code reads \`skills/\`; Codex reads this. They stay in step because only one\n` +
+  `of them is written by a person.\n\n` +
+  `## What the build changes\n\n` +
+  `| in \`skills/\` | here |\n|---|---|\n` +
+  `| \`Agent tool\` / \`Task tool\` | \`spawn_agent\` |\n` +
+  `| \`WebSearch\` / \`WebFetch\` | web search / HTTP fetch |\n` +
+  `| \`AskUserQuestion\` | a numbered decision prompt |\n` +
+  `| \`Claude Code\` | Codex CLI |\n` +
+  `| \`allowed-tools:\` frontmatter | removed (Claude-only key) |\n` +
+  `| no \`agents/openai.yaml\` | one is generated |\n\n` +
+  `## Real runtime differences\n\n` +
+  `Anything the table above cannot express goes in \`codex-overrides/<skill>/\`:\n\n` +
+  `- \`<file>.replace.json\` — \`[{"from": "...", "to": "..."}]\`, applied to that file.\n` +
+  `  Each \`from\` must match **exactly once** or the build fails, so an override\n` +
+  `  cannot rot silently when the source changes.\n` +
+  `- \`<file>\` — replaces the file outright. Use sparingly; a whole-file override is\n` +
+  `  a fork by another name.\n`
+
+generated.set('README.md', Buffer.from(README, 'utf8'))
+
+// ── 쓰기 또는 검사 ────────────────────────────────────────────────
+const existing = fs.existsSync(OUT) ? new Set(walk(OUT)) : new Set()
+let changed = 0
+const stale = []
+
+for (const [rel, buf] of generated) {
+  const dest = path.join(OUT, rel)
+  const same = fs.existsSync(dest) && fs.readFileSync(dest).equals(buf)
+  if (!same) {
+    changed++
+    if (!CHECK) {
+      fs.mkdirSync(path.dirname(dest), { recursive: true })
+      fs.writeFileSync(dest, buf)
+    } else stale.push(rel)
+  }
+  existing.delete(rel)
+}
+for (const orphan of existing) {
+  changed++
+  if (!CHECK) fs.rmSync(path.join(OUT, orphan))
+  else stale.push(`${orphan} (정본에 없음)`)
+}
+
+const skills = new Set([...generated.keys()].filter((k) => k.includes('/')).map((k) => k.split('/').slice(0, 2).join('/')))
+if (CHECK) {
+  if (changed) {
+    console.error(`codex-skills/ 가 낡았습니다 — ${changed}개 파일:`)
+    stale.slice(0, 20).forEach((s) => console.error('  ' + s))
+    if (stale.length > 20) console.error(`  … 외 ${stale.length - 20}개`)
+    console.error('node tools/build-codex-skills.mjs 를 돌리고 커밋하세요.')
+    process.exit(1)
+  }
+  console.log(`최신 — 스킬 ${skills.size}개 / 파일 ${generated.size}개`)
+} else {
+  console.log(`생성 완료 — 스킬 ${skills.size}개 / 파일 ${generated.size}개 (변경 ${changed}개)`)
+}

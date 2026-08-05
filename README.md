@@ -15,8 +15,20 @@ skills/
 │                        metasci-style-extraction · meta-styling
 └── metasci_slide/       meta-slide-content · meta-slide-design
 
+codex-skills/            generated Codex build of the four packs above
 legacy-skills/           superseded — kept for reference, not loaded by the plugin
 ```
+
+`skills/` is the source Claude Code reads. `codex-skills/` is the same skills
+rewritten for the Codex runtime — **generated, never hand-edited**:
+
+```
+node tools/build-codex-skills.mjs           rebuild
+node tools/build-codex-skills.mjs --check   fail if the build output is stale
+```
+
+Edit a skill in `skills/`, rebuild, commit both. Runtime differences the build
+cannot express go in `codex-overrides/` (see `codex-skills/README.md`).
 
 `legacy-skills/` holds the earlier `writing/` and `research/` packs. Where a skill
 was carried forward, the `metasci_*` version is the current one; see

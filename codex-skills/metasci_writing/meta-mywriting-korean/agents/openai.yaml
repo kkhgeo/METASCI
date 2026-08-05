@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Mywriting Korean"
+  short_description: "사용자의 한국어 초고(또는 AI 생성 초고)를 사전 구축된 개인 스타일 Blueprint에 맞춰 리라이팅하는 스킬"
+  default_prompt: "Use $meta-mywriting-korean for this task."

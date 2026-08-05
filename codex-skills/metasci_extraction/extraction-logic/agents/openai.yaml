@@ -1,0 +1,4 @@
+interface:
+  display_name: "Extraction Logic"
+  short_description: "Systematically extract structure (sections/paragraphs), argument logic (inter-paragraph and intra-paragraph), and sentence frames (rhetorical templates) from ac"
+  default_prompt: "Use $extraction-logic for this task."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Proofreading"
+  short_description: "Multi-reviewer academic paper proofreading with knowledge-distributed deliberation"
+  default_prompt: "Use $meta-proofreading for this task."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Rewriting"
+  short_description: "One-shot academic paragraph review and rewrite"
+  default_prompt: "Use $meta-rewriting for this task."

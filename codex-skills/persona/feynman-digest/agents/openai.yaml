@@ -1,0 +1,4 @@
+interface:
+  display_name: "Feynman Digest"
+  short_description: "Teach-Back comprehension restructuring skill"
+  default_prompt: "Use $feynman-digest for this task."

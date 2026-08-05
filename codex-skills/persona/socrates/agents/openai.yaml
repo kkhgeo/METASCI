@@ -1,0 +1,4 @@
+interface:
+  display_name: "Socrates"
+  short_description: "Socratic dialogue through maieutics"
+  default_prompt: "Use $socrates for this task."

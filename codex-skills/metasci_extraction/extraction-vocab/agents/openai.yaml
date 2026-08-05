@@ -1,0 +1,4 @@
+interface:
+  display_name: "Extraction Vocab"
+  short_description: "Exhaustively extract ALL content words from academic paper PDFs, organized by section and part of speech"
+  default_prompt: "Use $extraction-vocab for this task."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Picasso"
+  short_description: "Visual director skill that translates concepts into original visual language and produces tool-agnostic image generation prompts"
+  default_prompt: "Use $picasso for this task."

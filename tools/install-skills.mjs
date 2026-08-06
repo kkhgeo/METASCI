@@ -1,7 +1,10 @@
 // 이 저장소의 스킬을 이 컴퓨터의 전역 스킬 폴더에 건다.
 //
-//   node tools/install-skills.mjs           무엇을 할지 보여주기만 한다 (기본)
-//   node tools/install-skills.mjs --apply   실제로 건다
+//   node tools/install-skills.mjs             무엇을 할지 보여주기만 한다 (기본)
+//   node tools/install-skills.mjs --apply     실제로 건다
+//   node tools/install-skills.mjs --apply --replace
+//                                             자리를 막고 있는 실물 폴더를 백업하고 링크로 바꾼다
+//                                             (이 저장소에 같은 이름이 있는 것만. 나머지는 건드리지 않는다)
 //
 // 정본은 GitHub 이고 이 clone 이 그 사본이다. 전역 폴더에는 **심볼릭 링크**만 만든다.
 // 그래서 갱신은 `git pull` 한 번이면 끝난다 — 다시 설치할 필요가 없다.
@@ -25,6 +28,9 @@ import { fileURLToPath } from 'node:url'
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const APPLY = process.argv.includes('--apply')
+const REPLACE = process.argv.includes('--replace')
+// 백업은 홈 아래, 스킬 폴더 **밖**에 둔다 — 안에 두면 백업본이 스킬로 딸려 들어간다.
+const BACKUP = path.join(os.homedir(), '.metasci', 'replaced-skills')
 
 const TARGETS = [
   { name: 'Claude Code', src: path.join(REPO, 'skills'), dir: path.join(os.homedir(), '.claude', 'skills') },
@@ -104,6 +110,8 @@ console.log(APPLY ? '모드: 실제 설치\n' : '모드: 미리보기 — 실제
 
 let created = 0
 const blocked = []
+const replaced = []
+const stamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19)
 
 for (const t of TARGETS) {
   const skills = collect(t.src)
@@ -137,9 +145,20 @@ for (const t of TARGETS) {
     }
 
     if (cur.kind === 'dir' || cur.kind === 'file') {
-      // 실물이 있다 — 지우지 않는다. 정본과 같은지만 알려준다.
       const identical = cur.kind === 'dir' && sameTree(snap(link), snap(srcDir))
-      blocked.push({ target: t.name, name, identical, link })
+      if (!(APPLY && REPLACE)) {
+        // 기본은 손대지 않는다. 이 폴더에는 이 저장소와 무관한 스킬이 훨씬 많다.
+        blocked.push({ target: t.name, name, identical, link })
+        continue
+      }
+      // --replace: 통째로 백업한 뒤 링크로 바꾼다. 지우기 전에 반드시 사본을 남긴다.
+      const keep = path.join(BACKUP, stamp, t.name.replace(/\s+/g, '-'), name)
+      fs.mkdirSync(path.dirname(keep), { recursive: true })
+      fs.cpSync(link, keep, { recursive: true })
+      fs.rmSync(link, { recursive: true, force: true })
+      fs.symlinkSync(srcDir, link, 'dir')
+      replaced.push({ target: t.name, name, identical })
+      created++
       continue
     }
 
@@ -157,11 +176,23 @@ for (const t of TARGETS) {
     }
   }
 
+  const mine = replaced.filter((r) => r.target === t.name).length
   const bits = []
   if (made) bits.push(`${APPLY ? '새로 연결' : '연결 예정'} ${made}`)
   if (repointed) bits.push(`${APPLY ? '다시 연결' : '다시 연결 예정'} ${repointed}`)
+  if (mine) bits.push(`실물 교체 ${mine}`)
   if (already) bits.push(`이미 맞음 ${already}`)
   console.log(`   ${bits.join(' · ') || '할 일 없음'}\n`)
+}
+
+if (replaced.length) {
+  const changed = replaced.filter((r) => !r.identical)
+  console.log(`실물 폴더 ${replaced.length}개를 링크로 바꿨습니다. 사본: ${path.join(BACKUP, stamp)}`)
+  if (changed.length) {
+    console.log(`   그중 ${changed.length}개는 내용이 정본과 달랐습니다 — 사라진 것이 아쉬우면 위 사본에서 꺼내세요:`)
+    for (const r of changed) console.log(`      ${r.target}: ${r.name}`)
+  }
+  console.log()
 }
 
 if (blocked.length) {

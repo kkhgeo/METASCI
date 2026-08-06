@@ -3,7 +3,7 @@ name: meta-rewriting
 description: >
   One-shot academic paragraph review and rewrite. Use when the user gives
   a paragraph and wants it rewritten ("이 단락 다시 써줘"), or wants its
-  logic and clarity checked ("이 단락 논리 봐줘").
+  logic and clarity checked ("이 단락 논리 봐줘").
 ---
 
 # Meta-Rewriting — One-Shot Paragraph Review & Rewrite

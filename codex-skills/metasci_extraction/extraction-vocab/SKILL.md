@@ -6,7 +6,7 @@ description: |
   are separately identified and classified.
   Triggers: "단어 추출", "어휘 추출", "용어 추출", "품사별 추출",
   "vocabulary extraction", "term extraction".
-  **MUST read references/extraction_template.md before starting!**
+  **MUST read references/extraction_template.md before starting!**
 ---
 
 > **REQUIRED**: Before executing this skill, ALWAYS read `references/extraction_template.md` first and follow it precisely.

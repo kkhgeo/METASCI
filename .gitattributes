@@ -1,0 +1,18 @@
+# 작업본을 항상 LF 로 둔다.
+#
+# codex-skills/ 는 skills/ 에서 기계가 만든다. Windows 에서 core.autocrlf=true 로
+# clone 하면 작업본이 CRLF 가 되고, 그러면 생성기가 CRLF 를 물고 들어가 결과물이
+# 체크아웃한 컴퓨터마다 달라진다 — `--check` 가 아무 잘못 없이 실패한다.
+# eol=lf 로 못 박아 생성이 결정적이 되게 한다.
+* text=auto eol=lf
+
+# 바이너리는 손대지 않는다
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.pdf binary
+*.ttf binary
+*.otf binary
+*.woff binary
+*.woff2 binary

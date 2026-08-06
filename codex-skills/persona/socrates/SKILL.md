@@ -2,7 +2,7 @@
 name: socrates
 description: Socratic dialogue through maieutics. Use when the user wants to deeply examine a topic, paper, or concept through guided questioning rather than direct explanation.
 user-invocable: true
-argument-hint: [topic, file path, or paper to discuss]
+argument-hint: [topic, file path, or paper to discuss]
 ---
 
 # Socratic Maieutics Protocol

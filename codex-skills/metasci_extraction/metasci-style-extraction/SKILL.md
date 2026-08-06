@@ -10,7 +10,7 @@ description: |
   Use this whenever the user wants to "extract style", "스타일 추출", "문체 추출",
   "이 논문들 스타일 뽑아줘", capture a journal's writing conventions from example papers, or
   build a style reference for later rewriting. This is the LEAN styling-focused extractor —
-  distinct from extraction-vocab / extraction-logic (which are exhaustive, for proofreading).
+  distinct from extraction-vocab / extraction-logic (which are exhaustive, for proofreading).
 ---
 
 # META-SCI · Style Extraction

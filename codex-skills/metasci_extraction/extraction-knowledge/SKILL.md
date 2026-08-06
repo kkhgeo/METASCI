@@ -5,7 +5,7 @@ description: |
   Classify into 5 epistemological categories (Theory, Empirical, Methodology, Context, Critique).
   Supports parallel processing via Subagent. Automatically invoked on requests like
   "논문 분석", "지식 추출", "Knowledge 저장".
-  **Must follow the format in references/extraction_template.md!**
+  **Must follow the format in references/extraction_template.md!**
 ---
 
 > **Warning — Mandatory**: Before executing this skill, you MUST read `references/extraction_template.md` and strictly follow its format (Phase 1~5).

@@ -7,7 +7,7 @@ description: |
   트리거: "내 스타일로 써줘", "내 톤으로 바꿔줘", "내 문체로 고쳐줘",
   "AI 톤 빼줘", "한국어 리라이팅", "내 글투로 맞춰줘",
   "rewrite in my style", "apply my Korean tone".
-  **반드시 references/ 파일을 Phase별로 읽을 것!**
+  **반드시 references/ 파일을 Phase별로 읽을 것!**
 ---
 
 > **REQUIRED**: 각 Phase 시작 전 해당 reference 파일을 반드시 읽는다.

@@ -8,7 +8,7 @@ description: |
   "apply style profile", draft + style profile given.
   NOT for style extraction ("스타일 추출" → metasci-style-extraction) and NOT for
   argument-logic review ("논리 검토" → meta-review).
-  **Always read references/revision_guide.md first!**
+  **Always read references/revision_guide.md first!**
 ---
 
 > **Prerequisite**: Read `references/revision_guide.md` before revising anything.

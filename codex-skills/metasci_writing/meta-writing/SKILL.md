@@ -7,7 +7,7 @@ description: |
   Uses a 5-Loop process: source exploration -> data analysis -> gap filling -> writing -> verification,
   with bilingual (English + Korean) output and APA 7 citations.
   Trigger phrases: "글쓰기", "섹션 작성", "선행연구 정리", "Results 써줘", "Discussion 작성",
-  "이 그림 기반으로 써줘", "Knowledge 기반으로 글써줘", "Figure 해석해줘" — activate this skill upon these requests.
+  "이 그림 기반으로 써줘", "Knowledge 기반으로 글써줘", "Figure 해석해줘" — activate this skill upon these requests.
 ---
 
 # Meta Writing Skill

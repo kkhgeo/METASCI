@@ -11,8 +11,11 @@
 //
 //   skills/<팩>/<스킬>        →  ~/.claude/skills/<스킬>     (Claude Code)
 //   codex-skills/<팩>/<스킬>  →  ~/.codex/skills/<스킬>      (Codex CLI)
+//   hermes-skills/            →  hermes config skills.external_dirs
 //
-// 두 세트는 같은 이름을 쓰지만 폴더가 달라서 부딪히지 않는다. 각 런타임은 자기 판만 본다.
+// 세 세트는 같은 이름을 쓰지만 각 런타임이 보는 곳이 달라서 부딪히지 않는다.
+// Hermes 만 링크가 아니라 설정 한 줄이다 — 외부 디렉터리를 직접 읽고, 팩 구조도
+// 그대로 이해해서 팩 이름을 카테고리로 보여준다.
 //
 // ⚠️ 정션(mklink /J)이 아니라 디렉터리 심볼릭 링크여야 한다. Windows 에서는 개발자 모드
 //    또는 관리자 권한이 필요하다.
@@ -25,6 +28,7 @@ import os from 'node:os'
 import path from 'node:path'
 import crypto from 'node:crypto'
 import { fileURLToPath } from 'node:url'
+import { execFileSync } from 'node:child_process'
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const APPLY = process.argv.includes('--apply')
@@ -208,6 +212,35 @@ if (blocked.length) {
     for (const b of diff) console.log(`      ${b.target}: ${b.name}   ${b.link}`)
   }
   console.log()
+}
+
+// ── Hermes ────────────────────────────────────────────────────────
+// 링크가 아니라 설정이다. hermes 는 external_dirs 를 직접 훑고 팩 구조도 이해한다.
+const HERMES_DIR = path.join(REPO, 'hermes-skills')
+const hermesGet = () => {
+  try {
+    return execFileSync('hermes', ['config', 'get', 'skills.external_dirs'], {
+      encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'], shell: true,
+    }).trim()
+  } catch {
+    return null
+  }
+}
+const cur = hermesGet()
+if (cur === null) {
+  console.log(`[Hermes] hermes 를 찾지 못했습니다. 설치 후 아래를 직접 실행하세요:`)
+  console.log(`   hermes config set skills.external_dirs "${HERMES_DIR}"\n`)
+} else if (path.resolve(cur) === path.resolve(HERMES_DIR)) {
+  console.log(`[Hermes] skills.external_dirs   이미 맞음\n`)
+} else if (!APPLY) {
+  console.log(`[Hermes] skills.external_dirs   ${cur || '(없음)'} → ${HERMES_DIR}\n`)
+} else {
+  try {
+    execFileSync('hermes', ['config', 'set', 'skills.external_dirs', HERMES_DIR], { stdio: 'pipe', shell: true })
+    console.log(`[Hermes] skills.external_dirs → ${HERMES_DIR}\n`)
+  } catch (e) {
+    console.log(`[Hermes] 설정 실패: ${e.message}\n`)
+  }
 }
 
 console.log(APPLY ? `완료 — 링크 ${created}개 생성` : '미리보기 끝 — 실제로 하려면 --apply')

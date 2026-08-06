@@ -16,19 +16,39 @@ skills/
 └── metasci_slide/       meta-slide-content · meta-slide-design
 
 codex-skills/            generated Codex build of the four packs above
+hermes-skills/           generated Hermes build of the same
 legacy-skills/           superseded — kept for reference, not loaded by the plugin
 ```
 
-`skills/` is the source Claude Code reads. `codex-skills/` is the same skills
-rewritten for the Codex runtime — **generated, never hand-edited**:
+`skills/` is the only hand-written copy — the source Claude Code reads. The other
+two are the same skills rewritten for another runtime, **generated, never
+hand-edited**:
 
 ```
-node tools/build-codex-skills.mjs           rebuild
-node tools/build-codex-skills.mjs --check   fail if the build output is stale
+node tools/build-agent-skills.mjs           rebuild both
+node tools/build-agent-skills.mjs --check   fail if the build output is stale
 ```
 
-Edit a skill in `skills/`, rebuild, commit both. Runtime differences the build
-cannot express go in `codex-overrides/` (see `codex-skills/README.md`).
+Edit a skill in `skills/`, rebuild, commit all three. Runtime differences the
+build cannot express go in `agent-overrides/<profile>/`.
+
+## Installing on a machine
+
+```
+git clone https://github.com/kkhgeo/METASCI ~/.metasci/METASCI
+node ~/.metasci/METASCI/tools/install-skills.mjs --apply
+```
+
+Each runtime is pointed at its own build:
+
+| runtime | gets | how |
+|---|---|---|
+| Claude Code | `skills/` | symlinks in `~/.claude/skills/` |
+| Codex | `codex-skills/` | symlinks in `~/.codex/skills/` |
+| Hermes | `hermes-skills/` | `skills.external_dirs` config |
+
+They are symlinks, so `git pull` is the whole update path. Add `--replace` if
+real directories are shadowing the links (it backs them up first).
 
 `legacy-skills/` holds the earlier `writing/` and `research/` packs. Where a skill
 was carried forward, the `metasci_*` version is the current one; see

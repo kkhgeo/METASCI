@@ -6,7 +6,6 @@ description: |
   from academic paper PDFs. Saves results as structured markdown.
   Triggers: "논리 분석", "구조 분석", "문장 형식 추출", "논문 구조 파악",
   "logic analysis", "structure analysis", "sentence frame extraction".
-  **MUST read references/extraction_template.md before starting!**
 ---
 
 > **REQUIRED**: Before executing this skill, ALWAYS read `references/extraction_template.md` first and follow it precisely.

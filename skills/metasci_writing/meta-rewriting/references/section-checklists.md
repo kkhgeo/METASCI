@@ -9,6 +9,16 @@
 - 체크 항목 위반은 ③ 진단표에 포함한다. 구조 위반의 기본 심각도: 섹션 필수 요소 누락 = 高, 요소 순서·배치 문제 = 中, 관례 이탈 = 低.
 - principles.md의 일반 원칙(정보구조·지시어·hedging)이 항상 우선하며, 이 파일은 섹션 특이적 추가 기준만 제공한다.
 
+> **2026-08-10 개정 근거 — 역할 분리와 회수분 반영.** 이 파일은 **진단** 창구다: 초고에 무엇이 결손·이탈했는가를 이진으로 판정한다. 같은 코퍼스의 **근거** 창구는 `../meta-writing/references/claude_writing_manual/`이며, 원리마다 verbatim 영문 인용·지지 소스·검증 상태를 갖고 있다. 이 파일은 근거를 `[1차: Ecarnot 2015]`처럼 압축해 두므로, **논문에 인용할 문장이 필요하면 매뉴얼을 읽는다.** 내용이 충돌하면 `principles.md` > 이 파일 > 매뉴얼 순으로 우선하되, **출처·인용의 정확성은 언제나 매뉴얼이 권위**다.
+>
+> 이번 개정은 `by-source/`(원리 1,168개) 재채굴에서 나온 항목 중 **진단 가능한 것만** 이식했다. 기존 100항목은 하나도 변경·삭제하지 않았고 추가만 했다. 이식 항목에는 `[회수 2026-08-10 · <매뉴얼 ID>]`를 달아 추적·철회가 가능하다. 재채굴분의 약 절반은 이 파일에 **이미 있었다**(초록 자기완결성, 표본→모집단 범위 이동, 외교적 비판, 그래프 서술 등) — 은행보다 이 파일의 판단이 나았다는 뜻이므로 중복 이식하지 않았다.
+>
+> 재채굴은 기록되지 않았던 **상충 2건**도 드러냈다: 제목 길이(7–10 vs 10–15단어)와 초록의 태(수동태 회피 vs 수동태 권장). 둘 다 해당 섹션에 ⚠로 표시하고 `claude_writing_manual/DECISIONS.md` §D4·§D5로 넘겼다. 어느 쪽도 기본값으로 적용하지 않는다.
+>
+> **2026-08-10 모순 감사.** 이 설치본에는 진단 자산이 둘이다 — 이 파일(단락 1개 고속 진단)과 `meta-proofreading/writing-manual/`(15파일, 패널 심사, Swales·Yang & Allison·Hyland 기반). 겹치는 대상은 **단락 하나**뿐이고 차이는 범위가 아니라 비용이다. 태·헤징·명사화·시제·주제문 축에서 대조한 결과 **모순 0** — 양쪽 다 Gopen & Swan / Williams & Bizup에 뿌리를 두어 독립적으로 수렴한다. 섹션 규범·장르 판단은 저쪽이 우선하고, 고속 이진 진단은 이 파일이 맡는다. **어느 쪽도 다른 쪽에 맞추려고 고치지 않는다.** 전체 기록: `claude_writing_manual/DIAGNOSTIC-MAP.md`
+>
+> 감사 결과 상충 5건 중 **2건이 해결됐다**: 1인칭(결정·해석·논증에는 쓴다)과 단정 vs 헤징(중간 강도)은 코퍼스 밖 근거가 더 나아 저쪽 입장을 따른다 — 사용자에게 선택지로 내지 않는다. 남은 미해결은 초록 길이·제목 길이·초록의 태 **3건**이며, 셋 다 투고처가 정하는 문제다.
+
 > **2026-07-23 개정 근거.** `Writing_Principles_Extraction` 원리 은행(27개 소스, 대표 원리 185개)과 대조해 회수분을 반영했다. 은행은 모든 소스를 동등 취급하고 **수렴 수**로 신뢰를 표현하지만, 이 파일은 **권위 등급제**를 유지한다 — 추가된 항목이 전부 출판 문헌 지지를 갖고 있어 무손실로 번역되었고, 트윗만 지지하는 항목은 0건이었다. 수렴 수는 본문에 넣지 않는다: 이 파일 안에서는 수렴이 높을수록 이미 반영되어 있어 진단 가치와 역상관이기 때문이다(수렴 최상위 "저널 지침 준수"는 단락 진단 가치 0, 이번 최대 수확인 Methods 통계 블록은 수렴 1).
 
 ---
@@ -22,7 +32,12 @@
 - [ ] **검색용 키워드가 제목에 포함**되어 있는가 — 색인·검색엔진 회수 목적
 - [ ] 길이 최적화 — 긴 제목은 산만("boring and unfocused"), 극단적으로 짧으면 내용 대표성 상실; 저널 규정 준수
 - [ ] 내용과의 정합 — 본문이 입증하지 않는 범위를 제목이 약속하지 않는가 (misleading = 高)
-- 참고: 제목 유형은 descriptive / declarative / interrogative 3종 — 유형 자체는 선택이나 분야 관례 확인
+- [ ] **빈 상투구 제거** — "Study of…", "An investigation of…", "The analysis of…", "Effect of…", "novel", "performance evaluation", "architecture". 거의 모든 논문에 해당해 정보량이 0이고 검색어도 되지 못한다. 효과가 있다면 그 효과가 무엇인지 명시하라 (中) [1차: Schulzrinne; Hengl & Gould 2002; Tullu 2019; Ecarnot 2015 — "If there are effects, state what they are!"] [회수 2026-08-10 · `remined-title-3`]
+- [ ] **기발·재치형 제목 회피** — 바쁜 독자에게 간과·오독되고 덜 진지하게 받아들여지며 인용도 적다 (中) [1차: Tullu 2019] [회수 · `remined-title-6`]
+- [ ] **기간·표본수·장소는 과학적 가치를 더할 때만** — 장소는 인구 특성·사회경제 조건·문화 관행이 결과에 영향을 줄 때에 한한다 (低) [1차: Tullu 2019] [회수 · `remined-title-7`]
+- [ ] **부제 절제**, 그리고 **러닝헤드 40–50자** 제공 여부 (低) [1차: Ecarnot 2015 — "Subtitles should be used sparingly"; Tullu 2019] [회수 · `remined-title-8`, `remined-title-10`]
+- 참고: 제목 유형은 descriptive / declarative / interrogative 3종 — 유형 자체는 선택이나 분야 관례 확인. 단 Tullu 2019는 연구논문에 한해 **declarative(결과 단언)와 interrogative(질문형) 회피**를 권한다 — 전자는 독자의 호기심을 소진시키고 저자 편향을 시사하며, 후자는 다운로드는 늘지만 인용은 준다 (리뷰 논문에는 질문형 허용). [회수 · `remined-title-1`]
+- ⚠ **제목 길이는 미해결 상충** — Hengl & Gould 7–10단어 vs Tullu 10–15단어. 저널 규정이 있으면 그것이 결정하고, 없으면 사용자에게 묻는다. `claude_writing_manual/DECISIONS.md` §D4
 
 ## Literature Review / 문헌고찰
 
@@ -34,6 +49,9 @@
 - [ ] **자기 연구의 객관적 취급** — 저자 자신의 선행연구를 과대 비중 없이 다루는가 (Rule 9)
 - [ ] **최신성과 고전의 균형** — 최근 문헌만도, 낡은 문헌만도 아닌가 (Rule 10 "Be Up-to-Date, but Do Not Forget Older Studies")
 - [ ] (체계적 고찰·메타분석 한정) **검색 전략이 본문에 명시**되어 있는가 — 데이터베이스, 검색어, 기간, 포함·배제 기준. 재현 불가능한 리뷰는 서사일 뿐 (누락 = 高) [1차: Koons et al. 2019; Pautasso 2013 Rule 3]
+- [ ] **신규성·비반복성 입증** — 유사한 생태·사회경제 조건에서 이미 수행된 연구의 반복이 아님을 리뷰가 보이는가. 이것이 안 되는 불완전한 리뷰는 게재 거부의 명시적 사유로 기록되어 있다 (高) [1차: IUFRO Ch.9 Common Reasons for Rejection] [회수 2026-08-10 · `remined-intro-19`]
+- [ ] **아이디어 단위 조직 + 공통→분기 순서** — 논문 단위로 나열하지 않고 아이디어로 묶되, 한 아이디어에 대해 문헌의 공통된 흐름을 먼저 논한 뒤 갈라지는 지점을 다루는가 (中) [1차: Hon (UF)] [회수 · `remined-intro-18`]
+- [ ] (리뷰 논문 한정) **범위 경계 명시** — 무엇을 포함하고 무엇을 제외했는지가 서론에 밝혀져 있는가 (中) [1차: Koons et al. 2019] [회수 · `remined-intro-25`]
 
 ## Abstract / 초록
 
@@ -55,6 +73,13 @@
 - [ ] **결과의 제시 순서** — 1차 평가변수(주 결과) 먼저, 2차 결과 뒤. 방법에 언급한 항목에 대응 결과가 있는가 [1차: Ecarnot 2015 Table 4]
 - [ ] **배제 항목** — 비표준 약어, 평가적 진술("Surprisingly, we observed…"), 표·그림·삽화 [1차: Ecarnot 2015 Table 4 — "no discussion, or no judgemental statements"]
 - [ ] 첫 1-2문장이 인접 분야 밖 독자에게도 읽히는가 — 도입부 전문용어 밀도 (低~中) [1차: Nature Summary Paragraph 템플릿(B7) — 첫 문장은 넓은 독자 대상]
+- [ ] **수식·수학 배제** (低) [1차: Schulzrinne — "Avoid equations and math."] [회수 2026-08-10 · `remined-abstract-7`]
+- [ ] **검색 식별 용어 포함** — 개발한 프로토콜·시스템 이름 등 이 연구를 특정하는 용어가 초록에 있는가. 검색엔진이 초록을 색인한다 (中) [1차: Schulzrinne] [회수 · `remined-abstract-6`]
+- [ ] **본문에 없는 새 정보 도입 금지** — 초록은 기존 내용의 요약이다. 개정 원고를 낼 때 본문 변경이 초록에도 반영되었는가 (高) [1차: Tullu 2019] [회수 · `remined-abstract-9`]
+- [ ] (임상시험) **CONSORT 필수 항목 + 말미의 등록번호(ICMJE)**; 관찰연구·진단정확도 등 연구유형별 지침은 EQUATOR network에서 확인 (누락 = 高 — 규정 사항이며 수렴 수와 무관) [1차: Tullu 2019] [회수 · `remined-abstract-12`]
+- [ ] **키워드 3–10개를 통제어휘에서** (생의학은 MeSH) — 제목 단어는 자동 색인되므로 키워드는 제목과 달라야 한다 (中) [1차: Tullu 2019] [회수 · `remined-abstract-13`]
+- 참고: 인용 번호는 금지지만 **저자명·약어·RFC 번호로 선행연구를 지칭하는 것은 허용**된다 — "Our algorithm is based upon the work by Smith and Wesson." [1차: Schulzrinne] [회수 · `remined-abstract-8`]
+- ⚠ **초록의 태·문형은 미해결 상충** — Tullu 2019는 "문장 대신 구, 수동태 회피", Hengl & Gould는 "과거완료 + 수동태(!)". 분야 관례를 확인하고 사용자에게 묻는다. 능동태 기본값을 초록에 기계 적용하지 말 것. `claude_writing_manual/DECISIONS.md` §D5
 
 ## Introduction / 서론
 
@@ -74,6 +99,23 @@
 - [ ] **공백 진술의 구체성** — "연구가 부족하다/알려진 바 없다" 류 추상 공백이 아니라, 공백이 초래하는 구체적 결과·수치로 중요성을 입증하는가 [1차: IUFRO pp.58-60 — 계획서 규칙이나 서론 공백 진술에 동일 적용]
 - [ ] (학위논문·긴 논문 한정) 서론 말미 로드맵 문장 — 이후 구성 예고 [보조: Scholar]
 - [ ] **마무리 순서** — 공백 진술 → 작업가설 → 목적 → (한 줄) 목적 달성 전략. 가설을 세우는 분야인데 가설 없이 목적으로 건너뛰면 결격 (순서 이탈 = 中) [1차: Ecarnot 2015 — "clearly state your working hypothesis, followed by your objective(s), and very briefly, the strategy"]
+
+서론 안티패턴 [회수 2026-08-10 — 전부 1차 문헌 지지]:
+- [ ] **분야 예찬 대체** — 첫 문단이 "이 분야가 얼마나 중요한가"가 아니라 "이 논문이 무엇에 관한 것인가"를 알리는가. 독자는 그것을 알려고 세 쪽을 기다리지 않는다 (高) [1차: Schulzrinne] [`remined-intro-4`]
+- [ ] **개발 연대기 금지** — 자기 연구실·시스템의 내력("우리는 X 시스템을 만들었고 이전 버전으로 한동안 헤맸다")으로 시작하지 않는가 (高) [1차: Schulzrinne — 원문이 나쁜 서론 예시로 제시] [`remined-intro-7`]
+- [ ] **초록 되풀이 금지** — 서론이 초록을 다시 쓰고 있지 않은가 (中) [1차: Schulzrinne — "a waste of space"] [`remined-intro-5`]
+- [ ] **상투적 개시 회피** — "recent advances in XYZ" 류 (中) [1차: Schulzrinne] [`remined-intro-6`]
+- [ ] **동기 과잉** — 이유 3개면 충분하고 각각 아주 간략히 (低) [1차: Schulzrinne] [`remined-intro-8`]
+- [ ] **분량** — 저널 규정이 없으면 1~1.5쪽 (低) [1차: Ecarnot 2015] [`remined-intro-13`]
+- [ ] **Related Work 위치는 한 곳** — 서론 뒤 또는 요약 직전 중 택일. 앞에서 다뤘으면 뒤에서 되풀이하지 않는다 (中) [1차: Schulzrinne] [`remined-intro-11`]
+- [ ] **연구 질문의 논쟁 가능성** — 옳고 그름이 이미 정해진 사실 질문은 연구 질문이 아니다 (中) [1차: Lund] [`remined-intro-1`]
+- [ ] **인용 절제** — 주제의 모든 문헌을 인용하려 하지 않는가; 자명한 보편 진술을 넣지 않았는가 (低) [1차: Ecarnot 2015] [`remined-intro-14`]
+
+목표·가설 진술 블록 [1차: IUFRO Ch.7; 회수 2026-08-10]:
+- [ ] **성과 동사** — "to increase / decrease / reduce"가 "to provide / establish / create"보다 예상 성과를 드러낸다 (低) [`remined-intro-22`]
+- [ ] **목표 사슬 금지** — 한 목표가 다른 목표의 *특정 결과*에 의존하도록 배열되지 않았는가. 의사결정 트리 설계가 아닌 한 결함이며, 심사자가 특히 주시하는 항목이다 (中) [`remined-intro-23`]
+- [ ] **목표 vs 목적 구분** — 목표는 구체·측정 가능·기간 내 달성 가능, 목적(goal)은 개념적·궁극적·추상적. 둘이 섞이지 않았는가 (中) [`remined-intro-24`]
+- [ ] **가설의 검증 가능성** — 제안한 답이 검증 불가능하면 후속 연구에 무용하다 (高) [`remined-intro-24`]
 
 서론 시제 규칙 [1차: Ecarnot 2015 Table 2 — 원문 대조 완료]:
 - 확립된 지식 → **현재** ("Cancer is a common disease")
@@ -121,6 +163,10 @@
   - [ ] 해석·논평은 Discussion으로 — Results는 사실 보고
   - [ ] 시제: 관찰·수행 보고는 과거 [보조: Scholar 시제 가이드 — 관례 등급, Ecarnot Table 2의 원리 연장]
   - [ ] **그림·표 캡션 자기완결성** — 본문 없이 캡션만으로 이해 가능해야; 그래프 서술은 시각적으로 자명한 것("부하가 늘면 지연이 는다")의 반복이 아니라 관계의 설명이어야 [1차: Schulzrinne]
+  - [ ] **그래프 이상 거동의 설명** — 급락·급등·기울기 변화가 설명되었는가, 또는 통계적 변동임이 근거와 함께 밝혀졌는가. 설명도 귀속도 없이 방치된 이상점 = 中 [1차: Schulzrinne] [회수 2026-08-10 · `remined-results-2`]
+  - [ ] **수치 결과의 재현 가능성** — 사용한 모든 파라미터, 분석에 들어간 표본 수, (해당 시) 초기 조건이 제시되었는가 (中) [1차: Schulzrinne] [회수 · `remined-results-1`]
+  - [ ] **표·그림 묶음의 도입 문단** — 각 묶음마다 전반적 경향과 특히 주목할 데이터 지점을 짚는 별도 문단이 있는가 (低) [1차: Fisher et al. (Liebert)] [회수 · `remined-results-6`]
+  - [ ] (측정모형·잠재변수 보고 시) **신뢰도·타당도를 판정 임계값과 함께** — CR>0.70, AVE>0.50, VIF<5.0 등. 값만 나열하고 기준이 없으면 읽을 수 없다 (中) [1차: Zhu & Yang 2026] [회수 · `remined-results-7`]
 
 ## Discussion / 논의
 
@@ -136,6 +182,16 @@
 - [ ] **서론의 공백을 되짚는가** — 서론이 주장한 지식 공백을 이 연구가 실제로 메웠는지, 무엇을 새로 더하고 무엇을 반박하는지 명시 진술이 있는가. 없으면 "또 한 편"으로 읽힌다 (中) [1차: Ecarnot 2015 — "you can discuss whether or not your paper has succeeded in filling the gap"]
 - [ ] **범위 이동(scope creep) 검출** — 표본에서 관찰한 것이 모집단 진술로 확대되지 않았는가. "25개 중 20개에서 관찰" → "80%가 그렇다"는 원자료를 배신하는 미묘한 도약 (高) [1차: Ecarnot 2015 — "a subtle shift in interpretation that belies that original data"]
 - [ ] **선행연구 비판의 어조** — 타인 연구의 약점을 직접 지적하는 대신("X et al. failed to…") 자기 연구의 강점 진술로 함의를 전달하는가 (低~中) [1차: Ecarnot 2015 — "it pays to be diplomatic when criticizing the work of others"]
+
+추론의 타당성 [회수 2026-08-10]:
+- [ ] **인과 단정 금지** — 상관·횡단 설계에서 인과를 주장하지 않는가. 역인과 가능성이 명시되어 있는가 (高) [1차: Zhu & Yang 2026 — "Cross-sectional data allow identification of associations but make it difficult to establish causality; a reverse-causal possibility exists"] [`remined-discussion-11`]
+- [ ] **측정하지 않은 대안 경로 명시** — 설계가 포착하지 못한 그럴듯한 다른 기제를 스스로 밝혀 해석 범위를 한정하는가 (中) [1차: Zhu & Yang 2026] [`remined-discussion-12`]
+- [ ] **지역 결과의 일반화 논증** — 한 세팅에서 얻은 결과가 더 넓은 관련성을 갖는다는 주장에 논증이 붙어 있는가. 자명하게 취급하면 결함 (中) [1차: Perneger 2004 — "requires careful consideration and argument"] [`remined-discussion-10`]
+- [ ] **불일치의 설명** — 선행 보고와 결과가 다를 때 상황·모집단·접근법의 차이로 그럴듯한 설명을 제시하는가. 인접 인용 나열만으로는 대조가 아니다 (中) [1차: Ecarnot 2015; Fisher et al.] [`remined-discussion-4`]
+- [ ] **해석 vs 의견** — 개인적 의견이 해석으로 제시되지 않는가. 이론적 함의와 실무적 함의를 모두 다루는가 (中) [1차: Hon (UF) — "Present only interpretations of the findings, not opinion"] [`remined-discussion-7`]
+- [ ] **반론 선제 대응** — 예상되는 비판과 대안적 설명이 다뤄지는가 (中) [1차: Lund; 보조: Scholar 9단계 논의 틀] [`remined-discussion-9`]
+- [ ] **서론 마지막 문단과의 구조 대응** — 세 목표를 세웠으면 셋을 논의하는가, 가설을 세웠으면 채택·기각을 논증하는가 (中) [1차: Fisher et al. — "look to the last paragraph of the introduction"] [`remined-discussion-14`]
+- [ ] **방법 한계의 구체성** — 한계 절이 있다는 것으로 충분하지 않다. 실패 사례가 적용 범위를 규정하는 수준으로 기술되었는가 (中) [1차: Schulzrinne — "Interesting cases where an algorithm fails are important in clarifying the range of applicability"] [`remined-discussion-13`]
 
 ## Conclusion / 결론
 

@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Proofreading"
-  short_description: "Multi-reviewer academic paper proofreading with knowledge-distributed deliberation"
+  short_description: "Panel proofreading of an existing draft — several reviewers with different knowledge allocations review the same text in parallel, a judge scores their competin"
   default_prompt: "Use $meta-proofreading for this task."

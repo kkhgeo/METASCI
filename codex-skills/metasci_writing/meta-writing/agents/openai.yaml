@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Writing"
-  short_description: "Multi-source academic paper section writing skill"
+  short_description: "Draft a manuscript section that does not exist yet, from the user's own figures, tables, and data together with prior-literature sources"
   default_prompt: "Use $meta-writing for this task."

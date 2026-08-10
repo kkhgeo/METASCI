@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Rewriting Loop"
+  short_description: "Monte Carlo 방식의 다중 레퍼런스 기반 학술 논문 리라이팅 스킬"
+  default_prompt: "Use $meta-rewriting-loop for this task."

@@ -509,6 +509,10 @@ values] in [different context]."
 ## 공통 주의사항
 
 ### 인용 밀도 (Knowledge Sources 기준)
+
+**단락당 인용 개수는 여기서만 정한다.** SKILL.md의 `min_citations`는 섹션 전체의
+서로 다른 소스 수(기본 5)이고, 단락 단위 밀도는 아래 표를 쓴다.
+
 - Introduction: 단락당 3-5개
 - Methods: 단락당 2-3개
 - Results: 단락당 3-4개 (비교 시)
@@ -557,7 +561,13 @@ values] in [different context]."
 분야 표준이 아닌 약어는 3회 미만 등장하면 아예 쓰지 않는다.
 
 ### 피해야 할 표현
+
 - "I think", "We believe" → "This suggests", "The data indicate"
+  **1인칭 자체를 피하라는 뜻이 아니다.** 걸러내는 것은 근거 대신 내놓는 자기 확신
+  진술("I think")이다. 무엇을 했고 왜 그렇게 결정했는지는 1인칭으로 쓴다
+  ("We selected X because…", "We interpret this as…"). 1인칭을 전면 회피하면
+  Sword가 말한 "zombie prose"가 된다 —
+  `claude_writing_manual/DIAGNOSTIC-MAP.md` §D2 참조.
 - "very", "really" → 구체적 수치 사용
 - "proves" → "supports", "suggests"
 - 비학술적 표현 → 학술적 용어로 대체

@@ -11,7 +11,7 @@ description: |
   "이 논문들 스타일 뽑아줘", capture a journal's writing conventions from example papers, or
   build a style reference for later rewriting. This is the LEAN styling-focused extractor —
   distinct from extraction-vocab / extraction-logic (which are exhaustive, for proofreading).
-allowed-tools: [Read, Write, Edit, Glob, Grep, Task]
+allowed-tools: [Read, Write, Edit, Glob, Grep, Agent]
 ---
 
 # META-SCI · Style Extraction

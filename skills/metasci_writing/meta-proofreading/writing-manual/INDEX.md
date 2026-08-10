@@ -37,6 +37,42 @@ routing row; in Mode 3 (sentence level), load all of them.
 
 ---
 
+## Step 5 — When a finding needs a citable source
+
+This manual names its grounding by framework and author (Swales, Yang & Allison, Hyland, Gopen &
+Swan). It does not carry quotable sentences. When the author asks *why* a rule holds, needs a source
+to show a co-author or supervisor, or wants to quote the norm itself, read:
+
+`../../meta-writing/references/claude_writing_manual/` — enter at `INDEX.md`, then load
+`00_universal.md` plus the one matching section file. Never the whole folder.
+
+Each entry there carries a verbatim quote, its page location, every supporting source, a convergence
+count, and its PDF-verification status. It is drawn from a separate 27-source corpus (15 papers,
+5 books and guides, a tweet corpus), so it complements rather than replaces the genre-analysis basis
+of this manual. **On any norm the two both cover, this manual governs; go there for the evidence.**
+
+**Contested questions — ask, never default.** Three remain genuinely open, and all three are
+venue-bound rather than evidentially contested: **abstract length, title length, and abstract
+voice/sentence form.** `claude_writing_manual/DECISIONS.md` states both sides with their sources.
+
+Two former entries — first person, and assertion vs hedging — were **settled in this manual's
+favour** by the 2026-08-10 contradiction audit: `cross_section/sentence_craft.md` and
+`cross_section/stance_hedging.md` answer both on Hyland and Sword, while the other corpus's
+dissenting side rested on a tweet thread and a further-education handbook. Apply this manual's
+position and do not offer them as choices. Record: `claude_writing_manual/DIAGNOSTIC-MAP.md`.
+
+## Relationship to the other diagnostic asset
+
+`meta-rewriting/references/section-checklists.md` (137 binary checks) diagnoses the same object —
+one paragraph — as a fast single pass, because `meta-rewriting` runs with `Read, Glob` only and
+cannot load 99 KB. **This manual governs section norms and genre**; it is built on move-analysis
+literature (Swales, Yang & Allison, Kanoksilapatham) that the other corpus lacks. Neither file
+should be edited to match the other — they are separate renderings for separate costs. The audit
+found no contradiction between them on voice, hedging, nominalization, tense, or paragraph opening:
+both trace to Gopen & Swan and Williams & Bizup and converge independently.
+
+---
+
 ## Evaluation Principles for the Agent
 
 1. **Do not over-flag.** Expert writing tolerates stylistic variation. Flag only issues that genuinely impede clarity, logic, or reader comprehension.

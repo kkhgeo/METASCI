@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Review"
+  short_description: "Review and improve user's draft (paragraph/section) against multiple reference paper extraction files (logic + vocab)"
+  default_prompt: "Use $meta-review for this task."

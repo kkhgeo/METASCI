@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Rewriting Antiai"
+  short_description: "AI 글쓰기 흔적을 제거하고 자연스러운 학술 산문으로 전환하는 스킬"
+  default_prompt: "Use $meta-rewriting-antiai for this task."

@@ -119,7 +119,7 @@ Instead, run the dedicated judge:
 
 The judge round and the ISSUES classification run over the same reviewer
 output; present candidate selections at the point of each unit's
-walkthrough (Mode 3, SKILL.md 7c) and fold ISSUES into the Top-N block and
+walkthrough (Mode 3, `modes/paragraph.md` 7c) and fold ISSUES into the Top-N block and
 Agent B.
 
 ---
@@ -186,7 +186,7 @@ Output: paragraph-level issue map.
 
 ### Mode 3: Paragraph — Single reviewer round, then one judge round
 
-Reviewers return, from ONE panel round (see SKILL.md 7b): CANDIDATE sets
+Reviewers return, from ONE panel round (see `modes/paragraph.md` 7b): CANDIDATE sets
 (paragraph-whole + every sentence), ISSUES, and SUGGESTIONS. Synthesis
 runs once:
 
@@ -199,7 +199,7 @@ runs once:
    conflict) on each group.
 3. **Present.** The orchestrator presents the paragraph-whole result
    first (judge selection + any paragraph-level issues), then walks
-   through each sentence (SKILL.md 7c): the judge's optimal + alternatives
+   through each sentence (`modes/paragraph.md` 7c): the judge's optimal + alternatives
    for that sentence, plus any issues classified for it. No further
    reviewer or judge calls are needed during the walkthrough.
 4. Sentences whose judge selection is ORIGINAL and that carry no issues

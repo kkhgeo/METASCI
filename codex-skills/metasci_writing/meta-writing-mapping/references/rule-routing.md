@@ -12,6 +12,8 @@
 | 단락 순서·연결이 자연스러운가 | `cohesion_flow.md` | Glob `**/meta-proofreading/writing-manual/cross_section/cohesion_flow.md` |
 | 섹션 골격과 전환어 | `section_guides.md` | Glob `**/meta-writing/references/section_guides.md` |
 | 단락 하나가 논지로 성립하나 | `principles.md` | Glob `**/meta-rewriting/references/principles.md` |
+| **규범의 근거·출처가 필요하다** (사용자가 "왜"를 묻거나 인용할 문장이 필요할 때) | `claude_writing_manual/` — `INDEX.md`로 진입, `00_universal.md` + 해당 섹션 파일만 | `../../meta-writing/references/claude_writing_manual/` |
+| **답이 정해지지 않은 것** (초록 길이·1인칭·헤징·제목 길이·초록의 태) | `DECISIONS.md` — **사용자에게 묻는다** | 같은 폴더 |
 
 **Glob 결과가 여러 개면 `skills_archive/` 아래 것은 버린다** — 구버전
 `paper-proofreader` 잔재다. 항상 `skills/` 아래 것을 읽는다.

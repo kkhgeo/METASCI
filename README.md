@@ -7,10 +7,11 @@ A personal Claude Code skill collection in two domains: **academic research** (p
 Skills in use are organized into four packs under `skills/`:
 
 ```
-skills/
+skills/                                                              22 skills
 ├── persona/             virgil · beatrice · socrates · picasso · feynman-digest
 ├── metasci_writing/     meta-writing · meta-writing-mapping · meta-writing-blog · meta-mywriting-korean ·
-│                        meta-rewriting · meta-proofreading · meta-proofreading-codex · meta-proofreading-evidence
+│                        meta-rewriting · meta-rewriting-antiai · meta-rewriting-loop · meta-review ·
+│                        meta-proofreading · meta-proofreading-evidence
 ├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
 │                        metasci-style-extraction · meta-styling
 └── metasci_slide/       meta-slide-content · meta-slide-design
@@ -145,18 +146,43 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 
 ## Skills
 
-### Research skills
+### Extraction — read papers, produce reusable material
 
 | Skill | Description | Output |
 |-------|-------------|--------|
-| extraction-knowledge | Extract cited knowledge into 5 epistemological categories | `Knowledge_{topic}/` |
+| extraction-knowledge | Cited knowledge into 5 epistemological categories | `Knowledge_{topic}/` |
 | extraction-vocab | Exhaustive POS word extraction + technical term glossary | `Vocab_{topic}/` |
-| extraction-logic | Extract structure, argument logic, sentence frames | `Logic_{topic}/` |
-| meta-writing | Multi-source academic writing with My Data/Knowledge separation | English + Korean draft |
-| meta-rewriting | One-shot style transfer from reference paper to user's draft | `Rewrite_{topic}/` |
-| meta-styling | Extract lexical style patterns (A) / Revise draft to match (B) | `Style_{topic}/` |
-| meta-review | Multi-reviewer draft improvement using logic+vocab extractions | `Review_{timestamp}/` |
-| agentic-research | Autonomous data-driven scientific discovery with iterative analysis | `Research_{topic}/` |
+| extraction-logic | Structure, argument logic, sentence frames | `Logic_{topic}/` |
+| metasci-style-extraction | Style of 3-4 exemplar papers → Style Cards + profile | `Style_{destination}/` |
+
+### Writing — produce prose that does not exist yet
+
+| Skill | Description | Output |
+|-------|-------------|--------|
+| meta-writing-mapping | Settle section/paragraph composition before any prose | `outline.md` |
+| meta-writing | Draft a section from own figures/tables/data + literature | English + Korean draft |
+| meta-writing-blog | Paper or manuscript → KEI Korean HTML brief | portable folder |
+| meta-slide-content | Source material → approved slide content specification | content spec |
+| meta-slide-design | Approved spec → Korean HTML deck in the Onto house style | HTML + PDF |
+
+### Revision — work on text that already exists
+
+| Skill | Description | Needs |
+|-------|-------------|-------|
+| meta-rewriting | One paragraph: diagnose + 3 complete alternatives | nothing |
+| meta-review | Draft vs reference extractions, per-paper reviewer agents | `_logic.md` / `_vocab.md` |
+| meta-rewriting-loop | Monte Carlo optimisation over N references | N references |
+| meta-proofreading | Reviewer panel + judge; whole draft, section, or paragraph | invoked by name |
+| meta-proofreading-evidence | Are these phrases actually used in published papers? | nothing |
+| meta-styling | Apply an extracted style profile, measured before/after | `style_profile.md` |
+| meta-rewriting-antiai | Strip AI writing tells across 4 layers | nothing |
+| meta-mywriting-korean | Korean draft → the author's own style Blueprint | Blueprint |
+
+Each skill's `description` names where to send work that belongs to a different
+one, so routing between them is in the skills themselves, not only here.
+
+The numbered sections below predate several of these and cover a subset — the
+skill's own `SKILL.md` is authoritative where they disagree.
 
 ### Persona skills
 

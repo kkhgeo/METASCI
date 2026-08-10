@@ -8,11 +8,8 @@ description: |
   "apply style profile", draft + style profile given.
   NOT for style extraction ("스타일 추출" → metasci-style-extraction) and NOT for
   argument-logic review ("논리 검토" → meta-review).
-  **Always read references/revision_guide.md first!**
-allowed-tools: [Read, Write, Edit, Bash, Task, Glob, Grep]
+allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion]
 ---
-
-> **Prerequisite**: Read `references/revision_guide.md` before revising anything.
 
 # Meta-Styling Skill (v2.0 — apply-only)
 

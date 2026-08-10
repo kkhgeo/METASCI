@@ -11,11 +11,15 @@ From `writing/` — the `metasci_*` packs replaced it:
 |---|---|
 | `meta-writing` | superseded by `skills/metasci_writing/meta-writing` |
 | `meta-rewriting` | superseded by `skills/metasci_writing/meta-rewriting` |
-| `meta-review` | no successor — draft review against reference extractions |
-| `meta-rewriting-antiai` | no successor — strips AI writing tells |
-| `meta-rewriting-loop` | no successor — Monte Carlo multi-reference rewriting |
 | `paper-proofreader` | superseded by `skills/metasci_writing/meta-proofreading` |
 | `paper-proofreader_evidence` | superseded by `skills/metasci_writing/meta-proofreading-evidence` |
+
+**Un-retired 2026-08-10** — `meta-review`, `meta-rewriting-antiai`, and
+`meta-rewriting-loop` moved back into `skills/metasci_writing/`. The shipped
+skills route to them by name (`meta-rewriting` sends multi-reference work to
+`meta-review`, AI-trace removal to `meta-rewriting-antiai`, Monte Carlo
+optimisation to `meta-rewriting-loop`), so leaving them here made those routes
+dead on any machine that installed from this repo.
 
 From `research/`:
 

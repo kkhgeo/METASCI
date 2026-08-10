@@ -1,0 +1,22 @@
+# owner: codex; generated: true; do-not-edit: true
+owner: codex
+schema_version: 0.1.0
+projected_for: meta-writing-mapping
+selection: all referenced rules are bundled by this consumer
+conflicts:
+- id: CF-004
+  rules:
+  - SW-SECT-002
+  - SW-SECT-004
+  tension: General IMRaD separation can conflict with a venue's combined Results and
+    Discussion convention.
+  resolution: Follow the current venue instructions and recent article structure while
+    distinguishing description from interpretation at sentence level.
+  priority: SW-SECT-002
+global_precedence:
+- Research ethics, citation integrity, and factual accuracy outrank style and publication
+  format.
+- Current applicable legal, institutional, and venue policies outrank general procedure
+  but cannot lower research integrity.
+- Manuscript-level logic and information flow outrank the surface polish of an individual
+  sentence.

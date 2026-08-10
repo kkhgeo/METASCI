@@ -237,6 +237,18 @@ function buildProfile(profile) {
         const yaml = applyOverrides(profile, skill, 'agents/openai.yaml', makeOpenAiYaml(skill, skillMd))
         generated.set(`${pack}/${skill}/agents/openai.yaml`, Buffer.from(yaml, 'utf8'))
       }
+
+      // Whole-file overrides may also add profile-only files that do not exist
+      // in the shared skill source (for example, runtime-specific references).
+      const overrideDir = path.join(OVR, profile.name, skill)
+      if (fs.existsSync(overrideDir)) {
+        for (const rel of walk(overrideDir)) {
+          if (rel.endsWith('.replace.json')) continue
+          const dest = `${pack}/${skill}/${rel}`
+          if (generated.has(dest)) continue // existing source/generated file was handled above
+          generated.set(dest, fs.readFileSync(path.join(overrideDir, rel)))
+        }
+      }
     }
   }
   generated.set('README.md', Buffer.from(readmeFor(profile), 'utf8'))
@@ -248,10 +260,22 @@ function readmeFor(p) {
     .filter(([re]) => !/one \*\*Agent tool\*\*|Read, Glob, Grep/.test(re.source))
     .map(([re, to]) => `| \`${re.source.replace(/\\b|\\/g, '')}\` | ${to} |`)
     .join('\n')
+  const sourceNotice =
+    p.name === 'codex'
+      ? `**Generated — do not edit by hand.** Files here come from \`skills/\` plus any\n` +
+        `runtime-specific \`agent-overrides/${p.name}/\`, via \`node tools/build-agent-skills.mjs\`.\n` +
+        `Edit those sources, then rebuild.\n\n`
+      : `**Generated — do not edit by hand.** Every file here comes from \`skills/\` via\n` +
+        `\`node tools/build-agent-skills.mjs\`. Edit the skill in \`skills/\`, then rebuild.\n\n`
+  const wholeFileNotice =
+    p.name === 'codex'
+      ? `- \`<file>\` — replaces the file outright, or adds a runtime-only file when the path\n` +
+        `  does not exist in \`skills/\`. Use sparingly; replacement is a fork by another name.\n`
+      : `- \`<file>\` — replaces the file outright. Use sparingly; a whole-file override is a\n` +
+        `  fork by another name.\n`
   return (
     `# ${p.out}\n\n` +
-    `**Generated — do not edit by hand.** Every file here comes from \`skills/\` via\n` +
-    `\`node tools/build-agent-skills.mjs\`. Edit the skill in \`skills/\`, then rebuild.\n\n` +
+    sourceNotice +
     `Claude Code reads \`skills/\`; ${p.runtime} reads this. They stay in step because only\n` +
     `one of them is written by a person.\n\n` +
     `## What the build changes\n\n| in \`skills/\` | here |\n|---|---|\n${rows}\n` +
@@ -265,8 +289,7 @@ function readmeFor(p) {
     `- \`<file>.replace.json\` — \`[{"from": "...", "to": "..."}]\`, applied to that file.\n` +
     `  Each \`from\` must match **exactly once** or the build fails, so an override cannot\n` +
     `  rot silently when the source changes.\n` +
-    `- \`<file>\` — replaces the file outright. Use sparingly; a whole-file override is a\n` +
-    `  fork by another name.\n`
+    wholeFileNotice
   )
 }
 

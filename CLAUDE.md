@@ -69,7 +69,7 @@ Each profile translates the runtime's tool vocabulary, drops the Claude-only `al
 
 This replaced a hand-maintained `meta-proofreading-codex`. Comparing that fork against its source found 18 differing files of which only 2 differed for runtime reasons — the rest had simply gone stale, and the fork was missing `agents/agent_j.md` (the judge) and a whole writing-manual chapter. Generation is what keeps that from recurring.
 
-Anything the vocabulary table cannot express belongs in `agent-overrides/<profile>/<skill>/<file>.replace.json` as `[{from, to}]`. Each `from` must match exactly once or the build fails, so an override cannot rot silently when the source moves on.
+Anything the vocabulary table cannot express belongs in `agent-overrides/<profile>/<skill>/<file>.replace.json` as `[{from, to}]`. Each `from` must match exactly once or the build fails, so an override cannot rot silently when the source moves on. A whole file at `agent-overrides/<profile>/<skill>/<file>` replaces the generated path, or adds a runtime-only path when the shared source has none.
 
 ## Installing on a machine
 

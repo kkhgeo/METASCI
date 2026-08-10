@@ -1,0 +1,65 @@
+# owner: codex; generated: true; do-not-edit: true
+owner: codex
+schema_version: 0.1.0
+projected_for: meta-writing
+selection: all referenced rules are bundled by this consumer
+conflicts:
+- id: CF-001
+  rules:
+  - SW-PARA-001
+  - SW-SECT-003
+  tension: A concision rule can delete information needed for a stand-alone Abstract.
+  resolution: Preserve the question, methods, key results, and conclusion needed for
+    self-containment within the word limit; remove other redundancy first.
+  priority: SW-SECT-003
+- id: CF-002
+  rules:
+  - SW-PARA-002
+  - SW-PARA-005
+  tension: Varying terminology for accessibility can break conceptual consistency.
+  resolution: Define the exact term at first use and retain it for the same concept;
+    improve accessibility through definitions and sentence structure.
+  priority: SW-PARA-005
+- id: CF-003
+  rules:
+  - SW-PARA-003
+  - SW-SECT-005
+  tension: Requiring a direct Discussion answer can encourage stronger certainty than
+    the evidence permits.
+  resolution: Answer the question directly while limiting the answer's scope and certainty
+    to the design and evidence.
+  priority: SW-PARA-003
+- id: CF-004
+  rules:
+  - SW-SECT-002
+  - SW-SECT-004
+  tension: General IMRaD separation can conflict with a venue's combined Results and
+    Discussion convention.
+  resolution: Follow the current venue instructions and recent article structure while
+    distinguishing description from interpretation at sentence level.
+  priority: SW-SECT-002
+- id: CF-005
+  rules:
+  - SW-SECT-002
+  - SW-AI-004
+  tension: AI disclosure scope varies across venues and conflicts with a universal
+    disclosure rule.
+  resolution: Preserve an AI-use log, but tailor the actual disclosure to the current
+    applicable venue and institutional policy.
+  priority: SW-SECT-002
+- id: CF-006
+  rules:
+  - SW-PROC-004
+  - SW-AI-002
+  tension: Global-first revision can delay fact checking and allow structural decisions
+    to rest on false premises.
+  resolution: Verify structure-determining facts, numbers, and citations before global
+    revision; verify remaining details afterward.
+  priority: contextual
+global_precedence:
+- Research ethics, citation integrity, and factual accuracy outrank style and publication
+  format.
+- Current applicable legal, institutional, and venue policies outrank general procedure
+  but cannot lower research integrity.
+- Manuscript-level logic and information flow outrank the surface polish of an individual
+  sentence.

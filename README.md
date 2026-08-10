@@ -29,8 +29,9 @@ node tools/build-agent-skills.mjs           rebuild both
 node tools/build-agent-skills.mjs --check   fail if the build output is stale
 ```
 
-Edit a skill in `skills/`, rebuild, commit all three. Runtime differences the
-build cannot express go in `agent-overrides/<profile>/`.
+Edit a shared skill in `skills/`, rebuild, commit all three. Runtime differences the
+build cannot express go in `agent-overrides/<profile>/`; a whole-file override may
+also add a runtime-only file.
 
 ## Installing on a machine
 

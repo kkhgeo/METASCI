@@ -71,7 +71,9 @@ Edit the copy — don't author the chrome from scratch.
 **5. Fill the article header.** page-label (`Brief`), `<h1>` title, subtitle (optional), byline
 (author pattern per STYLE_GUIDE §3.3 — e.g. `AI 생성 · 김경호 검토`), date `YYYY.MM.DD`, field labels.
 
-**6. Abstract.** 1–3 sentences in `.article-abstract`, formal register.
+**6. Abstract.** 1–3 sentences in `.article-abstract`, formal register. **원 논문의 출처를
+초록 안에 명시한다** — 저자(연도), 논문 제목, 식별자(arXiv ID 또는 DOI). 콜로폰·References에만
+두는 것으로는 부족하다; 독자는 첫 화면에서 무엇에 기초한 해설인지 알 수 있어야 한다.
 
 **7. Write the body.** Fill the `<section>`s in the KEI editorial voice. Map content to the
 components in `references/STYLE_GUIDE.md` §4: callout (`callout-warn` for warnings), var-list for

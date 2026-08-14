@@ -38,14 +38,20 @@
 
 ---
 
-## 3. 표현 경계 정하기
+## 3. 표현 경계와 변형 정하기
 
 - **길이:** 2~6단어. 너무 길면(문장급) 매칭 실패 → 핵심 2~4단어로 축약.
-- **가지치기:** 관사·소유격·복수 어미는 검색 시 유연하게. 핵심 내용어를 남긴다.
+- **가지치기:** 관사·소유격은 제거하되 핵심 내용어를 남긴다.
   예: `the physical disruptions of soil aggregates` → `aggregate disruption`
-- **변형 후보 메모:** 의심 표현은 검색 단계에서 쓸 **변형 후보**를 같이 적어둔다.
-  예: `carbon liberation by frost` → 후보 `frost-induced carbon release`,
+- **표기 변형 후보:** 의미를 바꾸지 않는 단수·복수, 영미 철자, 하이픈·대시,
+  굴절형을 별도로 적는다. 표기 변형의 검색 결과는 같은 표현군으로 묶되 실제
+  일치 형태를 보고한다.
+  예: `freeze–thaw cycle` → `freeze-thaw cycles`, `freeze thaw cycle`
+- **의미 대안 후보:** 어휘나 통사 구조를 바꾸는 후보는 표기 변형과 분리한다.
+  예: `carbon liberation by frost` → `frost-induced carbon release`,
   `carbon release during freeze-thaw`
+- **의미 보존:** 긴 표현을 축약할 때는 원문의 핵심 술어와 논항 관계가 유지되는지
+  확인한다. 검색이 잘된다는 이유만으로 더 일반적인 다른 의미로 바꾸지 않는다.
 
 ---
 
@@ -67,8 +73,11 @@
   phrase: "aggregate disruption",
   sentence: "...the observed increase reflects aggregate disruption...",
   suspicion: "low" | "medium" | "high",   // 직역투 의심도
-  variant_candidates: ["aggregate breakdown", "disruption of aggregates"]
+  orthographic_variants: ["aggregate disruptions"],
+  alternative_candidates: ["aggregate breakdown", "disruption of aggregates"]
 }
 ```
 
-`suspicion=high`인 표현은 미확인 시 대안 검색을 더 적극적으로 수행한다.
+`orthographic_variants`는 같은 표현군의 표기 차이로, `alternative_candidates`는
+의미가 같은지 별도 검증해야 하는 표현으로 처리한다. `suspicion=high`이면 미확인
+시 대안 검색을 더 적극적으로 수행한다.

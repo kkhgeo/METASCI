@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Introduction"
+  short_description: "Meta-workflow skill for designing, generating, and evaluating Introduction sections of environmental science papers"
+  default_prompt: "Use $Meta_Introduction for this task."

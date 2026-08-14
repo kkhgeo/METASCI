@@ -4,25 +4,29 @@ import path from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 // cwd 드리프트에 좌우되지 않도록 프로젝트 루트를 위로 거슬러 탐색한다.
-// 1) 기존 _memory/ 가 있는 조상 재사용(중복·stray 방지) → 2) .claude/·.git/ 마커(home 자신 제외)
-// → 3) 못 찾으면 cwd. 명시적 opts.root 는 항상 우선(훅·--root 는 기존 동작 그대로).
+// 0) 명시적 앵커 `.memory-root` 최우선 — 하위 폴더의 stray _memory·중첩 .claude 를 전부 무시하고
+//    그 폴더로 못박음(가장 결정적). → 1) 기존 _memory/ 있는 조상 재사용(중복·stray 방지)
+// → 2) .claude/·.git/ 마커(home 자신 제외) → 3) 못 찾으면 cwd.
+// 명시적 opts.root 는 항상 우선. 훅은 이 함수 결과를 opts.root 로 넘겨 cwd 고정을 푼다.
 export function resolveProjectRoot(start = process.cwd()) {
   const home = os.homedir()
-  let dir = path.resolve(start)
-  for (let d = dir; ; ) {
-    if (fs.existsSync(path.join(d, '_memory'))) return d
-    if (d === home) break
-    const parent = path.dirname(d)
-    if (parent === d) break
-    d = parent
+  const dir = path.resolve(start)
+  // dir 에서 위로 올라가며 test(d)가 참인 첫 폴더 반환(home 포함해 검사), 없으면 null.
+  const climb = (test) => {
+    for (let d = dir; ; ) {
+      if (test(d)) return d
+      if (d === home) return null
+      const parent = path.dirname(d)
+      if (parent === d) return null
+      d = parent
+    }
   }
-  for (let d = dir; d !== home; ) {
-    if (fs.existsSync(path.join(d, '.claude')) || fs.existsSync(path.join(d, '.git'))) return d
-    const parent = path.dirname(d)
-    if (parent === d) break
-    d = parent
-  }
-  return dir
+  return (
+    climb((d) => fs.existsSync(path.join(d, '.memory-root'))) ||
+    climb((d) => fs.existsSync(path.join(d, '_memory'))) ||
+    climb((d) => d !== home && (fs.existsSync(path.join(d, '.claude')) || fs.existsSync(path.join(d, '.git')))) ||
+    dir
+  )
 }
 
 export function memRoot(opts = {}) {

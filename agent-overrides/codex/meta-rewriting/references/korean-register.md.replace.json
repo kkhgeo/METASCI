@@ -1,0 +1,10 @@
+[
+  {
+    "from": "- `~/.claude/skills/meta-mywriting-korean/SKILL.md` §설계 경계 (388–413행) — 은행 대조\n  결과와 충돌 3축",
+    "to": "- `meta-mywriting-korean` 스킬의 `SKILL.md` §설계 경계 — 은행 대조 결과와 충돌 3축"
+  },
+  {
+    "from": "- `~/.claude/skills/meta-mywriting-korean/references/korean-anti-ai-patterns.md`\n  §C·D·E·F·H — 표면형과 판정 기준",
+    "to": "- `meta-mywriting-korean` 스킬의 `references/korean-anti-ai-patterns.md` §C·D·E·F·H —\n  표면형과 판정 기준"
+  }
+]

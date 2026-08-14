@@ -110,9 +110,8 @@ C-C-C 단락 구조, 논증 타당성, 시제·인칭 일관성, 잉여 문장 �
 
 ## 출처
 
-- `~/.claude/skills/meta-mywriting-korean/SKILL.md` §설계 경계 (388–413행) — 은행 대조
-  결과와 충돌 3축
-- `~/.claude/skills/meta-mywriting-korean/references/korean-anti-ai-patterns.md`
-  §C·D·E·F·H — 표면형과 판정 기준
+- `meta-mywriting-korean` 스킬의 `SKILL.md` §설계 경계 — 은행 대조 결과와 충돌 3축
+- `meta-mywriting-korean` 스킬의 `references/korean-anti-ai-patterns.md` §C·D·E·F·H —
+  표면형과 판정 기준
 - 그 파일의 양성 기준 원자료: 김경호·김고범 (2020), *EIA Review* 4; 김경호 외 (2022),
   *EIA Review* 2022(1)

@@ -1,0 +1,10 @@
+[
+  {
+    "from": "1차 문헌 전문은 `Z:\\KKH_Research\\META_SCI\\X_ScholarshipfPhd_KnowledgeDB\\papers\\` 및 `books_guides\\`에 보관.",
+    "to": "1차 문헌 전문은 원래 프로젝트의 `papers/` 및 `books_guides/`에 보관되었다. 이 스킬의 런타임은 해당 개발 경로에 의존하지 않는다.\n\n> **Codex 런타임 주석.** 3층 근거 자료 `claude_writing_manual/`은 이 번들에 포함되지 않는다. 아래에서 그 경로를 가리키는 대목(제목 길이·초록의 태 상충 등)은 근거의 소재를 밝히는 기록이며, 읽을 수 없어도 진단은 그대로 수행한다. 다만 상충으로 표시된 항목은 기본값을 적용하지 말고 사용자에게 묻는다."
+  },
+  {
+    "from": "- 원리 은행 (2026-07-23 대조) — `Z:\\KKH_Research\\META_SCI\\Writing_Principles_Extraction\\bank\\` (27개 소스, 대표 원리 185개)",
+    "to": "- 원리 은행 (2026-07-23 대조) — 개발 프로젝트의 `Writing_Principles_Extraction/bank/` (27개 소스, 대표 원리 185개)"
+  }
+]

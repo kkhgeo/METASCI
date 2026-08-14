@@ -7,9 +7,10 @@ A personal Claude Code skill collection in two domains: **academic research** (p
 Skills in use are organized into four packs under `skills/`:
 
 ```
-skills/                                                              22 skills
+skills/                                                              24 skills
 ├── persona/             virgil · beatrice · socrates · picasso · feynman-digest
-├── metasci_writing/     meta-writing · meta-writing-mapping · meta-writing-blog · meta-mywriting-korean ·
+├── metasci_writing/     meta-writing · meta-writing-mapping · meta-writing-blog · Meta_Introduction ·
+│                        meta-mywriting-korean · meta-proofreading-korean ·
 │                        meta-rewriting · meta-rewriting-antiai · meta-rewriting-loop · meta-review ·
 │                        meta-proofreading · meta-proofreading-evidence
 ├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
@@ -162,6 +163,7 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 | meta-writing-mapping | Settle section/paragraph composition before any prose | `outline.md` |
 | meta-writing | Draft a section from own figures/tables/data + literature | English + Korean draft |
 | meta-writing-blog | Paper or manuscript → KEI Korean HTML brief | portable folder |
+| Meta_Introduction | Environmental-science Introduction blueprint → draft → CARS evaluation | Introduction package |
 | meta-slide-content | Source material → approved slide content specification | content spec |
 | meta-slide-design | Approved spec → Korean HTML deck in the Onto house style | HTML + PDF |
 
@@ -174,6 +176,7 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 | meta-rewriting-loop | Monte Carlo optimisation over N references | N references |
 | meta-proofreading | Reviewer panel + judge; whole draft, section, or paragraph | invoked by name |
 | meta-proofreading-evidence | Are these phrases actually used in published papers? | nothing |
+| meta-proofreading-korean | Korean academic/policy draft → rubric-tiered panel proofreading | Korean draft |
 | meta-styling | Apply an extracted style profile, measured before/after | `style_profile.md` |
 | meta-rewriting-antiai | Strip AI writing tells across 4 layers | nothing |
 | meta-mywriting-korean | Korean draft → the author's own style Blueprint | Blueprint |

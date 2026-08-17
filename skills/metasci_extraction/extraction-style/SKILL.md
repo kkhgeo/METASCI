@@ -1,10 +1,10 @@
 ---
 name: extraction-style
 description: |
-  META-SCI series. Build a reusable STYLE CORPUS from reference papers: one folder per
-  paper containing normalized text, per-section splits, an exhaustive sentence-frame
-  catalog, a measured style vocabulary, a lean Style Card, and a machine-readable
-  manifest. Runs three lenses over shared, pre-normalized text —
+  Build a reusable STYLE CORPUS from reference papers — one folder per paper holding
+  normalized text, per-section splits, an exhaustive sentence-frame catalog, a measured
+  style vocabulary, a lean Style Card, and a machine-readable manifest.
+  Runs three lenses over shared, pre-normalized text —
   A (architecture + sentence frames), W (style vocabulary, measured by section),
   C (Style Card: V/L/P indicators + red flags).
   Use whenever the user wants to "extract style", "스타일 추출", "문체 추출",

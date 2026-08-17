@@ -1,8 +1,13 @@
-# Korean Adaptation Guide (EXPERIMENTAL) — V/L/P lenses for Korean documents
+# Korean Adaptation Guide (EXPERIMENTAL) — lenses A / W / C for Korean documents
 
 How to run the three lenses on Korean formal documents (연구보고서, 정책보고서,
-국문 논문). Read the three English lens files first — this file only states what
-CHANGES for Korean. Mark every output card `[Korean — experimental]`.
+국문 논문). Read `stage0-prep.md`, `lens-architecture.md`, `lens-vocabulary.md`
+and `lens-card.md` first — this file only states what CHANGES for Korean.
+Mark every output card `[Korean — experimental]`.
+
+Stage 0 is unchanged: run `prep.py` first and read `sections/*.txt`, never the PDF.
+Section IDs stay A/I/M/R/D/C even when the document uses 장·절; record the real
+heading names in `manifest.prep.detection_notes` and supply them with `--marks`.
 
 ## Scope
 
@@ -10,7 +15,7 @@ Formal institutional/academic Korean (격식체). Sections follow the document's
 structure (장·절, 서론/본론/결론, or 요약/현황/개선방안) — record the actual
 structure; do not force IMRaD.
 
-## V lens — what "characteristic vocabulary" means in Korean
+## Lens W — what "style vocabulary" means in Korean
 
 Collect (per section, lean, evidence-gated):
 
@@ -23,11 +28,11 @@ Collect (per section, lean, evidence-gated):
 4. **격식 명사구 / 정형구**: ~방안, ~체계, ~기반, 제도적 기반, 개선방안 도출,
    시사점 — the handful that recur as register.
 5. Evidence gate applies unchanged: count with
-   `python scripts/quant_check.py --strip-refs count --items cand.txt doc.pdf`
+   `py -3.10 scripts/quant_check.py count --items cand.txt --per-file sections/*.txt`
    (Hangul items match with attached particles automatically). Keep at Freq ≥ 2,
    record freq, `(rare-but-marked)` ≤ 2 items.
 
-## L lens — frames and architecture in Korean
+## Lens A — frames and architecture in Korean
 
 - **Section architecture**: paragraph-function sequence per 장/절 (예: 배경 →
   현황 → 문제점 → 개선방향 → 시사점). Absences are style (예: 요약문 없음).
@@ -39,12 +44,12 @@ Collect (per section, lean, evidence-gated):
 - Anchor counting works unchanged (`것으로 판단된다` is a countable anchor).
   Recurrent (≥2) vs Singleton status required.
 
-## P lens — Korean profile dimensions
+## Lens C — Korean profile dimensions
 
 Measured (script auto-detects Korean; report as approximate, ±20% bands):
 
 ```bash
-python scripts/quant_check.py --strip-refs profile doc.pdf
+py -3.10 scripts/quant_check.py profile sections/*.txt
 # lang=ko: eojeol tokens, ending-split sentences, 한국어 헤징/1k, 되다·어지다 피동/1k
 ```
 
@@ -66,7 +71,9 @@ Reading judgments (replace English dims):
 
 ## Cards & synthesis
 
-Same card/profile formats as English (freq-stamped V items, anchored L frames,
-measured+judged P table). In `style_profile.md`, add `[Korean — experimental]`
-next to the title and keep Korean and English corpora in SEPARATE profiles —
-never aggregate across languages.
+Same output contract as English: `logic.md`, `anchors.txt`, `style-vocab.md`,
+`wordlist.tsv`, `card.md`, `manifest.json` under `papers/<slug>/`. Add
+`[Korean — experimental]` next to the card title and set
+`manifest.provenance.notes` accordingly. Keep Korean and English corpora in
+SEPARATE corpus roots — never aggregate across languages, and never put both
+in one `papers/` tree.

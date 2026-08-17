@@ -1,0 +1,4 @@
+interface:
+  display_name: "Extraction Style"
+  short_description: "Build a reusable STYLE CORPUS from reference papers — one folder per paper holding normalized text, per-section splits, an exhaustive sentence-frame catalog, a "
+  default_prompt: "Use $extraction-style for this task."

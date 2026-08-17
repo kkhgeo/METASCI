@@ -14,7 +14,7 @@ skills/                                                              24 skills
 │                        meta-rewriting · meta-rewriting-antiai · meta-rewriting-loop · meta-review ·
 │                        meta-proofreading · meta-proofreading-evidence
 ├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
-│                        metasci-style-extraction · meta-styling
+│                        extraction-style · meta-styling
 └── metasci_slide/       meta-slide-content · meta-slide-design
 
 codex-skills/            generated Codex build of the four packs above
@@ -74,8 +74,8 @@ The detailed sections below document the academic-research skills; the persona s
 │       ├──→ extraction-vocab → Vocab_{topic}/                             │
 │       │         (POS word inventory, technical glossary)                  │
 │       │                                                                  │
-│       ├──→ meta-styling (Mode A) → Style_{topic}/                        │
-│       │         (lexical style patterns)                                 │
+│       ├──→ extraction-style → <corpus>/papers/<slug>/                    │
+│       │         (frames, style vocabulary, Style Card)                   │
 │       │                                                                  │
 │       └──→ meta-writing                                                  │
 │                 (academic section writing)                                │
@@ -96,7 +96,7 @@ The detailed sections below document the academic-research skills; the persona s
 │                                                                          │
 │  Analysis Layer Separation:                                              │
 │    extraction-vocab     → WHAT words are used                            │
-│    meta-styling         → HOW words are used                             │
+│    extraction-style     → HOW the writing is built                       │
 │    extraction-logic     → HOW arguments are structured                   │
 │    extraction-knowledge → WHAT knowledge is cited                        │
 │                                                                          │
@@ -131,9 +131,15 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 ├── meta-rewriting/
 │   ├── SKILL.md
 │   └── references/{blueprint-template,journal-styles,output-formats}.md
+├── extraction-style/
+│   ├── SKILL.md
+│   ├── references/{stage0-prep,lens-architecture,lens-vocabulary,lens-card,
+│   │                manifest,aggregate,lens-korean}.md
+│   └── scripts/{prep,wordlist,quant_check}.py
 ├── meta-styling/
 │   ├── SKILL.md
-│   └── references/{extraction_template,revision_guide}.md
+│   ├── references/revision_guide.md
+│   └── scripts/quant_check.py
 ├── meta-review/
 │   ├── SKILL.md
 │   └── references/review_template.md
@@ -154,7 +160,7 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 | extraction-knowledge | Cited knowledge into 5 epistemological categories | `Knowledge_{topic}/` |
 | extraction-vocab | Exhaustive POS word extraction + technical term glossary | `Vocab_{topic}/` |
 | extraction-logic | Structure, argument logic, sentence frames | `Logic_{topic}/` |
-| metasci-style-extraction | Style of 3-4 exemplar papers → Style Cards + profile | `Style_{destination}/` |
+| extraction-style | Reference papers → style corpus: sentence frames, measured vocabulary, Style Card | `<corpus>/papers/<slug>/` |
 
 ### Writing — produce prose that does not exist yet
 
@@ -177,7 +183,7 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 | meta-proofreading | Reviewer panel + judge; whole draft, section, or paragraph | invoked by name |
 | meta-proofreading-evidence | Are these phrases actually used in published papers? | nothing |
 | meta-proofreading-korean | Korean academic/policy draft → rubric-tiered panel proofreading | Korean draft |
-| meta-styling | Apply an extracted style profile, measured before/after | `style_profile.md` |
+| meta-styling | Apply a style corpus to a draft: structural diff, then candidate revisions | a style corpus (N≥1) |
 | meta-rewriting-antiai | Strip AI writing tells across 4 layers | nothing |
 | meta-mywriting-korean | Korean draft → the author's own style Blueprint | Blueprint |
 
@@ -302,16 +308,26 @@ Output: `Rewrite_{topic}/` folder with blueprint, gap analysis, and rewritten dr
 
 ---
 
-## 6. meta-styling
+## 6. extraction-style + meta-styling
 
-Two-mode skill for analyzing and applying academic writing styles.
+A producer and a consumer, not two modes of one skill. `extraction-style` builds
+the corpus; `meta-styling` applies it. They were split so that the rule
+*"numbers diagnose, they do not set targets"* holds on both sides.
 
-- **Mode A (Extraction)**: Extract sentence patterns, vocabulary, transitions, hedging, quantitative expressions, and citation patterns per IMRaD section → Save to `Style_{topic}/`
-- **Mode B (Revision)**: Compare user draft against extracted data bank → Revise to match target style
+- **`extraction-style`**: reference paper → one folder per paper holding normalized
+  text, per-section splits, an exhaustive sentence-frame catalog, a measured style
+  vocabulary, a lean Style Card, and a manifest.
+- **`meta-styling`**: tags the draft's own structure *blind*, diffs it against the
+  reference's paragraph and sentence-role map across eight dimensions, then offers
+  2–3 candidate revisions with a recommendation. Measured rates are a closing
+  sanity check, never an edit target.
+
+Confidence scales with how many papers the corpus holds: `single-source` (N=1),
+`provisional` (N=2), `corpus` (N≥3). At N=1 only absences are enforced.
 
 ```
-> "Extract style from Weber2021.pdf to Style_geochemistry"
-> "Revise my Introduction to match Style_geochemistry"
+> "kkh_nitrate_iso.pdf 스타일 추출해줘"
+> "이 Discussion 초고를 스타일 코퍼스에 맞춰줘"
 ```
 
 ---
@@ -361,14 +377,14 @@ Output: `Research_{topic}/` folder with world model, analysis notebooks, and str
 1. extraction-knowledge  → extract cited knowledge
 2. extraction-vocab      → build word inventory + technical glossary
 3. extraction-logic      → map argument structure + sentence frames
-4. meta-styling (Mode A) → extract stylistic patterns
+4. extraction-style      → build the style corpus
 ```
 
 ### Academic writing
 ```
 1. meta-writing          → draft sections using My Data + Knowledge + PDF + Web
 2. meta-review           → multi-reviewer improvement using logic+vocab extractions
-3. meta-styling (Mode B) → revise draft to match target journal style
+3. meta-styling          → revise draft against the style corpus
 4. meta-rewriting        → one-shot style transfer from reference paper
 ```
 

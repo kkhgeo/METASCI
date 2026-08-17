@@ -423,7 +423,7 @@ Rewrite_내스타일/
 
 새 보고서/발간물을 Blueprint에 반영하려면:
 1. 논리·스타일 추출 스킬로 새 글을 분석한다.
-   - METASCI(원본 저장소): `extraction-logic`, `metasci-style-extraction`
+   - METASCI(원본 저장소): `extraction-logic`, `extraction-style`
    - 로컬 단독 대안: `logic-extraction`, `style-guide`
 2. 추출 결과(logic/style 마크다운)를 분석 폴더에 저장한다.
 3. 그 데이터로 `references/my-style-blueprint.md`의 해당 차원

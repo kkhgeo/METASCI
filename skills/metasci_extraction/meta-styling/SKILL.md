@@ -3,11 +3,11 @@ name: meta-styling
 description: |
   Use when an academic draft in English — a paragraph, section, or report chapter, including
   a bilingual working document whose manuscript prose is English — must be revised to match
-  reference papers whose style has already been extracted into a metasci-style-extraction
+  reference papers whose style has already been extracted into a extraction-style
   corpus. Triggers: "문체 교정", "스타일 맞춰줘", "톤 맞춰줘",
   "스타일 적용", "이 카드로 고쳐줘", "style revision", "apply style card",
   draft + style corpus given. NOT for style extraction ("스타일 추출" →
-  metasci-style-extraction), NOT for argument soundness ("논리 검토" → meta-review),
+  extraction-style), NOT for argument soundness ("논리 검토" → meta-review),
   NOT for AI-trace removal (→ meta-rewriting-antiai), NOT for Korean drafts
   (→ meta-mywriting-korean or meta-report-writing).
 allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, Agent]
@@ -26,7 +26,7 @@ The reference is already tagged — `logic.md` records every paragraph's functio
 relation, every sentence's role and frame code. v4.0 tags the draft the same way and
 diffs the two. Prescriptions come from that diff. Numbers are a sanity check at the end.
 
-**Why this replaced v3.0.** `metasci-style-extraction` instructs every card to carry the
+**Why this replaced v3.0.** `extraction-style` instructs every card to carry the
 rule *"Numbers diagnose; they do not set targets — never a value a draft should be edited
 toward."* v3.0 edited toward them. Measured consequence on a test draft: v3.0 returned
 `ALL DIMENSIONS IN BAND` on a revision that contained **none** of the five distinctive
@@ -48,7 +48,7 @@ revisions with a recommendation, not imposed as one answer.
 
 | Job | Skill |
 |-----|-------|
-| Extract style from reference papers | `metasci-style-extraction` (builds the corpus) |
+| Extract style from reference papers | `extraction-style` (builds the corpus) |
 | **Match a draft's structure to a corpus** | **meta-styling (this skill)** |
 | Judge whether the argument is *sound* | `meta-review` |
 | Decide section order / outline | `meta-writing-mapping` |
@@ -75,7 +75,7 @@ It does not ask whether the argument is good.
    If the draft carries **its own style rules**, they are a competing authority and
    **they win** over the corpus. Stage 0.3 governs how conflicts are handled — they are
    surfaced as choices, never resolved silently.
-2. **Corpus root** — a `metasci-style-extraction` v3.x folder:
+2. **Corpus root** — a `extraction-style` v3.x folder:
 
 ```
 <corpus-root>/
@@ -99,7 +99,7 @@ named). **Announce N, the tier, and the slugs before Stage 1.**
 **`style_profile.md` is an optional cache, never a requirement.** Use it only when it
 exists *and* is newer than every card in scope; otherwise ignore it and say so in one
 line. A stale profile is worse than none. **Never tell a user who has cards to go run
-`metasci-style-extraction`.**
+`extraction-style`.**
 
 **Legacy:** `Style_{destination}/style_profile.md` + `cards/*_style.md` still read. A v1.x
 24-table data bank does not — explain the supersession and offer re-extraction.
@@ -247,7 +247,7 @@ matter/abstract) is never a band.
 
 | Situation | Response |
 |-----------|----------|
-| No corpus found | Ask for the path; hand off to `metasci-style-extraction` only if none exists |
+| No corpus found | Ask for the path; hand off to `extraction-style` only if none exists |
 | No `style_profile.md` | **Normal.** Derive from cards; one line saying so. Never block |
 | `style_profile.md` stale | Ignore, warn once, derive from cards |
 | Draft's section absent from the corpus scheme | See `revision_guide.md` §Section mapping — fused R+D is the common case, not an error |
@@ -281,5 +281,5 @@ matter/abstract) is never a band.
 pipeline with parallel branches; multi-candidate output with recommendation; numbers
 demoted to a sanity check; Korean removed)
 **Design spec**: `docs/2026-08-17-v4-design.md`
-**Consumes**: `metasci-style-extraction` v3.x corpus
+**Consumes**: `extraction-style` v3.x corpus
 **Skill**: Meta_researcher / meta-styling

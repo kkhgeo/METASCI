@@ -1,0 +1,4 @@
+interface:
+  display_name: "Extraction Style"
+  short_description: "META-SCI series"
+  default_prompt: "Use $extraction-style for this task."

@@ -119,7 +119,7 @@ Generalization · Sequence · Concession · Problem-Solution · Evidence-Claim �
 Qualification · Reference · Method · Conclusion · Bridge.
 
 **Frame codes** — A1–L4 plus `Z` for anything the taxonomy does not name. Shared with
-`extraction-logic` and `metasci-style-extraction`; the table lives in that skill's
+`extraction-logic` and `extraction-style`; the table lives in that skill's
 `references/lens-architecture.md` §A.4. **Do not invent codes.** Expect a high `Z` rate — on
 the two papers measured so far it ran 39.5% and 26.5%, an order of magnitude above the
 taxonomy's illustrative 3%. A high `Z` rate is the interesting part, not a tagging failure.
@@ -485,7 +485,7 @@ N≥3  → divergence list: dimension, each paper's side, which lean was kept.
 ### G. Optional next steps
 - Argument soundness → meta-review
 - AI-trace removal → meta-rewriting-antiai
-- Raise confidence: extract more reference papers → metasci-style-extraction
+- Raise confidence: extract more reference papers → extraction-style
 (mention only; do not run)
 ```
 

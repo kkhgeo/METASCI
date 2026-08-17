@@ -5,7 +5,7 @@
 
 - `Logic_EIA_Review/` — 논리 추출 결과 (`extraction-logic` 산출)
   - `KimKH2020_logic.md`, `KEI2022_logic.md`, `index.md`
-- `Style_EIA_Review/` — 스타일 추출 결과 (`metasci-style-extraction` 산출)
+- `Style_EIA_Review/` — 스타일 추출 결과 (`extraction-style` 산출)
   - `KimKH2020_style.md`, `KEI2022_style.md`
 
 ## 발간물 원본 PDF는 보관하지 않음

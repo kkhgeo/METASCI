@@ -32,7 +32,7 @@ skills/
 │   ├── extraction-knowledge/
 │   ├── extraction-logic/
 │   ├── extraction-vocab/
-│   ├── metasci-style-extraction/
+│   ├── extraction-style/
 │   └── meta-styling/
 └── metasci_slide/       # talk narrative → house-style deck
     ├── meta-slide-content/
@@ -80,7 +80,7 @@ Anything the vocabulary table cannot express belongs in `agent-overrides/<profil
 - **Manifest**: the only manifest Claude Code reads is `.claude-plugin/plugin.json`. There is no top-level `plugin.json`. When adding a new skill under a new category folder, add that folder to the manifest `skills` array.
 - **References**: research skills carry a `references/` folder with detailed templates — MUST be read before execution.
 - **Output folders** (research skills): `{SkillType}_{topic}/` (e.g. `Knowledge_isotopes/`, `Style_geochemistry/`, `Logic_ecology/`).
-- **Source tracing**: extracted items carry source tags (`[EX#N-SECTION]` for meta-styling, `[P#-S#]` for logic/vocab).
+- **Source tracing**: extracted items carry `[P#-S#]` source tags (paragraph, sentence). `meta-styling` reuses the same address to join its stage artifacts.
 - **PDF reading**: the LLM reads PDFs directly — no preprocessing pipelines.
 - **Language**: skill instructions are in English for LLM accuracy; user-facing triggers and output include Korean.
 - **Parallel processing**: multiple papers can be processed concurrently via Task (Subagent).
@@ -89,7 +89,7 @@ Anything the vocabulary table cannot express belongs in `agent-overrides/<profil
 
 ```
 extraction-vocab      → WHAT words are used        (lexical inventory)
-meta-styling          → HOW words are used          (stylistic patterns)
+extraction-style      → HOW the writing is built     (frames, style lexicon)
 extraction-logic      → HOW arguments are structured (rhetorical flow)
 extraction-knowledge  → WHAT knowledge is cited      (epistemic content)
 ```
@@ -100,12 +100,12 @@ extraction-knowledge  → WHAT knowledge is cited      (epistemic content)
 1. `extraction-knowledge` → extract cited knowledge
 2. `extraction-vocab` → build word inventory + technical glossary
 3. `extraction-logic` → map argument structure + sentence frames
-4. `meta-styling` (Mode A) → extract stylistic patterns
+4. `extraction-style` → build the style corpus (frames, style lexicon, Style Card)
 
 ### Academic writing
 1. `meta-writing` → draft sections using Knowledge + PDF + Web
 2. `meta-review` / `paper-proofreader*` → multi-reviewer improvement and proofreading
-3. `meta-styling` (Mode B) → revise draft to match target journal style
+3. `meta-styling` → revise draft against the style corpus, candidates + recommendation
 4. `meta-rewriting` → one-shot style transfer from reference paper
 
 ### Data-driven discovery

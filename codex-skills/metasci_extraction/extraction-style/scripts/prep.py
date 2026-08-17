@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""prep.py — Stage 0 of metasci-style-extraction.
+"""prep.py — Stage 0 of extraction-style.
 
 Turns one paper into the fixed on-disk layout every downstream lens reads:
 

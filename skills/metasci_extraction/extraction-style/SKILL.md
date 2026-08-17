@@ -1,5 +1,5 @@
 ---
-name: metasci-style-extraction
+name: extraction-style
 description: |
   META-SCI series. Build a reusable STYLE CORPUS from reference papers: one folder per
   paper containing normalized text, per-section splits, an exhaustive sentence-frame
@@ -231,4 +231,4 @@ lays out candidates. For a deliberate corpus consensus — and only then — rea
 **Version**: 3.0.0 (corpus build: Stage 0 prep, fixed folder contract, manifest;
 absorbs measured frame-recurrence and section-scoped vocabulary; domain terminology
 delegated to extraction-knowledge)
-**Skill**: Meta_researcher / metasci-style-extraction
+**Skill**: Meta_researcher / extraction-style

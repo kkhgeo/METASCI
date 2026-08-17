@@ -3,7 +3,7 @@ name: meta-styling
 description: |
   Use when an academic draft in English — a paragraph, section, or report chapter, including
   a bilingual working document whose manuscript prose is English — must be revised to match
-  reference papers whose style has already been extracted into a extraction-style
+  reference papers whose style has already been extracted into an extraction-style
   corpus. Triggers: "문체 교정", "스타일 맞춰줘", "톤 맞춰줘",
   "스타일 적용", "이 카드로 고쳐줘", "style revision", "apply style card",
   draft + style corpus given. NOT for style extraction ("스타일 추출" →

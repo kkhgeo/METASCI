@@ -52,7 +52,7 @@ session = {
 
 **Save location:**
 ```
-~/.claude/projects/[project_hash]/memory/proofreader-session.json
+~/.claude/projects/[project_hash]/memory/proofreader-korean-session.json
 ```
 
 **Saved data:**

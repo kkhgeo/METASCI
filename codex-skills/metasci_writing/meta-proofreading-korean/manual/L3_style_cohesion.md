@@ -144,9 +144,9 @@ Kim, Taeryeong(2026) *Frontiers in Education* 11 — 평정자 42명, 204,894 �
 
 ---
 
-## 6. `meta-mywriting-korean`과 충돌할 때
+## 6. `meta-rewriting-korean` Blueprint와 충돌할 때
 
-그 스킬은 **저자 본인의 발간물에서 추출한 Blueprint**를 따르고(기술적 규범),
+그 스킬의 C안은 **저자 본인의 발간물에서 추출한 Blueprint**를 따르고(기술적 규범),
 이 스킬은 **공표된 규범**을 따른다(처방적 규범). 둘은 종류가 다른 주장이다.
 
 대표적 충돌: Blueprint Dim 4는 "따라서 8+회/편, 즉 5+회/편"을 지문으로 삼지만,

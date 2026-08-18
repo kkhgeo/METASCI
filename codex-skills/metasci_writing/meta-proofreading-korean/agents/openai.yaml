@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Proofreading Korean"
+  short_description: "한국어 학술·정책 원고의 다중 리뷰어 심의 교정"
+  default_prompt: "Use $meta-proofreading-korean for this task."

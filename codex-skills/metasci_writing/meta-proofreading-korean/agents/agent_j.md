@@ -106,7 +106,7 @@ SELECTIONS_L3: [
 
 ### 충돌 보고
 
-`meta-mywriting-korean` Blueprint와 어긋나면 판정하지 말고 그대로 보고한다.
+`meta-rewriting-korean`의 Blueprint(`references/blueprint.md`)와 어긋나면 판정하지 말고 그대로 보고한다.
 
 ```
 [L3 · 충돌] {항목}

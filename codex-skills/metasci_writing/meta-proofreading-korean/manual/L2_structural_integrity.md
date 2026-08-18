@@ -59,8 +59,8 @@ A strict one-to-one relation, checkable mechanically.
       corresponding outcome anywhere = MEDIUM. Either the result was dropped
       (selective reporting) or the method description is vestigial.
 - [ ] **Order matches.** Where Results follow a different sequence than Methods,
-      ask whether the ordering is deliberate (importance-driven ordering is
-      legitimate — see `sections/04_results.md`) or accidental. Flag only when the
+      ask whether the ordering is deliberate (importance-driven ordering —
+      leading with the most important finding — is legitimate) or accidental. Flag only when the
       mismatch makes the paper harder to follow, not on principle.
 
 **Build the correspondence table before judging:**
@@ -128,9 +128,9 @@ consistency of **statements**.
 - [ ] **Sample-to-population drift.** Does an observation made on the studied
       sample get restated as a general property? "20 of 25 sites showed X" becoming
       "X occurs at 80% of sites" changes an observation into a population estimate.
-      = HIGH. This is distinct from the causal over-claiming that
-      `sections/06_discussion.md` already covers — the claim can be correctly
-      non-causal and still over-generalized.
+      = HIGH. This is distinct from causal
+      over-claiming — the claim can be correctly non-causal and still
+      over-generalized.
 - [ ] **Focus pruning.** Are results, tables, or figures included that the research
       question does not require? Comprehensiveness is not a virtue when it dilutes
       the argument; flag MEDIUM and name what could be moved to supplementary.

@@ -10,7 +10,7 @@ Kim(2026): 준거 난도 범위(3.09 logits)가 평정자 엄격도 범위(1.003
 **리뷰어를 늘리는 것보다 준거를 명세화하는 것이 3배 중요하다.** 이 스킬은 그
 결론을 설계에 반영해 인원 대신 매뉴얼에 투자한다.
 
-리뷰어들은 **서로를 모른 채** 병렬로 판단한다(한 응답에서 Agent tool 다중 호출).
+리뷰어들은 **서로를 모른 채** 병렬로 판단한다(한 응답에서 `spawn_agent` 다중 호출).
 지식 자원은 `knowledge/distribution_strategy.md`에 따라 분배한다.
 
 ---
@@ -97,7 +97,7 @@ OPTIONS: [
     ],
     keep_original_case: "원문을 그대로 두는 근거 한 줄",
     source: "박혜진·이미혜(2017)" | "출처 없음 — 제안일 뿐",
-    conflict: null | { blueprint: "…", manual: "…" }   // meta-mywriting-korean과 충돌 시
+    conflict: null | { blueprint: "…", manual: "…" }   // meta-rewriting-korean Blueprint와 충돌 시
   }
 ]
 ```

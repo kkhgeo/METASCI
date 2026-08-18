@@ -73,3 +73,11 @@ booster·self-mention), `cohesion_flow.md`(Given-New·acronym discipline),
 
 그 자리를 `L1_sentence_rules.md`(번역투·피동·조사 호응)와
 `L3_style_cohesion.md`(응집성·어휘)가 대신한다.
+
+---
+
+## 이 폴더가 정본이다
+
+`meta-rewriting-korean/references/manual/`은 이 폴더의 **사본**이다(단락 스킬
+동봉용). 매뉴얼 수정은 여기서 하고 그쪽으로 재복사한다 — 사본을 직접 고치면
+다음 재복사에서 소실된다.

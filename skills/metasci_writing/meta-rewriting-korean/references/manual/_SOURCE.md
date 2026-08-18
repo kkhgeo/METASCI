@@ -1,10 +1,13 @@
 # 출처와 동기화 규칙
 
-이 폴더와 상위 `references/`의 파일들은 2026-08-19에 퇴역한 두 스킬에서
-흡수한 **정본**이다. 원 스킬들은 `legacy-skills/`로 이동했고 더 이상
-갱신되지 않는다 — 즉 이 사본이 이제 유일한 관리본이며, 수정은 여기서 한다.
+이 폴더와 상위 `references/`의 파일들은 2026-08-19 스킬 재편에서 흡수한
+것이다. 관리 지위는 파일마다 다르다 — 아래 표의 "정본/사본"을 볼 것.
 
-## 이 폴더 (`manual/`) — meta-proofreading-korean에서
+## 이 폴더 (`manual/`) — **사본** (정본: meta-proofreading-korean)
+
+meta-proofreading-korean은 같은 날 검토·개선을 거쳐 **복귀**했고, manual의
+정본은 그 스킬의 `manual/`이다. 수정은 거기서 하고 이 폴더로 재복사한다.
+이 사본을 직접 고치면 다음 재복사에서 소실된다.
 
 | 파일 | 층 | 판정 권한 |
 |---|---|---|
@@ -26,7 +29,7 @@
 
 | 파일 | 출처 (퇴역/유지) | 용도 |
 |---|---|---|
-| `blueprint.md` | meta-mywriting-korean (퇴역) `my-style-blueprint.md` | C안 개인 문체. 소스: EIA리뷰 Vol.1 등 사용자 글 추출 |
+| `blueprint.md` | meta-mywriting-korean (퇴역) `my-style-blueprint.md` | **정본(여기)** — C안 개인 문체. meta-proofreading-korean도 충돌 보고 시 이 파일을 가리킴 |
 | `anti-ai-patterns.md` | meta-mywriting-korean (퇴역) | 진단 신호 (Stage 2 항상 로드) |
 | `humanization-gates.md` | meta-mywriting-korean (퇴역) | H1–H14 신호·span 규칙·결정적 게이트. MIT 라이선스 고지 포함 — 삭제 금지 |
 | `report-register.md` | **research-report-writer (유지, 프로필 플러그인)** `tone-adjustment.md` | 보고서 레지스터. **유일하게 상류가 살아있는 파일** — 상류가 바뀌면 재복사, 직접 수정 금지 |

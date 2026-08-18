@@ -8,11 +8,12 @@ description: >
   규범의 권위는 국립국어원·법제처 발간물과 KCI 등재 연구이며, 출처 없는
   규칙은 싣지 않는다. 모든 사용자 대면 출력은 한국어.
 
-  트리거: "한국어 교정", "국문 교정", "한국어 메타교정", "국문 원고 검토",
-  "meta-proofreading-korean", "한국어 패널 교정".
-  영문 원고는 이 스킬이 아니라 meta-proofreading을 쓴다.
-  문체를 개인 스타일로 맞추는 것은 meta-mywriting-korean 몫이다.
-allowed-tools: [Read, Write, Edit, Glob, Grep, Task, Agent, WebSearch, WebFetch, AskUserQuestion]
+  패널을 지명할 때만 발동한다: "한국어 메타교정", "국문 메타교정",
+  "한국어 패널 교정", "국문 패널 교정", "meta-proofreading-korean".
+  패널 지명이 없는 "국문 교정"·"이 문단 봐줘"와 단락 하나의 리뷰·리라이팅은
+  meta-rewriting-korean으로 간다. 영문 원고는 meta-proofreading을 쓴다.
+  개인 문체 적용은 meta-rewriting-korean의 C안(내 문체안) 몫이다.
+allowed-tools: [Read, Write, Glob, Grep, Agent, WebSearch, WebFetch, AskUserQuestion]
 ---
 
 # Meta-Proofreading-Korean — 명세성 3층 심의 교정
@@ -119,7 +120,8 @@ optimal을 선정한다. 한국어판은 **L3에서 optimal 필드를 비운다.
   항목은 `manual/sources.md` §인용 금지에 있다. 지적에 쓰지 않는다.
 - **영어권 글쓰기 규범을 들이지 않는다.** 단, 언어와 무관한 층위
   (구조 정합·수치 정합)는 예외다. 이 두 파일은 `meta-proofreading`에서 가져왔다.
-- **개인 스타일을 규범으로 쓰지 않는다.** `meta-mywriting-korean`의 Blueprint는
+- **개인 스타일을 규범으로 쓰지 않는다.** `meta-rewriting-korean`의 Blueprint
+  (`references/blueprint.md`)는
   *기술적* 규범(저자가 실제로 쓰는 방식)이고 이 스킬은 *처방적* 규범을 다룬다.
   둘을 섞으면 양쪽 다 무너진다.
 
@@ -167,6 +169,11 @@ optimal을 선정한다. 한국어판은 **L3에서 optimal 필드를 비운다.
 | **2. 섹션** | 한 절·장 | L1 + L2(섹션 내부만) + L3 |
 | **3. 단락** | 한 단락 + 문장 단위 | L1 + L3. **L2 섹션 간 정합은 판정 불가 — 그렇다고 말한다** |
 
+Mode 3는 **패널 심의가 필요할 때만** 쓴다. 단락 하나를 원칙 기준으로 진단하고
+대안 3안을 받는 일반 경로는 `meta-rewriting-korean`이고, 거기가 더 싸고 빠르다.
+이 스킬의 Mode 3는 리뷰어 합의가 값어치를 하는 경우 — 지적이 다툼의 여지가
+있거나, 저자가 독립 시선 여러 개를 원할 때 — 를 위해 남겨둔 것이다.
+
 Mode 3에서 `L2_structural_integrity.md`의 섹션 간 판정(질문 사슬, 초록↔본문)은
 **양쪽 섹션이 다 있어야 가능하다.** 못 한다고 말하지, 통과한 것처럼 굴지 않는다.
 
@@ -192,7 +199,7 @@ PHASE 6  출력 + 저자 결정 대기
 
 L1은 결정적이라 패널이 필요 없고, L1에서 걸린 문장은 L3 후보 생성 대상에서
 빠진다. 곧 교정될 문장의 문체 대안을 만드는 것은 낭비다
-(`meta-writing-mapping`·`meta-mywriting-korean`의 "전역에서 국소로"와 같은 논리).
+(`meta-writing-mapping`·`meta-rewriting-korean`의 "전역에서 국소로"와 같은 논리).
 
 ### 병렬 실행
 
@@ -232,14 +239,14 @@ L1은 결정적이라 패널이 필요 없고, L1에서 걸린 문장은 L3 후�
 |---|---|
 | 섹션·단락 **배치 설계** (문장 이전) | `meta-writing-mapping` |
 | 근거 수집 + **문장 생성** | `meta-writing` |
-| **개인 스타일**로 문체 전이 + AI 패턴 제거 | `meta-mywriting-korean` |
+| 한국어 **단락 하나** 리뷰·리라이팅 (3안, 개인 문체 포함) | `meta-rewriting-korean` |
 | **한국어 원고 심의 교정** | **이 스킬** |
 | 영문 원고 심의 교정 | `meta-proofreading` |
 | 표현이 실제 논문에 쓰이는지 실증 | `meta-proofreading-evidence` |
 
-`meta-mywriting-korean`과 겹치는 것처럼 보이지만 권위가 다르다. 그 스킬은
-**저자 본인의 발간물**에서 추출한 Blueprint를 따르고, 이 스킬은 **공표된 규범**을
-따른다. 둘이 충돌하면 — 예컨대 Blueprint는 "따라서 8+회/편"인데 이 스킬은
+`meta-rewriting-korean`의 C안과 겹치는 것처럼 보이지만 권위가 다르다. 그쪽의
+Blueprint는 **저자 본인의 발간물**에서 추출한 기술적 규범이고, 이 스킬은 **공표된
+규범**을 따른다. 둘이 충돌하면 — 예컨대 Blueprint는 "따라서 8+회/편"인데 이 스킬은
 "접속어 기본값 미사용"인데 — **충돌 자체를 사용자에게 보고하고 판정하지 않는다.**
 
 ---
@@ -264,5 +271,5 @@ L1은 결정적이라 패널이 필요 없고, L1에서 걸린 문장은 L3 후�
 
 ---
 
-**Version**: 0.1.0 (초판)
+**Version**: 0.2.0 (복귀판 — 트리거를 패널 지명으로 한정, Blueprint 참조를 meta-rewriting-korean으로, 세션 파일 분리, 영어판 유령 포인터 제거)
 **규범 소스베이스**: `한국어_규범_소스베이스.md` (조사 2026-08-04, 5개 병렬 조사)

@@ -40,7 +40,7 @@ py -3.10 "<skills-dir>/meta-styling/scripts/quant_check.py" profile 0-draft.pros
 ```
 
 Stop only if **the extracted prose** is not English, and point to
-`meta-mywriting-korean` or `meta-report-writing`.
+`meta-rewriting-korean`.
 
 > **Never run the language check on the raw file.** Measured on a live draft: a 3,458-word
 > working document whose manuscript prose is entirely English returned `lang: ko`, because
@@ -518,13 +518,12 @@ already recorded. **Never infer fusion from the content.**
 
 ## Not supported
 
-**Korean drafts and Korean corpora.** Stop and point to `meta-mywriting-korean` or
-`meta-report-writing`. The frame taxonomy, paragraph-function tags, and sentence-role list
+**Korean drafts and Korean corpora.** Stop and point to `meta-rewriting-korean`. The frame taxonomy, paragraph-function tags, and sentence-role list
 are all derived from English academic prose; applied to Korean they produce tags that look
 authoritative and mean nothing. The v3.0 experimental Korean path was removed rather than
 carried forward — a half-working path that labels itself experimental still gets used.
 
 ---
 
-**Guide Version**: 4.1.0
+**Guide Version**: 4.1.1
 **Design spec**: `../docs/2026-08-17-v4-design.md`

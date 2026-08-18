@@ -32,7 +32,7 @@ at a glance that the rewrite still says what they meant. The translation is
 a comprehension aid, not manuscript prose: the English text is the
 deliverable, and the translation is checked against no Korean register
 standard. A Korean paragraph that is meant to *stay* Korean does not belong
-here: say so in one line and point to `meta-mywriting-korean`. This skill
+here: say so in one line and point to `meta-rewriting-korean`. This skill
 carries no Korean register standard, and judging Korean prose by English
 norms wrecks it.
 
@@ -351,11 +351,11 @@ recommendation.
   untouched. If the revision changes the ⑤ recommendation, restate it.
 - **한국어 원고 요청** (a paragraph that should *be* Korean manuscript
   prose, not a translation) → decline in one line and point to
-  `meta-mywriting-korean`. The 국문 번역 in ④ is a comprehension aid;
+  `meta-rewriting-korean`. The 국문 번역 in ④ is a comprehension aid;
   Korean prose meant for a manuscript needs a Korean register standard
   this skill does not carry.
 - **새 단락** → run the four stages again from Stage 1.
 
 ---
 
-**Version**: 2.3.0
+**Version**: 2.3.1

@@ -92,8 +92,17 @@ It does not ask whether the argument is good.
     └── manifest.json           measured rows (sanity check only)
 ```
 
-Resolve in this order, stop at the first hit: the path the user gave → a folder matching
-`*style*corpus*` or `Style_*` at or under the working directory → ask.
+Resolve in this order: the path the user gave → a folder matching `*style*corpus*` or
+`Style_*` at or under the working directory → ask.
+
+**If resolution turns up more than one corpus** — several matching folders, or a
+user-given path that is a *parent* holding several collections — never pick one silently.
+List what was found and ask which to use. Corpora are not interchangeable: one may hold
+the author's own papers, another a target journal's, and revising toward the wrong
+identity is a category error the structural diff cannot catch. A folder of raw PDFs with
+no `papers/<slug>/card.md` underneath is not a corpus — name it as unextracted and offer
+`extraction-style`, but never block on it when an extracted corpus is also present.
+Corpora are mixed only when the user asks for it (Pick-list mixing, N≥2).
 
 **Then count N** = `papers/<slug>/card.md` files in scope (all, or the subset the user
 named). **Announce N, the tier, and the slugs before Stage 1.**
@@ -281,7 +290,10 @@ matter/abstract) is never a band.
 
 ---
 
-**Version**: 4.0.0 (representation matching replaces metric matching; staged file-backed
+**Version**: 4.1.0 (frame-code taxonomy bundled as `references/frame-codes.md` so Stage 1a
+runs without `extraction-style` installed; multi-corpus resolution made explicit — multiple
+hits are listed and asked, never silently picked)
+**Previous**: 4.0.0 (representation matching replaces metric matching; staged file-backed
 pipeline with parallel branches; multi-candidate output with recommendation; numbers
 demoted to a sanity check; Korean removed)
 **Design spec**: `docs/2026-08-17-v4-design.md`

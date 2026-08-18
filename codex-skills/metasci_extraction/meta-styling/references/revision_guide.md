@@ -118,9 +118,10 @@ Generalization · Sequence · Concession · Problem-Solution · Evidence-Claim �
 **Sentence roles** — Topic · Claim · Evidence · Elaboration · Example · Transition ·
 Qualification · Reference · Method · Conclusion · Bridge.
 
-**Frame codes** — A1–L4 plus `Z` for anything the taxonomy does not name. Shared with
-`extraction-logic` and `extraction-style`; the table lives in that skill's
-`references/lens-architecture.md` §A.4. **Do not invent codes.** Expect a high `Z` rate — on
+**Frame codes** — A1–L4 plus `Z` for anything the taxonomy does not name. The table is
+bundled in this skill: `references/frame-codes.md` (a synced copy of `extraction-style`'s
+`lens-architecture.md` §A.4 — edits happen upstream, then re-copy; the copy's header
+records the rule). **Do not invent codes.** Expect a high `Z` rate — on
 the two papers measured so far it ran 39.5% and 26.5%, an order of magnitude above the
 taxonomy's illustrative 3%. A high `Z` rate is the interesting part, not a tagging failure.
 
@@ -525,5 +526,5 @@ carried forward — a half-working path that labels itself experimental still ge
 
 ---
 
-**Guide Version**: 4.0.0
+**Guide Version**: 4.1.0
 **Design spec**: `../docs/2026-08-17-v4-design.md`

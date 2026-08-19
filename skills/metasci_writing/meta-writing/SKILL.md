@@ -76,7 +76,7 @@ Settings:
   paragraphs: [1-3, default 2]
   words_per_paragraph: [150-250]
   citation_style: APA 7
-  language: [bilingual/english/korean]
+  language: [bilingual/english]
   results_style: [data-only / with-comparison, default with-comparison]
 </task_spec>
 
@@ -373,4 +373,4 @@ the field, restating the abstract, chaining objectives together — are in the m
 
 ---
 
-**Version**: 1.2.0
+**Version**: 1.2.1

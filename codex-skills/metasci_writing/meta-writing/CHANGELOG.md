@@ -1,5 +1,44 @@
 # CHANGELOG — meta-writing (metasci_writing / finalized)
 
+## 1.2.1 (2026-08-19)
+
+- **`language: korean` 옵션 제거** (사용자 결정). task_spec에 선언만 있고 구현
+  규칙이 어디에도 없는 유령 옵션이었다 — 한국어 레지스터 기준 없이 국문 학술
+  산문을 생성할 위험. 국문 단락 작업은 meta-rewriting-korean(리뷰·리라이팅),
+  한국어 원고 패널 교정은 meta-proofreading-korean이 맡는다. bilingual의
+  국문 번역(이해 보조용)은 그대로 유지.
+- **`claude_writing_manual/_SOURCE.md` 의존 표 현행화.** meta-rewriting 행이
+  낡아 있었다 — 2.3.0(2026-08-18)부터 자체 사본(`references/manual/`, 00–07 +
+  DECISIONS 부분집합)을 동봉하므로 이 폴더를 더 이상 읽지 않는다.
+  meta-writing-mapping과 meta-proofreading은 여전히 상대 경로로 이 폴더를
+  읽으므로 **meta-writing과 나란히 설치되어야 한다**는 요구를 명시.
+
+## 1.2.0 (2026-08 중순 — 소급 기록)
+
+> 저장소 이력 통합(PR #14, 2026-08-18)으로 이 버전의 커밋 이력이 소실되어,
+> 1.1.0 로컬 사본(codex_METASCI_repo, a61a108)과의 diff로 2026-08-19에 복원한
+> 내역이다.
+
+- **`references/claude_writing_manual/` 동봉 신설** — 327개 원리 매뉴얼 전체
+  (00–12, INDEX, DECISIONS, DIAGNOSTIC-MAP, _remined). Phase 3에 "세 가지를
+  이 순서로 읽는다"(template §Loop 5 → section_guides → manual) 절차와
+  venue-bound 3문항(DECISIONS) · 기결정 2문항(1인칭, 중간 강도 헤징) 처리를
+  추가. `_SOURCE.md`에 상류(`Z:\...\claude_writing_manual`) 및 타 스킬의
+  상대 경로 접근 표를 기록.
+- **description 재작성** — 트리거 중심, NOT-케이스 라우팅(교정→proofreading,
+  단락→rewriting, 목차→writing-mapping, 문체→styling).
+- **allowed-tools 정비** — `Task`(구명) 제거, `Grep`·`AskUserQuestion` 추가.
+- **인용 밀도 단일 출처화** — `min_citations`은 섹션 전체의 서로 다른 소스
+  수로 재정의하고, 단락당 밀도는 `section_guides.md` §인용 밀도 표로 일원화
+  (기존 "단락당 3회 이상" 고정값 제거).
+- **본문 요약을 직접 실행 가능하게** — Loop 1–4·검증 5단계 요약을 따라가면
+  되고, 참조 파일은 형식·규칙 보충용으로 강등("전체를 읽어라" 지시 제거).
+- **`references/parallel-processing.md` 분리 신설** — SKILL.md의 병렬 처리
+  절을 이동, 디스패치 임계값(Knowledge 3+, PDF 2+, 그림+표)과 서브에이전트
+  프롬프트 수록.
+- Source Language Discipline 문구 정련 — Phase 4 Step 3와의 관계 명시,
+  reporting verb 표를 section_guides §Reporting verb 선택으로 위임.
+
 ## 1.1.0 (2026-07-23)
 
 `Writing_Principles_Extraction` 원리 은행(27개 소스, 대표 원리 185개) 대조 검토 결과를 반영.

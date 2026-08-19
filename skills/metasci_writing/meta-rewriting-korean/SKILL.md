@@ -8,8 +8,8 @@ description: >
   "내 스타일로 써줘", "내 톤으로 바꿔줘", "AI 톤 빼줘", "보고서 문장
   다듬어줘"라고 하면 이 스킬을 쓴다. 입력도 출력도 한국어. 영어 단락
   리라이팅은 meta-rewriting, 영어 AI 흔적 제거는 meta-rewriting-antiai,
-  참조 논문 문체 적용은 meta-styling, PPT→보고서 생성은
-  research-report-writer.
+  참조 논문 문체 적용은 meta-styling, 아직 없는 국문 섹션을 새로 쓰는 것은
+  meta-writing-korean, PPT→보고서 생성은 research-report-writer.
 allowed-tools: [Read, Glob, Bash, AskUserQuestion]
 ---
 
@@ -270,7 +270,7 @@ P1 보호 토큰(수치·인용·각주·표/그림 참조의 증감), P3 종결
 
 ---
 
-**Version**: 1.0.0
+**Version**: 1.0.1
 **계보**: meta-rewriting 2.3.0의 4단계 구조를 한국어 레지스터로 이식.
 지침은 meta-proofreading-korean의 manual/(L1·L2·L3), meta-mywriting-korean의
 Blueprint·anti-AI·humanization gates, research-report-writer의 보고서 톤

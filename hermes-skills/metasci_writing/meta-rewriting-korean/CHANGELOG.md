@@ -1,5 +1,11 @@
 # Changelog — meta-rewriting-korean
 
+## 1.0.1 — 2026-08-19
+
+description에 국문 섹션 생성 라우팅 추가(meta-writing-korean 신설). 본문 변경
+없음. meta-writing-korean이 이 스킬의 references/·scripts/를 상대 경로로
+읽으므로 나란히 설치되어야 한다.
+
 ## 1.0.0 — 2026-08-19
 
 신규. meta-rewriting 2.3.0(영어판)의 4단계 구조 — 입력 → 원리 로드 →

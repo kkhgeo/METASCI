@@ -8,7 +8,8 @@ description: >
   prose ("이 그림 기반으로 써줘", "Figure 해석해줘").
   Not for text that already exists — sentence correction goes to meta-proofreading,
   paragraph rewriting to meta-rewriting, section order and outline to
-  meta-writing-mapping, style to meta-styling.
+  meta-writing-mapping, style to meta-styling. A section to be written in
+  Korean goes to meta-writing-korean.
 allowed-tools: [Read, Write, Edit, Glob, Grep, Agent, WebSearch, WebFetch, AskUserQuestion]
 ---
 
@@ -373,4 +374,4 @@ the field, restating the abstract, chaining objectives together — are in the m
 
 ---
 
-**Version**: 1.2.1
+**Version**: 1.2.2

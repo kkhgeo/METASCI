@@ -1,5 +1,12 @@
 # CHANGELOG — meta-writing (metasci_writing / finalized)
 
+## 1.2.2 (2026-08-19)
+
+- description에 국문 섹션 작성 라우팅 추가 — meta-writing-korean 신설에 따름.
+  본문 변경 없음. meta-writing-korean은 이 스킬의 writing_template·
+  parallel-processing·citation-and-verification을 상대 경로로 읽으므로
+  이 스킬과 나란히 설치되어야 한다.
+
 ## 1.2.1 (2026-08-19)
 
 - **`language: korean` 옵션 제거** (사용자 결정). task_spec에 선언만 있고 구현

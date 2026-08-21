@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Writing Korean"
-  short_description: "아직 없는 국문 원고 섹션을 새로 쓴다 — 사용자의 그림·표·데이터(My Data)와 선행문헌(Knowledge)을 결합해 학술 논문 국문 또는 기관·정책 보고서 섹션의 초안을 작성한다"
+  short_description: "아직 본문이 없는 한국어 학술 논문 또는 기관·정책 보고서의 특정 섹션을 새로 작성한다"
   default_prompt: "Use $meta-writing-korean for this task."

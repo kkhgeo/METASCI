@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Rewriting Korean"
-  short_description: "한국어 학술·보고서 단락의 4단계 리뷰·리라이팅: 초고 단락을 받고, 한국어 글쓰기 규범(L1 결정 규칙·L2 논증 준거·L3 문체)을 로드하고, 문제를 진단한 뒤, 대안 단락 3안(최소수정 / 규범 재구성 / 내 문체안)을 제공한다"
+  short_description: "이미 존재하는 한국어 학술 논문·기관·정책 보고서 단락 또는 섹션을 비판적으로 해체하고 다시 쓴다"
   default_prompt: "Use $meta-rewriting-korean for this task."

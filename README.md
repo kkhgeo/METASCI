@@ -16,7 +16,7 @@ skills/                                                              26 skills
 ├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
 │                        extraction-style · meta-styling
 ├── metasci_slide/       meta-slide-content · meta-slide-design
-└── metasci_workspace/   writing-workspace-init
+└── metasci_workspace/   init-writing-workspace
 
 codex-skills/            generated Codex build of the five packs above
 hermes-skills/           generated Hermes build of the same

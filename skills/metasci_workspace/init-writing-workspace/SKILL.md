@@ -1,9 +1,9 @@
 ---
-name: writing-workspace-init
+name: init-writing-workspace
 description: >
   Initialize an academic writing/manuscript project folder by generating
   CLAUDE.md and AGENTS.md instruction files that configure any AI agent
-  (Codex CLI, Codex, Cursor, etc.) as a scholarly manuscript reviewer
+  (Claude Code, Codex, Cursor, etc.) as a scholarly manuscript reviewer
   rather than a coding agent. Use this whenever the user starts a new
   writing or manuscript project, asks to "set up a writing workspace",
   "글쓰기 작업폴더 초기화", "이 폴더에 클로드 엠디 만들어줘", "원고 프로젝트
@@ -12,7 +12,7 @@ description: >
   existing writing-project CLAUDE.md to the current canonical version.
 ---
 
-# Writing Workspace Init
+# Init Writing Workspace
 
 Generates the canonical instruction files for an academic manuscript
 workspace, so every writing project starts with the same reviewed-and-settled

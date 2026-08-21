@@ -1,0 +1,4 @@
+interface:
+  display_name: "Writing Workspace Init"
+  short_description: "Initialize an academic writing/manuscript project folder by generating CLAUDE.md and AGENTS.md instruction files that configure any AI agent (Claude Code, Codex"
+  default_prompt: "Use $writing-workspace-init for this task."

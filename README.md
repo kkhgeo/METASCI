@@ -4,20 +4,21 @@ A personal Claude Code skill collection in two domains: **academic research** (p
 
 ## Structure
 
-Skills in use are organized into four packs under `skills/`:
+Skills in use are organized into five packs under `skills/`:
 
 ```
-skills/                                                              24 skills
+skills/                                                              26 skills
 ├── persona/             virgil · beatrice · socrates · picasso · feynman-digest
 ├── metasci_writing/     meta-writing · meta-writing-mapping · meta-writing-blog · Meta_Introduction ·
-│                        meta-mywriting-korean · meta-proofreading-korean ·
+│                        meta-writing-korean · meta-rewriting-korean · meta-proofreading-korean ·
 │                        meta-rewriting · meta-rewriting-antiai · meta-rewriting-loop · meta-review ·
 │                        meta-proofreading · meta-proofreading-evidence
 ├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
 │                        extraction-style · meta-styling
-└── metasci_slide/       meta-slide-content · meta-slide-design
+├── metasci_slide/       meta-slide-content · meta-slide-design
+└── metasci_workspace/   writing-workspace-init
 
-codex-skills/            generated Codex build of the four packs above
+codex-skills/            generated Codex build of the five packs above
 hermes-skills/           generated Hermes build of the same
 legacy-skills/           superseded — kept for reference, not loaded by the plugin
 ```

@@ -1,220 +1,234 @@
 ---
 name: meta-writing-korean
 description: >
-  아직 없는 국문 원고 섹션을 새로 쓴다 — 사용자의 그림·표·데이터(My Data)와
-  선행문헌(Knowledge)을 결합해 학술 논문 국문 또는 기관·정책 보고서 섹션의
-  초안을 작성한다. 사용자가 "국문으로 써줘", "보고서 섹션 작성", "이 그림으로
-  국문 초안", "국문 Results 써줘", "선행연구 국문으로 정리"라고 하면 이 스킬을
-  쓴다. 출력은 국문 단독. 영문 섹션 작성은 meta-writing, 이미 있는 국문 단락의
-  수정은 meta-rewriting-korean, 완성 원고의 패널 교정은
-  meta-proofreading-korean, PPT 전체를 보고서로 변환은 research-report-writer.
+  아직 본문이 없는 한국어 학술 논문 또는 기관·정책 보고서의 특정 섹션을
+  새로 작성한다. 사용자가 제공한 연구자료·그림·표·데이터와 외부 문헌을
+  출처 유형별로 구분하고, 핵심 주장과 근거를 구성하여 내용이 빠지지 않은
+  작업 초안을 만든다. "국문 결과 단락 작성", "이 표로 고찰 초안 써줘",
+  "보고서의 개선방안 절 작성", "선행문헌과 내 결과를 엮어 국문 초안 작성"
+  요청에 쓴다. 이미 존재하는 국문 단락·섹션을 비판적으로 해체하고 다시 쓰는
+  작업은 meta-rewriting-korean이 담당한다. 단순 요약·번역·일반 설명에는 쓰지 않는다.
 allowed-tools: [Read, Write, Edit, Glob, Grep, Agent, WebSearch, WebFetch, AskUserQuestion]
 ---
 
-# Meta-Writing-Korean — 국문 섹션 작성
+# Meta-Writing-Korean — 내용 중심 국문 초안 작성
 
-meta-writing(영어판)의 절차 — My Data/Knowledge 구분, 5-Loop 탐색, 개고,
-인용 검증 — 를 그대로 따르되, 언어 규범 레이어만 한국어 자산으로 바꾼 스킬이다.
+이 스킬의 책임은 **무엇을 말할 것인가를 빠짐없이 구성하는 것**이다. 자료를
+탐색하고 주장과 근거를 연결하여 작업 초안을 만들되, 완성 문체를 가장하거나
+개인 문체를 과도하게 주입하지 않는다. 깊은 문장 비평, 삭제·이동·전면 재구성,
+리듬 최적화는 `meta-rewriting-korean`의 책임이다.
 
-## 나란히 설치 요구 (co-installation)
+## 역할 경계
 
-이 스킬은 두 이웃 스킬의 파일을 상대 경로로 읽는다. 사본을 만들지 않는 것은
-의도다 — 같은 매뉴얼 사본이 늘수록 드리프트가 늘기 때문이다.
+| 이 스킬이 한다 | 이 스킬이 하지 않는다 |
+|---|---|
+| 자료·문헌 탐색과 출처 구분 | 기존 문단의 문장별 비판 |
+| 섹션의 핵심 주장과 근거 구성 | 원문 문장 순서의 전면 해체 |
+| 표·그림·데이터에서 핵심 패턴 추출 | 개인 Blueprint에 맞춘 문체 모사 |
+| 주장-출처 대응과 인용 검증 | AI처럼 보이지 않기 위한 빈도 조정 |
+| 내용이 완결된 작업 초안 작성 | 여러 대안 문단의 비교·선택 |
 
-| 읽는 것 | 경로 | 용도 |
+초안은 읽을 수 있어야 하지만, **표현의 최종성보다 내용의 완전성과 근거의
+추적 가능성**을 우선한다.
+
+## 의존 자료
+
+탐색·인용 검증의 상세 절차가 필요할 때만 다음을 읽는다.
+
+| 경로 | 용도 |
+|---|---|
+| `../meta-writing/references/writing_template.md` | 자료 탐색과 골격 작성 형식 |
+| `../meta-writing/references/parallel-processing.md` | 자료가 많을 때 병렬 탐색 |
+| `../meta-writing/references/citation-and-verification.md` | 인용·서지 검증 |
+| `references/section_guides_korean.md` | 국문 섹션별 작성 기준 |
+
+다른 한국어 리라이팅 스킬의 문체 규범이나 검증 스크립트는 초안 생성의 필수
+의존성이 아니다. 경로가 열리지 않으면 아래 절차를 그대로 수행하며 없는 파일을
+지어내지 않는다.
+
+---
+
+## Phase 1 — 작업 정의
+
+요청에서 다음 항목을 내부 `task_spec`으로 정리한다. 결과를 바꿀 정도의
+불확실성이 있을 때만 질문한다. 요청이 명백하면 확인 절차 없이 진행한다.
+
+```yaml
+register: 학술 논문 국문 | 기관·정책 보고서
+section: 서론 | 방법 | 결과 | 고찰 | 결론 | 보고서 장·절
+scope: 섹션 전체 | 일부 단락
+central_message: 독자가 가져가야 할 핵심 주장 1문장
+audience: 전문가 | 인접 분야 | 일반
+results_style: data-only | with-comparison
+output_mode: clean | audit | file
+```
+
+기본값은 다음과 같다.
+
+- `results_style`: **data-only**. 결과 섹션에 문헌 비교나 기전 해석을 자동으로
+  넣지 않는다. 사용자가 요구하거나 고찰을 작성할 때만 비교·해석을 포함한다.
+- `output_mode`: **clean**. 본문을 먼저 주고, 실제 확인이 필요한 항목만 짧게 붙인다.
+- 인용 양식: 사용자·학술지·기관 규정 → 기존 원고 관행 → 임시 저자-연도형 순.
+  APA 7은 사용자가 지정하거나 다른 기준이 없을 때만 임시값으로 쓴다.
+
+## Phase 2 — Source Ledger와 Claim Ledger
+
+### 2.1 Source Ledger
+
+파일이 사용자 폴더에 있다는 이유만으로 저자 자료라고 간주하지 않는다. 각 자료를
+다음 유형 중 하나로 분류한다.
+
+| 유형 | 예 | 본문 처리 |
 |---|---|---|
-| 한국어 규범 매뉴얼 (L1·L2·L3) | `../meta-rewriting-korean/references/manual/` | 문장·단락·논증 규칙 |
-| 보고서 레지스터 사양 | `../meta-rewriting-korean/references/report-register.md` | 보고서 문체·구조·치환 |
-| AI 패턴 목록 | `../meta-rewriting-korean/references/anti-ai-patterns.md` | 생성 시 자기검열 |
-| 결정적 게이트 스크립트 | `../meta-rewriting-korean/scripts/verify_korean_revision.py` | Phase 3.5 검사 |
-| 탐색·산출 형식 상세 | `../meta-writing/references/writing_template.md` | Loop 1–5 형식 |
-| 병렬 처리 규칙 | `../meta-writing/references/parallel-processing.md` | 서브에이전트 임계값 |
-| 인용 검증 상세 | `../meta-writing/references/citation-and-verification.md` | Step 3 절차·APA 7 |
+| `author_data` | 이 연구가 생산한 실험·조사·분석 결과 | 그림·표·자료 번호로 지시, 별도 문헌 인용 없음 |
+| `external_dataset` | 국가 관측망, 공간자료, 공개 통계 | 생산기관·자료명·연도 인용 |
+| `literature` | 논문·보고서의 주장과 결과 | 해당 문헌 인용 |
+| `policy_legal` | 법령·지침·정책 문서 | 공식 명칭·연도·조문 확인 후 인용 |
+| `user_notes` | 연구자 메모·해석 후보 | 근거 상태 표시, 사실처럼 단정하지 않음 |
+| `unverified_secondary` | 다른 요약문에서 가져온 주장 | 원문 확인 전 미검증 표시 |
 
-**`meta-rewriting-korean`과 `meta-writing`이 함께 설치되어 있어야 한다.** 경로가
-열리지 않으면 그 사실을 사용자에게 알리고 해당 스킬 설치를 안내한다 — 없는
-파일을 지어내 대신하지 않는다.
+### 2.2 Claim Ledger
+
+초안을 쓰기 전에 주장 단위를 만든다.
+
+```text
+C1 | 주장 | 섹션 내 역할 | 근거/자료 | 출처 유형 | 인용 | 확실성 | 필수/선택
+```
+
+각 주장에는 최소 하나의 근거를 연결한다. **인용 개수 목표를 채우지 않는다.**
+평가 기준은 소스 수가 아니라 다음이다.
+
+- 외부에서 가져온 주요 주장에 근거가 있는가.
+- 가장 직접적인 1차 자료를 사용했는가.
+- 같은 주장을 뒷받침하는 인용을 불필요하게 쌓지 않았는가.
+- 수치·법령·기전 설명의 출처를 추적할 수 있는가.
+
+### 2.3 탐색 루프
+
+```
+Loop 1  요청·파일·표·그림·문헌 목록 스캔
+Loop 2  Knowledge에서 Claim + Citation 추출
+Loop 3  My Data와 외부 데이터의 패턴·수치·비교축 추출
+Loop 4  Claim Ledger의 근거·범위·최신성·반대 증거 갭 확인
+Loop 5  단락별 기능과 주장 순서 확정
+```
+
+문헌 3개 이상, PDF 2개 이상, 표·그림이 동시에 있으면 병렬 탐색을 고려하되,
+병렬 결과는 하나의 Claim Ledger로 합쳐 중복과 충돌을 정리한다.
 
 ---
 
-## 시작 — 프로젝트 설정
+## Phase 3 — 내용 초안 작성
 
-`writing.local.md`를 현재 폴더에서 찾는다(영어판과 공유). 있으면 요약해
-확인받고, 없으면 소스 경로를 직접 묻는다. 사용자가 명시한 경로가 항상 우선.
+### 3.1 먼저 단락 기능을 정한다
 
-## Phase 1 — 입력 파싱
+각 단락에 하나의 주된 기능을 부여한다. 예:
 
-요청을 분석해 task_spec을 만들고, 진행 전에 사용자에게 확인받는다.
-영어판과 같은 골격에 두 가지가 다르다:
+- 배경과 범위 설정
+- 핵심 결과 제시
+- 문헌과의 일치·차이 설명
+- 대안 해석 검토
+- 한계와 함의 제시
+- 정책 문제와 개선방안 연결
 
-- **`register`: [학술 논문 국문 / 기관·정책 보고서]** — 필수. 사용자가 밝히지
-  않았고 명백하지도 않으면 AskUserQuestion으로 묻는다. 레지스터가 문체·구조·
-  인용 양식을 전부 가르므로 추측하지 않는다.
-- **`language` 항목 없음** — 출력은 국문 단독이다.
+단락의 첫 문장이 반드시 정형화된 두괄식일 필요는 없지만, 독자가 두세 문장 안에
+단락의 역할을 파악할 수 있어야 한다.
 
-```xml
-<task_spec>
-핵심 주제: [주제]
-섹션: [서론/방법/결과/고찰/결론 | 보고서 장·절 이름]
-register: [학술 논문 국문 / 기관·정책 보고서]
-범위: [섹션 전체 / 일부]
-핵심 메시지: [이 글이 반드시 도달해야 할 단일 주장 — 한 문장]
-대상 독자: [전문가 / 인접 분야 / 일반 — 기본: 인접 분야]
+### 3.2 Claim Ledger에서 산문화한다
 
-My Data:
-  figures/tables/data_files: [경로, 배치]
-Knowledge Sources:
-  knowledge_folder / pdf_folder / web_search: [경로 또는 없음 / 허용 여부]
+- 원문 문헌의 문장을 문장 틀로 삼지 않는다. 주장과 근거를 자기 말로 재서술한다.
+- 연구자료와 선행문헌이 한 문장에 함께 나오면 귀속을 분명히 한다.
+- 표본 수준 발견을 모집단 수준으로 확대하지 않는다.
+- 상관·연관을 인과로 바꾸지 않는다.
+- 헤징된 원문은 같은 수준의 불확실성을 유지한다.
+- 표·그림의 모든 값을 산문으로 옮기지 않고 논지에 필요한 핵심 수치만 쓴다.
+- 그림에서 판독한 값은 근사값으로, 원자료가 있으면 원자료 값으로 쓴다.
 
-설정:
-  min_citations: [섹션 전체의 서로 다른 소스 수, 기본 5]
-  paragraphs: [1-3, 기본 2]
-  인용 양식: register가 정한다 — 학술=APA 7, 보고서=국문 관행((저자, 연도),
-    법령 「」, (표 1) 지시). 섹션별 단락당 밀도는
-    references/section_guides_korean.md §인용 밀도.
-  results_style: [data-only / with-comparison, 기본 with-comparison]
-</task_spec>
-```
+국문 문체와 섹션 기능은 `references/section_guides_korean.md`의 해당 부분만
+읽는다. 규칙을 빈도 목표로 적용하지 말고 의미·장르·자료에 맞게 사용한다.
 
-핵심 메시지는 초안 전체의 구성 제약이다 — 모든 단락이 그것을 전진시켜야
-하고, 아닌 단락은 Phase 3.5에서 잘린다. 사용자가 주지 않았으면 소스에서
-후보를 도출해 확인받는다.
+### 3.3 해석과 사실을 분리한다
 
-## Phase 2 — 탐색과 분석 (5-Loop)
+- 자료가 직접 보여주는 것: 사실 기술
+- 자료와 문헌에서 합리적으로 도출되는 것: 해석, 적정 강도로 헤징
+- 추가 근거가 필요한 것: `[해석 필요 — 근거 없음]` 또는 `[확인 필요: 항목]`
 
-절차·형식·갭 기준은 영어판과 동일하다. 아래 요약을 따라가되, 추출 형식·
-My Data 분석 절차·갭 보고 양식·웹 검색 규칙이 필요하면
-`../meta-writing/references/writing_template.md`의 해당 Loop 절을 연다.
-
-```
-Loop 1  소스 스캔·계획 (writing.local.md, My Data 목록, Knowledge index, PDF)
-Loop 2  Knowledge 읽기 (최대 5개) → Claim + Citation 쌍 추출
-Loop 3  My Data 분석 (패턴·수치 추출) + Knowledge와 비교쌍 생성 + 추가 소스
-Loop 4  갭 체크 (인용 수·주제 커버리지·최신 연구·비교 데이터) → 부족 시 웹 검색
-```
-
-Knowledge 3개 이상, PDF 2개 이상, 또는 그림·표 동시 존재면
-`../meta-writing/references/parallel-processing.md`를 읽고 Loop 2–4를
-서브에이전트로 병렬 실행한다.
-
-**국문 소스 주의**: 한국어 Knowledge·PDF에서 뽑은 claim은 원문 그대로가
-아니라 자기 말로 기록한다(아래 Source Language Discipline은 언어와 무관하게
-적용된다). 영어 문헌을 국문 원고에 인용할 때 번역 인용문은 만들지 않는다 —
-내용을 재서술하고 (저자, 연도)만 단다.
-
-## Phase 3 — 작성
-
-쓰기 전에 세 가지를 이 순서로 읽는다:
-
-| 읽을 것 | 얻는 것 |
-|---|---|
-| `../meta-writing/references/writing_template.md` §Loop 5 | 골격 확정 → 산문화 절차 |
-| `references/section_guides_korean.md` §해당 섹션·레지스터 | **어떻게** 쓰는가 — 국문 문체·구조·시제·보고 동사·인용 밀도·피할 패턴 |
-| `../meta-rewriting-korean/references/manual/L1_sentence_rules.md` + `L1_paragraph_rules.md` | **판정 기준** — 생성문이 통과해야 할 문장·단락 규칙 |
-
-register가 보고서면 `../meta-rewriting-korean/references/report-register.md`도
-읽는다(격식체·구조 패턴·치환 사전·빈도 지침). 논증이 실리는 섹션(고찰,
-개선방안)은 `manual/L2_argument_rubric.md`의 준거를 골격 단계에서 반영한다.
-
-### 핵심 규칙
-
-**My Data vs Knowledge 구분 (영어판과 동일):**
-- My Data는 인용 없이 직접 기술 — "(그림 1)", "(표 2)"로 지시.
-- Knowledge는 반드시 인용 — 양식은 register가 정한다.
-- 한 문장에 둘이 섞이면 어느 쪽이 이 연구이고 어느 쪽이 선행문헌인지
-  문면에서 구별되게 쓴다.
-
-**Source Language Discipline (표절·왜곡 방지, 영어판과 동일):**
-- 빌린 것은 전부 자기 말로 재서술. Loop 2의 Claim 문자열은 메모지 초안이
-  아니다. 직접 인용이 꼭 필요하면 따옴표+출처+짧게.
-- 원문의 범위·강도·강조를 유지한 재서술 — 표본 수준 발견은 표본 수준으로,
-  헤징된 발견은 헤징된 채로.
-- 보고 동사는 인용된 저자가 실제 한 행위에 맞추고, 연속 인용마다 바꾼다 —
-  국문 동사·레인 표는 `section_guides_korean.md` §보고 동사.
-
-**생성 자기검열:** AI 필러·만능 동사·기계적 병렬·헤징 중첩을 만들지
-않는다 — 목록은 `section_guides_korean.md` §생성 시 자기검열(원본:
-anti-ai-patterns.md). 리뷰 스킬이 나중에 지울 것을 지금 만들지 않는 것이
-싸다.
-
-## Phase 3.5 — 개고
-
-초안은 산출물이 아니다. 전역 → 국소 순서로 한 번 고친다.
-
-**전역 (논리·초점):**
-- 핵심 메시지 심사 — 모든 단락의 기여를 한 구절로 답하기. 답 없는 단락은 삭제.
-- 삭제 테스트 — 단락을 하나씩 빼보고 무엇도 깨지지 않으면 영구 삭제.
-- 순서 — 골격(§Loop 5-0)에서 확정한 순서와 일치하는가. 결과·고찰이 방법과
-  같은 순서인가.
-- 커버리지 — 지지 없는 주장, 이유 없이 안 쓴 소스가 없는가.
-
-**국소 (언어):**
-- 두 주장 문장 분할, 정보 없는 어절 삭제, 보고 동사 다양화, 용어·시제 통일
-- 종결체 통일, 이중 피동 0건, 지시 대용 절제 — L1 기준으로 자체 점검
-
-**결정적 게이트:** Bash가 가능하면
-`../meta-rewriting-korean/scripts/verify_korean_revision.py`로 개고본을
-검사한다(P3 종결체 혼용, P4 AI 신호 빈도가 생성문에도 그대로 유효하다).
-경고가 남으면 1회 보수적 재수정 후 결과를 보고에 남긴다. 스크립트를 돌릴
-수 없으면 같은 항목을 손으로 점검했다고 밝힌다.
-
-## Phase 4 — 검증
-
-영어판과 같은 5단계. 상세 절차·보고 양식은
-`../meta-writing/references/citation-and-verification.md`.
-
-```
-Step 1  본문 인용 ↔ 참고문헌 대응
-Step 2  양식 검증 — 학술: APA 7 필수 필드 / 보고서: (저자, 연도)·「법령」·(표 N) 지시 존재
-Step 3  Claim-Source 내용 일치 — 인용된 문헌이 실제로 그 주장을 하는가 (필수, 생략 불가)
-Step 4  소스별 검증 (Knowledge 원문 대조, PDF 메타데이터, Web URL·접속일)
-Step 5  검증 보고 생성 (PASS / ISSUES FOUND + 목록)
-```
-
-- 2차 인용: Knowledge 마크다운에서 수확한 쌍은 간접 정보다 — 원문 확인
-  전에는 `(…에서 재인용)` 명시 또는 `[미검증 2차 인용]` 표기.
-- DOI·URL·연도·저자·법령명·수치는 눈앞의 소스에서 옮겨 적는다. 안 보이는
-  필드는 `[누락: 항목]`.
-- 그림에서 읽은 값은 근사(~) 표기, 원자료가 있으면 원자료에서.
-
-## 출력 — 7블록 (영어판과 동일, C만 국문 단독)
-
-| 블록 | 내용 |
-|---|---|
-| A) 접근 체크리스트 | 3–8단계 작업 요약 |
-| B) 소스 요약 | 소스 유형별 요약 + 갭 보고 |
-| C) 본문 | **국문 단락 (번역 블록 없음)** |
-| D) 참고문헌 | register 양식의 단일 목록 |
-| E) 자체 평가 | 체크리스트 (자기 보고임을 명시) |
-| F) 검증 보고 | Step 1–5 결과 |
-| G) AI 지원 로그 | 이 스킬이 한 일·안 한 일 + 공개 문안 |
-
-**C) 본문은 초안이지 완성 섹션이 아니다.** 그렇게 표기한다. 소스가 정하지
-못하는 해석적 판단 위에 선 문장은 본문 안에 표시해 저자에게 넘긴다.
-출처 없는 인과 설명은 `[해석 필요 — 근거 문헌 없음]`.
-
-**다음 단계 안내(⑤ 성격의 한 줄):** 초안이 나가면 "단락 검토는
-meta-rewriting-korean, 완성 원고 패널 교정은 meta-proofreading-korean"을
-한 줄로 안내한다 — 실행은 하지 않는다.
+근거 없는 연결 문장을 자연스럽게 보이게 하려고 만들어 넣지 않는다.
 
 ---
 
-## 참조 파일 가이드
+## Phase 3.5 — 내용 무결성 점검
 
-| 파일 | 읽는 시점 |
-|---|---|
-| `references/section_guides_korean.md` | Phase 3·3.5 — 해당 섹션·레지스터 절 |
-| `../meta-rewriting-korean/references/manual/L1_*.md` | Phase 3 (판정 기준), 3.5 (자체 점검) |
-| `../meta-rewriting-korean/references/manual/L2_argument_rubric.md` | 논증 섹션의 골격 단계 |
-| `../meta-rewriting-korean/references/report-register.md` | register=보고서일 때 Phase 3 |
-| `../meta-rewriting-korean/references/anti-ai-patterns.md` | 자기검열 목록이 더 필요할 때 |
-| `../meta-writing/references/writing_template.md` | Phase 2–3 형식 상세 |
-| `../meta-writing/references/parallel-processing.md` | Loop 1이 임계값을 넘을 때 |
-| `../meta-writing/references/citation-and-verification.md` | Phase 4 |
+이 단계는 **깊은 리라이팅이 아니라 초안의 내용 안전성 점검**이다.
+
+1. Claim Ledger의 필수 주장이 모두 초안에 있는가.
+2. 각 외부 주장에 적절한 인용이 붙었는가.
+3. 수치·단위·부호·불확도·표/그림 번호가 자료와 일치하는가.
+4. 결과와 해석, 저자 자료와 외부 자료의 귀속이 분명한가.
+5. 같은 주장을 표현만 바꾸어 반복하지 않았는가.
+6. 명백한 주어-서술어 불호응, 종결체 혼용, 용어 불일치가 없는가.
+
+문장 리듬, 개인 문체, 단락의 과감한 삭제·이동·재작성은 여기서 최적화하지 않는다.
+초안의 표현을 지나치게 고정하면 후속 리라이팅이 원문 구조에 묶인다.
+
+## Phase 4 — 인용·서지 검증
+
+```
+Step 1  본문 인용과 참고문헌 대응
+Step 2  사용자가 요구한 양식 확인
+Step 3  Claim-Source 내용 일치 확인
+Step 4  원문·PDF·공식 문서·웹 메타데이터 대조
+Step 5  확인되지 않은 항목을 명시
+```
+
+- 2차 자료에서 얻은 구체적 주장은 원문 확인 전 `미검증 2차 정보`로 둔다.
+- DOI·URL·연도·저자·법령명·수치는 확인한 자료에서만 옮긴다.
+- 검증하지 못한 항목을 추정으로 채우지 않는다.
 
 ---
 
-**Version**: 1.0.0
-**계보**: meta-writing 1.2.1의 절차(5-Loop·개고·검증)를 국문 레지스터로 이식.
-규범은 meta-rewriting-korean(manual·report-register·anti-AI·게이트 스크립트)을
-상대 경로로 공유 — 나란히 설치 요구는 이 파일 상단에 명시.
+## 출력
+
+### 기본 `clean`
+
+1. **국문 작업 초안**을 먼저 제시한다.
+2. 실제 저자 판단이나 자료 확인이 필요한 항목만 `확인 필요`로 짧게 덧붙인다.
+3. 참고문헌 목록은 사용자가 요청했거나 새 인용을 추가했을 때만 제시한다.
+
+접근 체크리스트, 자체평가, AI 지원 로그, 전체 Claim Ledger를 매번 출력하지 않는다.
+
+### `audit`
+
+사용자가 근거 추적이나 작성 과정을 요구하면 다음을 추가한다.
+
+- Source Ledger 요약
+- Claim Ledger
+- 인용·서지 검증 결과
+- 해석과 저자 판단이 필요한 지점
+
+### `file`
+
+파일 작업이면 본문을 지정 파일에 쓰고, 필요할 때만 같은 폴더에
+`<파일명>.claims.md`를 만들어 후속 `meta-rewriting-korean`에 전달한다.
+
+## 후속 리라이팅을 위한 인계
+
+후속 스킬에는 원문 문장보다 다음을 우선 전달한다.
+
+```yaml
+paragraph_role: 단락 기능
+central_message: 핵심 주장
+required_claims: 반드시 보존할 Claim ID
+source_anchors: 수치·인용·표/그림·법령
+uncertainties: 헤징·미확인 항목
+movable_or_optional: 이동·삭제 가능한 Claim ID
+```
+
+이 인계 자료는 `meta-rewriting-korean`이 초안의 문장 배열에 매이지 않고 내용을
+보존하면서 새 구조를 설계하게 한다.
+
+---
+
+**Version**: 1.1.0
+**설계 원칙**: `meta-writing-korean`은 내용과 근거를 만들고,
+`meta-rewriting-korean`은 그 초안을 비판적으로 해체하여 다시 쓴다.

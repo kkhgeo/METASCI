@@ -1,5 +1,23 @@
 # Changelog — meta-writing-korean
 
+## 1.1.0 — 2026-08-22
+
+`meta-writing-korean`과 `meta-rewriting-korean`의 역할을 분리했다.
+
+- 이 스킬의 기본 목표를 **완성 문체 생성**에서 **내용·근거가 완결된 작업 초안**으로 변경.
+- 기존 문단의 비판적 해체, 삭제·이동·전면 재작성, 개인 문체·리듬 최적화는
+  `meta-rewriting-korean`으로 이관.
+- 자료를 `author_data / external_dataset / literature / policy_legal /
+  user_notes / unverified_secondary`로 분류하는 Source Ledger 추가.
+- 초안 전에 주장·근거·확실성을 기록하는 Claim Ledger 추가.
+- 고정 `min_citations`와 섹션별 인용 개수 목표 제거. 주장-근거 커버리지로 평가.
+- 결과 섹션 기본값을 `data-only`로 통일.
+- 학술 인용 양식은 사용자·학술지·기존 원고 관행을 우선하고 APA 7은 임시값으로 격하.
+- `meta-rewriting-korean`의 anti-AI·개인 문체·변경률 게이트 의존 제거.
+- Phase 3.5를 깊은 개고가 아닌 내용 무결성 점검으로 축소.
+- 7블록 강제 출력을 폐지하고 `clean / audit / file` 모드로 단순화.
+- 후속 리라이팅이 원문 표현에 묶이지 않도록 Claim Ledger 기반 인계 사양 추가.
+
 ## 1.0.0 — 2026-08-19
 
 신규. meta-writing 1.2.1(영어판)의 절차 — My Data/Knowledge 구분, 5-Loop

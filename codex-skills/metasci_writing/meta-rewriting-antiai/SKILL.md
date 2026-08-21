@@ -11,7 +11,7 @@ description: |
   Trigger phrases: "anti-AI 교정", "AI 흔적 제거", "자연화", "naturalization",
   "anti-AI rewriting", "AI 탐지 대응", "humanize writing".
   AI 흔적 제거 전용. 일반 단락 교정은 meta-rewriting, 문체 프로파일 적용은
-  meta-styling, 한국어 단락 리뷰·리라이팅은 meta-rewriting-korean.
+  meta-styling, 한국어 단락 리뷰·리라이팅은 meta-rewriting-korean.
 ---
 
 > **REQUIRED**: Before starting each Phase, you MUST read the corresponding reference file.

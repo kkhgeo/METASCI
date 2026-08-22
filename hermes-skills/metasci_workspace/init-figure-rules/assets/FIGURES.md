@@ -43,12 +43,17 @@ write inches or pixels in user-facing code or conversation.
    writing a hex.
 7. **Close every panel with `S.style(ax, "<id>")`.** This applies tick
    length, pad, spine width, label sizes, and any per-panel overrides.
-8. **Save with `S.save(fig, "<name>")`.** It exports the formats listed in
-   the spec with editable text, fixed artboard, and `<g id="panel-a">`
-   groups that Illustrator selects as units.
+8. **Save with `S.save(fig, "<name>")`.** It exports a single PDF with the
+   artboard fixed at the spec canvas, Arial embedded as live text (Type 42),
+   and one clipping group per panel for Illustrator. PDF is the only
+   deliverable; SVG is not produced.
 9. **No mathtext super/subscripts in labels.** `$^{13}$` renders at 70 % of
    the base size and breaks the 5 pt floor. Use Unicode (δ¹³C, Mg²⁺) or
-   write the label in prose.
+   write the label in prose. Arial carries superscript digits ⁰–⁹ but **not**
+   ⁺, ⁻, or any subscript digit ₀–₉, so ion labels (NH₄⁺, SO₄²⁻) borrow those
+   four glyph shapes from `text.font_fallback` (DejaVu Sans by default). The
+   audit lists both families and passes; what must never appear is a
+   LastResort family, which prints placeholder boxes.
 10. **Shared axes are declared, not hand-coded.** For panel grids, set
     `layout.shared_x_rows` / `shared_y_cols` in the spec; `S.style` then
     hides inner tick labels and axis titles. Leave at least 13 mm below the
@@ -60,7 +65,7 @@ write inches or pixels in user-facing code or conversation.
 
 ## Audit rules (after every render)
 
-- Run `python figspec.py audit figure_spec.yaml <name>.svg` and report the
+- Run `python figspec.py audit figure_spec.yaml <name>.pdf` and report the
   result verbatim. A figure is not finished while any line reads `XX`.
 - Present `python figspec.py sheet figure_spec.yaml` when the author asks to
   review or adjust numbers. Edits go into `figure_spec.yaml`, then the same

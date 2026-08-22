@@ -16,10 +16,10 @@ Usage in a plotting script
 Command line
 ------------
     python figspec.py sheet   figure_spec.yaml            # print the parameter sheet
-    python figspec.py audit   figure_spec.yaml fig1.svg   # verify rendered SVG against spec
+    python figspec.py audit   figure_spec.yaml fig1.pdf   # verify the exported PDF against the spec
     python figspec.py wire    figure_spec.yaml out        # render empty panel boxes
 
-Requires matplotlib and pyyaml. The audit subcommand needs only the stdlib.
+Requires matplotlib, pyyaml, and pymupdf (for audit).
 """
 from __future__ import annotations
 
@@ -27,6 +27,15 @@ import re
 import sys
 import xml.etree.ElementTree as ET
 from pathlib import Path
+
+# Windows consoles default to a legacy codepage (cp949 here). Every printed line
+# from this module — the collision check a plotting script triggers, the sheet,
+# the audit — carries Korean labels and en dashes, so force UTF-8 once at import
+# instead of only on the command-line path.
+try:
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+except (AttributeError, ValueError):
+    pass
 
 MM_PER_IN = 25.4
 PT_PER_IN = 72.0
@@ -104,6 +113,11 @@ class Spec:
         sec, key = table[name]
         return float(self._get(sec, key, pid))
 
+    @property
+    def font_fallback(self) -> list[str]:
+        """Families that supply glyphs the spec font lacks. Spec key text.font_fallback."""
+        return list(self.d["text"].get("font_fallback") or ["DejaVu Sans"])
+
     def color(self, role: str) -> str:
         return self.d["colors"]["roles"][role]
 
@@ -126,8 +140,12 @@ class Spec:
     def rc(self) -> dict:
         t, l, k, lg, c = (self.d[s] for s in ("text", "lines", "ticks", "legend", "colors"))
         return {
-            "font.family": "sans-serif",
-            "font.sans-serif": [t["font_family"], "Helvetica", "Liberation Sans", "DejaVu Sans"],
+            # Arial has no ⁺ ⁻ and no subscript digits. matplotlib only walks a
+            # fallback chain when font.family is a LIST of families; with
+            # font.family="sans-serif" the missing glyphs land on LastResort and
+            # export as placeholder boxes.
+            "font.family": [t["font_family"], *self.font_fallback],
+            "font.sans-serif": [t["font_family"], *self.font_fallback, "Helvetica", "Liberation Sans"],
             "font.size": t["axis_label_pt"],
             "axes.labelsize": t["axis_label_pt"],
             "axes.titlesize": t["axis_label_pt"],
@@ -236,6 +254,135 @@ class Spec:
                 t.set_fontsize(self.fs("legend", pid))
         return ax
 
+    # ------------------------------------------------ legend / annotations
+    def legend(self, ax, pid: str, **kw):
+        """Place the legend from spec: global legend.loc, per-panel panels[].legend
+        {loc, dx_mm, dy_mm, ncol, title}. dx/dy shift the anchor in mm."""
+        g = self.d["legend"]; p = self._panel(pid); lg = p.get("legend") or {}
+        loc = lg.get("loc", g.get("loc", "best"))
+        dx, dy = float(lg.get("dx_mm", 0)), float(lg.get("dy_mm", 0))
+        opts = dict(loc=loc, ncol=lg.get("ncol", 1), title=lg.get("title"),
+                    fontsize=self.fs("legend", pid), frameon=g["frame"])
+        if dx or dy:
+            # anchor = the corner implied by loc, shifted by mm in axes fraction
+            W, H = p["w_mm"], p["h_mm"]
+            corner = {"upper right": (1, 1), "upper left": (0, 1), "lower right": (1, 0), "lower left": (0, 0),
+                      "center right": (1, .5), "center left": (0, .5), "upper center": (.5, 1), "lower center": (.5, 0)}.get(loc, (1, 1))
+            opts["bbox_to_anchor"] = (corner[0] + dx / W, corner[1] + dy / H)
+        opts.update(kw)
+        leg = ax.legend(**opts)
+        if leg is not None:
+            leg.set_gid(f"legend-{pid}")
+        return leg
+
+    def annotate(self, ax, pid: str):
+        """Draw every inline text and arrow declared for this panel in the spec.
+        Positions are mm from the panel's bottom-left corner."""
+        p = self._panel(pid); W, H = p["w_mm"], p["h_mm"]
+        for i, a in enumerate(p.get("annotations") or []):
+            t = ax.text(a["x_mm"] / W, a["y_mm"] / H, a["text"], transform=ax.transAxes,
+                        fontsize=float(a.get("pt", self.fs("annotation", pid))),
+                        color=a.get("color", self.d["colors"]["text"]),
+                        ha=a.get("ha", "left"), va=a.get("va", "bottom"),
+                        fontweight=a.get("weight", "normal"), rotation=a.get("rotation", 0))
+            t.set_gid(f"note-{pid}-{i}")
+        for i, r in enumerate(p.get("arrows") or []):
+            ax.annotate("", xy=(r["to_mm"][0] / W, r["to_mm"][1] / H), xytext=(r["from_mm"][0] / W, r["from_mm"][1] / H),
+                        xycoords="axes fraction", textcoords="axes fraction",
+                        arrowprops=dict(arrowstyle=r.get("style", "->"), lw=float(r.get("pt", self.pt("data"))),
+                                        color=r.get("color", self.d["colors"]["text"]), shrinkA=0, shrinkB=0))
+
+    def check_collisions(self, fig) -> list[str]:
+        """Overlapping text boxes (labels, ticks, legend, notes). Returns messages in mm."""
+        fig.canvas.draw(); r = fig.canvas.get_renderer(); items = []
+        def add(name, art):
+            try:
+                bb = art.get_window_extent(r)
+            except Exception:
+                return
+            if bb.width > 0 and bb.height > 0 and art.get_visible() and (getattr(art, "get_text", lambda: "x")() != ""):
+                items.append((name, bb))
+        for ax in fig.axes:
+            gid = ax.get_gid() or "ax"
+            add(f"{gid}:xlabel", ax.xaxis.label); add(f"{gid}:ylabel", ax.yaxis.label)
+            xl, yl = sorted(ax.get_xlim()), sorted(ax.get_ylim())
+            for k, tk in enumerate(ax.xaxis.get_major_ticks()):
+                if xl[0] <= tk.get_loc() <= xl[1]: add(f"{gid}:xtick{k}", tk.label1)
+            for k, tk in enumerate(ax.yaxis.get_major_ticks()):
+                if yl[0] <= tk.get_loc() <= yl[1]: add(f"{gid}:ytick{k}", tk.label1)
+            for k, t in enumerate(ax.texts): add(f"{gid}:note{k}('{t.get_text()[:12]}')", t)
+            if ax.get_legend(): add(f"{gid}:legend", ax.get_legend())
+        for t in fig.texts: add(f"fig:'{t.get_text()[:12]}'", t)
+        out = []
+        px2mm = 25.4 / fig.dpi
+        for i in range(len(items)):
+            for j in range(i + 1, len(items)):
+                a, b = items[i][1], items[j][1]
+                ox = min(a.x1, b.x1) - max(a.x0, b.x0); oy = min(a.y1, b.y1) - max(a.y0, b.y0)
+                if ox > 0.3 / px2mm and oy > 0.3 / px2mm:  # ignore < 0.3 mm touches
+                    out.append(f"{items[i][0]} ↔ {items[j][0]}  겹침 {ox*px2mm:.1f} × {oy*px2mm:.1f} mm")
+        return out
+
+    def audit_pdf(self, pdf_path: str | Path) -> str:
+        """Audit the exported PDF against the spec: canvas mm, font sizes/family,
+        5 pt floor, stroke widths, text kept as text (not outlines)."""
+        try:
+            import pymupdf
+        except ImportError:
+            return "[XX] pymupdf 없음: pip install pymupdf"
+        page = pymupdf.open(pdf_path)[0]
+        rep, ok = [], True
+        # canvas
+        w, h = round(pt2mm(page.rect.width), 1), round(pt2mm(page.rect.height), 1)
+        cw, ch = self.d["canvas"]["width_mm"], self.d["canvas"]["height_mm"]
+        good = abs(w - cw) < 0.2 and abs(h - ch) < 0.2; ok &= good
+        rep.append(f'[{"OK" if good else "XX"}] 캔버스 {w} × {h} mm (스펙 {cw} × {ch})')
+        # text
+        spans = [sp for b in page.get_text("dict")["blocks"] for l in b.get("lines", []) for sp in l["spans"] if sp["text"].strip()]
+        if not spans:
+            return "결과: 불일치\n" + "\n".join(rep) + "\n[XX] PDF에 텍스트 객체 없음 — 글자가 윤곽선으로 변환됨"
+        rep.append(f"[OK] 텍스트 객체 {len(spans)}개 유지 (편집 가능)")
+        fams = sorted({sp["font"] for sp in spans})
+        norm = lambda s: s.lower().replace(" ", "").replace("-", "")
+        allowed = [self.d["text"]["font_family"], *self.font_fallback]
+        unexpected = [f for f in fams if not any(norm(a) in norm(f) for a in allowed)]
+        good = not unexpected; ok &= good
+        rep.append(f'[{"OK" if good else "XX"}] 글꼴 {fams} (스펙 {self.d["text"]["font_family"]}'
+                   f' + 폴백 {self.font_fallback})' + (f"  ← 예상 밖: {unexpected}" if unexpected else ""))
+        placeholder = [f for f in fams if "lastresort" in norm(f)]
+        if placeholder:
+            ok = False
+            rep.append(f"[XX] 자리표시자 글꼴 {placeholder} — 이 글리프는 네모 상자로 인쇄된다. "
+                       "폴백 글꼴에 없는 문자다")
+        t = self.d["text"]
+        want_fs = {float(t[k]) for k in ("axis_label_pt", "tick_label_pt", "legend_pt", "annotation_pt", "panel_label_pt")}
+        for p in self.d["panels"]:
+            for k, v in (p.get("overrides") or {}).items():
+                if k in t: want_fs.add(float(v))
+            for a in p.get("annotations") or []:
+                if "pt" in a: want_fs.add(float(a["pt"]))
+        got_fs = sorted({round(sp["size"], 1) for sp in spans})
+        extra = [v for v in got_fs if not any(abs(v - w_) < 0.15 for w_ in want_fs)]
+        good = not extra; ok &= good
+        rep.append(f'[{"OK" if good else "XX"}] 글자 크기 실측 {got_fs} pt / 스펙 {sorted(want_fs)}' + (f"  ← 스펙에 없는 값: {extra}" if extra else ""))
+        small = [v for v in got_fs if v < 5]
+        if small: ok = False; rep.append(f"[XX] 5 pt 미만 글자: {small}")
+        # strokes
+        l, k, m = self.d["lines"], self.d["ticks"], self.d["markers"]
+        want_sw = {float(l["axis_pt"]), float(l["data_pt"]), float(l["errorbar_pt"]), float(k["width_pt"]), float(m["edge_pt"])}
+        if l["grid"]: want_sw.add(float(l["grid_pt"]))
+        if k["minor"]: want_sw.add(float(k["minor_width_pt"]))
+        for p in self.d["panels"]:
+            for kk, v in (p.get("overrides") or {}).items():
+                if kk.endswith("_pt") and kk not in t: want_sw.add(float(v))
+            for r in p.get("arrows") or []:
+                if "pt" in r: want_sw.add(float(r["pt"]))
+        got_sw = sorted({round(dr["width"], 2) for dr in page.get_drawings() if dr.get("width") and dr["type"] in ("s", "fs")})
+        extra = [v for v in got_sw if not any(abs(v - w_) < 0.03 for w_ in want_sw)]
+        good = not extra; ok &= good
+        rep.append(f'[{"OK" if good else "XX"}] 선 두께 실측 {got_sw} pt / 스펙 {sorted(want_sw)}' + (f"  ← 스펙에 없는 값: {extra}" if extra else ""))
+        return "결과: " + ("스펙과 일치" if ok else "불일치 항목 있음") + "\n" + "\n".join(rep)
+
     def errorbar_kw(self, pid: str | None = None) -> dict:
         return dict(elinewidth=self.pt("errorbar", pid),
                     capsize=mm2pt(self.mm("errorbar_cap", pid)) / 2,  # capsize is half-width
@@ -243,6 +390,8 @@ class Spec:
 
     # ---------------------------------------------------------------- save
     def save(self, fig, basename: str) -> list[Path]:
+        hits = self.check_collisions(fig)
+        print("충돌 없음" if not hits else "텍스트 충돌:\n  " + "\n  ".join(hits))
         out = []
         for fmt in self.d["export"]["formats"]:
             p = Path(f"{basename}.{fmt}")
@@ -265,6 +414,13 @@ class Spec:
             A(("패널", f'{p["id"]} 위치·크기', f'x {p["x_mm"]}, y {p["y_mm"]}, w {p["w_mm"]}, h {p["h_mm"]} mm'))
             if p.get("overrides"):
                 A(("패널", f'{p["id"]} 예외', ", ".join(f"{k}={v}" for k, v in p["overrides"].items())))
+        for p in d["panels"]:
+            if p.get("legend"):
+                lg = p["legend"]; A(("범례", f'{p["id"]} 위치', f'{lg.get("loc", d["legend"]["loc"])}, 이동 dx {lg.get("dx_mm", 0)} / dy {lg.get("dy_mm", 0)} mm'))
+            for i, a in enumerate(p.get("annotations") or []):
+                A(("인라인", f'{p["id"]}-{i} "{a["text"][:14]}"', f'x {a["x_mm"]}, y {a["y_mm"]} mm, {a.get("pt", d["text"]["annotation_pt"])} pt, {a.get("ha", "left")}'))
+            for i, r in enumerate(p.get("arrows") or []):
+                A(("화살표", f'{p["id"]}-{i}', f'{r["from_mm"]} → {r["to_mm"]} mm'))
         t = d["text"]
         A(("글자", "글꼴", t["font_family"]))
         for k, lab in (("axis_label_pt", "축 제목"), ("tick_label_pt", "눈금 라벨"), ("legend_pt", "범례"),
@@ -393,19 +549,14 @@ def _cycler(colors):
 
 
 def main(argv):
-    # Windows consoles default to a legacy codepage (cp949 here); the sheet and
-    # audit output carry en dashes and Korean labels, so force UTF-8 on stdout.
-    try:
-        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    except (AttributeError, ValueError):
-        pass
     if len(argv) < 3:
         print(__doc__); return 1
     cmd, spec = argv[1], Spec.load(argv[2])
     if cmd == "sheet":
         print(spec.sheet())
     elif cmd == "audit":
-        print(spec.audit_svg(argv[3]))
+        f = argv[3]
+        print(spec.audit_pdf(f) if f.lower().endswith(".pdf") else spec.audit_svg(f))
     elif cmd == "wire":
         print("wrote", [str(p) for p in spec.wireframe(argv[3] if len(argv) > 3 else "wireframe")])
     else:

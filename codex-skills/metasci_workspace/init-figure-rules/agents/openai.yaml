@@ -1,0 +1,4 @@
+interface:
+  display_name: "Init Figure Rules"
+  short_description: "Install workspace-level figure rules for publication figures that go from Python (matplotlib) to Illustrator with minimal post-editing: drops FIGURES.md (drafti"
+  default_prompt: "Use $init-figure-rules for this task."

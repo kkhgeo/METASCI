@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Writing Mapping"
-  short_description: "Use when the user wants to settle or diagnose a manuscript's composition before the prose exists — which sections, which paragraphs, in what order, on what evid"
+  short_description: "Use when the user wants to settle or diagnose a manuscript's composition before or during drafting — which sections or paragraphs are needed, in what order, on "
   default_prompt: "Use $meta-writing-mapping for this task."

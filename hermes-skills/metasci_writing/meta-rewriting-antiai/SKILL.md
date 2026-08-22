@@ -5,15 +5,18 @@ description: |
   4계층 체계(Lexical → Syntactic → Discourse → Formatting)로 AI 특유의
   어휘 패턴, 구문 균일성, 저자 목소리 부재, 과잉 구조화를 진단하고 교정한다.
   어떤 meta 스킬의 출력이든 마지막 파이프라인으로 적용 가능.
+  영어 산문은 ai-lexicon, 한국어 산문은 ko-patterns(실증 검증된 번역투·대구·
+  리듬 패턴 체계)로 스캔하며, 교정 후 결정적 게이트(verify_gates.py)가
+  변경률·수치 보존을 코드로 판정한다.
   Trigger phrases: "anti-AI 교정", "AI 흔적 제거", "자연화", "naturalization",
   "anti-AI rewriting", "AI 탐지 대응", "humanize writing".
   AI 흔적 제거 전용. 일반 단락 교정은 meta-rewriting, 문체 프로파일 적용은
-  meta-styling, 한국어 개인 문체 적용은 meta-mywriting-korean.
+  meta-styling, 한국어 단락 리뷰·리라이팅은 meta-rewriting-korean.
 ---
 
 > **REQUIRED**: Before starting each Phase, you MUST read the corresponding reference file.
-> - PHASE 1 (Scan): `references/ai-lexicon.md`
-> - PHASE 2 (Naturalization): `references/naturalization-guide.md`
+> - PHASE 1 (Scan): `references/ai-lexicon.md` — **입력이 한국어면 대신 `references/ko-patterns.md`**
+> - PHASE 2 (Naturalization): `references/naturalization-guide.md` — **한국어면 ko-patterns.md의 처방 사용**
 > - OUTPUT: `references/output-formats.md`
 
 # Meta-Rewriting-AntiAI Skill
@@ -99,6 +102,11 @@ OUTPUT: Naturalized Final Draft + Session Log
 입력 텍스트에서 AI 글쓰기 흔적을 4계층으로 진단한다.
 
 **You MUST read `references/ai-lexicon.md` first!**
+
+**한국어 입력이면** 아래 4-Layer의 영어 체크 항목 대신 `references/ko-patterns.md`의
+카테고리(A~J, Layer 매핑표 포함)를 사용한다. 심각도는 S1(결정적)/S2(반복 시)/S3(약함)이며,
+실증 확증(★) 패턴 — 대구 공식(C-8), 연결어미 뒤 쉼표(C-11), 장문 부재(E-1),
+종결어미 편중(E-2) — 을 우선 스캔한다.
 
 ### Layer 1: Lexical Scan (어휘)
 
@@ -229,6 +237,10 @@ OUTPUT: Naturalized Final Draft + Session Log
 - ✗ 주장/데이터/인용 추가/제거/변경 불가
 - ✗ 단락 순서 변경 불가
 - ✗ 과학적 의미 변경 절대 금지
+- ✗ **상투구·비유·hype 표현 신규 삽입 금지** — AI 티는 빼기만 하고 넣지 않는다
+  (Layer 3의 hedge/booster/self-mention 보강은 예외 — 이 스킬의 설계된 기능)
+- ✗ **register 변경 금지 (양방향)** — 격식체→격식체, 구어→구어.
+  한국어에서 '-했-'→'-하였-' 격식 상향도 금지
 
 ### Verification
 
@@ -240,6 +252,24 @@ OUTPUT: Naturalized Final Draft + Session Log
 | 개선폭 < 0.5 (이전 대비) | ACCEPT — 추가 교정 효과 미미 |
 | 특정 Layer < 5 | 해당 Layer만 재교정 1회 |
 | 사용자 중단 | STOP |
+
+### Deterministic Gate (결정적 게이트)
+
+LLM 재스캔 점수는 참고값이다. 과교정·수치 훼손의 **확정 판정은 코드가 한다.**
+원문과 교정본을 파일로 저장한 뒤 Bash로 1회 실행:
+
+```
+python scripts/verify_gates.py --before {원문} --after {교정본}
+```
+
+| exit | 판정 | 후속 |
+|---|---|---|
+| 0 | 수렴 — 변경률·수치 보존·대구 모두 통과 | 결과 전달 진행 |
+| 1 | 경고 — 변경률 30~50% / 수치 소실·주입 / 대구 전멸 | 결과 전달 + 해당 축을 사용자에게 고지 |
+| 2 | 중단 — 변경률 ≥ 50% | **교정본 채택 금지.** 보수 강도로 1회 재교정, 재차 2면 원본 유지 + 사람 검토 안내 |
+| 3 | 판정 불가 | 입력 파일 확인 후 재시도. 게이트를 건너뛰지 않는다 |
+
+특히 **수치 주입**(원문에 없던 숫자 등장)은 날조 위험이므로 exit 1이어도 반드시 원문 대조 결과를 보고한다.
 
 ### Gate Rule
 
@@ -319,7 +349,9 @@ meta-rewriting-antiai를 시작합니다.
 | 이미 자연스러운 텍스트 (모든 Layer ≥ 8) | "AI 흔적이 거의 없습니다. 교정이 필요하지 않습니다." |
 | 인간이 작성한 원본 텍스트 | 정상 작동 (인간 글에도 AI 유사 패턴이 있을 수 있음) |
 | 특정 Layer만 교정 요청 | 해당 Layer만 실행 |
-| 비영어 텍스트 | "현재 영어 학술 글쓰기에 최적화되어 있습니다" 경고 후 진행 |
+| 한국어 텍스트 | `references/ko-patterns.md` 기반 정식 지원 (실증 검증된 패턴 체계) |
+| 영어·한국어 외 텍스트 | "영어·한국어에 최적화되어 있습니다" 경고 후 진행 |
+| 이미 자연스러운 한국어 (S1 잔존 0, 변경 필요 < 5%) | "이미 좋은 글입니다 — 손댄 곳 N곳" 조기 종료. 억지로 더 고치지 않는다 |
 | Markdown/LaTeX 혼합 | Markdown 서식만 정리, LaTeX 수식/명령어 보존 |
 | 교정 후 오히려 점수 하락 | 해당 Layer 교정 취소, 원본 유지 |
 
@@ -362,11 +394,14 @@ meta-rewriting-antiai를 시작합니다.
 
 | File | Read when | Content |
 |------|-----------|---------|
-| `references/ai-lexicon.md` | PHASE 1 | AI 과잉 어휘 목록, 공기 패턴, 모델별 시그니처, 대체어 |
-| `references/naturalization-guide.md` | PHASE 2 | 4계층 자연화 규칙, 체크리스트, 예시 |
+| `references/ai-lexicon.md` | PHASE 1 (영어) | AI 과잉 어휘 목록, 공기 패턴, 모델별 시그니처, 대체어 |
+| `references/ko-patterns.md` | PHASE 1·2 (한국어) | 한국어 AI 티 패턴 A~J + 처방 + 실증 근거 + Do-NOT (im-not-ai v2.3 이식) |
+| `references/naturalization-guide.md` | PHASE 2 (영어) | 4계층 자연화 규칙, 체크리스트, 예시 |
 | `references/output-formats.md` | 전체 | Diagnostic Card, Changelog, Verification 출력 형식 |
+| `scripts/verify_gates.py` | Verification 후 | 결정적 게이트 — 변경률·수치 보존·대구 전멸 판정 |
 
 ---
 
-**Version**: 1.0.0
+**Version**: 1.1.0 — 한국어 패턴 체계(ko-patterns) + 결정적 게이트 흡수
+([epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai) humanize-korean v2.3, MIT)
 **Skill by**: KEI / meta-rewriting-antiai

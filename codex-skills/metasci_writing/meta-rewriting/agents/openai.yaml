@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Rewriting"
-  short_description: "One-shot academic paragraph review and rewrite"
+  short_description: "One-shot academic paragraph review and rewrite, in four stages: take a draft paragraph, load the writing principles and section guidelines, diagnose the problem"
   default_prompt: "Use $meta-rewriting for this task."

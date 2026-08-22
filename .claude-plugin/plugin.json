@@ -27,6 +27,7 @@
     "skills/persona",
     "skills/metasci_extraction",
     "skills/metasci_writing",
-    "skills/metasci_slide"
+    "skills/metasci_slide",
+    "skills/metasci_workspace"
   ]
 }

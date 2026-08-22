@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Styling"
-  short_description: "Apply an extracted style profile to a draft (paper or report): measured diagnosis, style revision, and post-revision verification"
+  short_description: "Use when an academic draft in English — a paragraph, section, or report chapter, including a bilingual working document whose manuscript prose is English — must"
   default_prompt: "Use $meta-styling for this task."

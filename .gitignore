@@ -10,6 +10,11 @@ Thumbs.db
 # Temp
 *.tmp
 *.log
+__pycache__/
+*.py[cod]
 
 # Knowledge outputs (user-generated)
 Knowledge_*/
+
+# Skill surgery 패키지가 적용 시 남기는 백업 — 저장소에 들어가면 안 된다
+.skill-surgery-backup-*/

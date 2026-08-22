@@ -21,6 +21,18 @@ test('resolveProjectRoot reuses an existing _memory in an ancestor (no cwd drift
   assert.equal(resolveProjectRoot(sub), path.resolve(dir))
 })
 
+test('resolveProjectRoot honors an explicit .memory-root anchor over stray _memory and nested .claude', () => {
+  const dir = tmp()
+  fs.writeFileSync(path.join(dir, '.memory-root'), '')
+  const v4 = path.join(dir, 'v4')
+  const sub = path.join(v4, 'Knowledge')
+  fs.mkdirSync(sub, { recursive: true })
+  // 하위 폴더에 stray _memory 와 중첩 .claude 가 있어도 앵커가 이겨야 한다(분산 방지)
+  fs.mkdirSync(path.join(sub, '_memory'))
+  fs.mkdirSync(path.join(v4, '.claude'))
+  assert.equal(resolveProjectRoot(sub), path.resolve(dir))
+})
+
 test('resolveProjectRoot falls back to nearest .claude/.git marker when no _memory exists', () => {
   const dir = tmp()
   fs.mkdirSync(path.join(dir, '.claude'))

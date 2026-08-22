@@ -33,7 +33,7 @@ passive approximation. Hangul items in `count` match with attached particles
 (prefix match: "평가" also counts "평가는", "평가를").
 
 Version: 1.2.0 (shared across extraction-vocab / extraction-logic /
-metasci-style-extraction / meta-styling)
+extraction-style / meta-styling)
 """
 import argparse
 import math

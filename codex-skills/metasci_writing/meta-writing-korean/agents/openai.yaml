@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Writing Korean"
+  short_description: "아직 본문이 없는 한국어 학술 논문 또는 기관·정책 보고서의 특정 섹션을 새로 작성한다"
+  default_prompt: "Use $meta-writing-korean for this task."

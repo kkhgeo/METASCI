@@ -1,0 +1,4 @@
+interface:
+  display_name: "Init Communication Rules"
+  short_description: "Install the author-dialogue communication rules (AI-tell removal, adapted from pstack's unslop) into a manuscript workspace as one standalone `AGENT_communicati"
+  default_prompt: "Use $init-communication-rules for this task."

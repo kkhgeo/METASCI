@@ -1,120 +1,86 @@
-# Search Strategy — 표현 용례 검색 (Attestation)
+# Search Strategy — 학술 표현 용례 검색
 
-목적: 하나의 표현이 **실제 출판 논문에 쓰였는지**를 판정한다. 문체 패턴 수집이
-아니라 **"존재 여부 + 빈도 + 실제 용례 문장"** 확인이 목표다.
+표현의 존재, 대략적 확산도, 추적 가능한 실제 용례를 확인한다. 검색 건수를 정밀한
+코퍼스 빈도로 해석하거나 논문을 대량 다운로드하지 않는다.
 
-메일 파라미터(polite pool / Unpaywall)에는 `kkhgeo@gmail.com`을 쓴다.
+## 1. 검색 순서
 
----
+1. 일반 웹에서 `"{phrase}"`를 검색한다. 노이즈가 많으면 분야 키워드나 출판사·
+   저장소 `site:` 조건 하나를 추가한다.
+2. 결과가 부족하거나 모호하고 접근 가능할 때만 Google Scholar를 보조로 사용한다.
+   CAPTCHA를 우회하지 않으며 Scholar 결과 수를 용례 수로 쓰지 않는다.
+3. 필요할 때만 OpenAlex로 대략적 색인 건수·메타데이터를, Semantic Scholar로
+   초록 정확일치·DOI·저널을 보강한다.
+4. 표현당 웹 검색 1회로 시작하고 결과가 분명하면 멈춘다. 모호·미확인일 때만
+   변형, 보조 서비스, 대안 검색으로 확장한다.
 
-## 1. 검색 백엔드
+여러 표현은 도구가 허용하는 범위에서 최대 4개 정확구절 쿼리를 한 호출에 묶되,
+표현별 판정과 출처는 섞지 않는다.
 
-> **현실 주의 (실측 2026-07):** OpenAlex·Semantic Scholar 모두 **익명 검색은
-> 부하 시 429/503으로 throttle**된다(연결·일반 필터는 정상). 따라서 **정확구절
-> 용례 판정의 주력은 하버스의 WebSearch(따옴표 검색)** ①로 두고, OpenAlex
-> 전문검색 건수 ②는 **무료 API 키가 있을 때의 정밀 정량화**로 쓴다. 어느 것도
-> 못 쓰면 판정은 ①만으로 내리고, ①까지 실패해야 `SEARCH_FAILED`.
+## 2. 유효한 정확일치
 
-### ① Google Scholar / 웹 따옴표 검색 — 주력 (WebSearch 도구)
+다음을 모두 만족해야 용례로 센다.
 
-정확 구절을 따옴표로 감싸 검색 → 색인된 논문 PDF의 정확일치를 잡는다. 하버스
-도구라서 위 API throttle의 영향을 받지 않는다. **존재 여부 + 실제 문장 맥락 +
-출처**를 이걸로 확보한다 — 사용자의 핵심 질문("실제 논문에 쓰였나")에는 이것만으로
-충분하다.
+- 표현이 검색 스니펫이나 접근한 페이지에 정확히 나타난다.
+- 논문 제목과 저자 또는 DOI 같은 식별 정보가 연결된다.
+- 논문·학술대회 논문·학술 저장소·색인 레코드이며 블로그, 생성형 요약, 단순
+  참고문헌 목록이 아니다.
+
+스니펫에서만 확인하면 `INDEXED`, 접근한 출판사 HTML·초록·공개 원문에서 다시
+확인하면 `DIRECT`, 추적 가능한 일치가 없으면 `NONE`이다. 잘린 스니펫이나 충돌하는
+메타데이터는 용례로 세지 않는다. 원문 확인이 필요하면 HTML·초록을 우선하고 PDF는
+사용자가 요청했거나 단일 핵심 문헌의 모호성을 달리 해소할 수 없을 때만 고려한다.
+
+## 3. 보조 서비스
+
+OpenAlex:
+
+```text
+https://api.openalex.org/works?filter=fulltext.search:%22{phrase}%22&per_page=5&select=id,display_name,publication_year,authorships,primary_location,doi
 ```
-WebSearch: "{phrase}"
-WebSearch: "{phrase}" (관련 분야 키워드)   # 노이즈 많을 때 좁히기
-```
-- 정확일치 스니펫이 **학술 출처**(저널/논문 PDF/저자)에서 나오면 → 용례 확인.
-- 학술 출처 정확일치가 여럿이면 ATTESTED, 1~2건이면 RARE, 없으면 NOT_FOUND 후보.
 
-### ② OpenAlex 전문 검색 — 정밀 건수 (WebFetch, 키 있으면 신뢰)
+- `OPENALEX_API_KEY`와 `OPENALEX_MAILTO`가 있으면 해당 파라미터를 추가한다.
+- `meta.count`는 `OpenAlex 색인 건수`일 뿐 전체 빈도나 고유 논문 수가 아니다.
+- 메타데이터만으로 본문 예문을 만들지 않는다. 429/503은 `접근불가`이지 0건이 아니다.
 
-OpenAlex는 본문(full text)까지 색인하고 **매칭 건수(`meta.count`)**를 돌려주므로
-"얼마나 흔한가"를 정량화할 수 있다. **익명은 자주 503** → 아래 키 사용 권장.
+Semantic Scholar:
 
-**정확 구절 검색 (따옴표 `%22`, 공백 `%20`):**
-```
-https://api.openalex.org/works?filter=fulltext.search:%22{phrase}%22&per_page=3&mailto=kkhgeo@gmail.com&select=id,display_name,publication_year,authorships,primary_location,doi
-```
-- **무료 API 키(권장):** 환경변수 `OPENALEX_API_KEY`가 있으면 `&api_key={KEY}`를
-  붙인다. (Bash로 `printf '%s' "$OPENALEX_API_KEY"` 확인. 키 발급:
-  https://openalex.org/rest-api) 키가 없으면 호출은 하되 **503이면 조용히 ①로
-  대체**하고 `OPENALEX_COUNT`는 `-`로 둔다.
-
-**응답 파싱:** `meta.count`→건수 · `results[].display_name`→제목 ·
-`results[].authorships[0].author.display_name`→제1저자 ·
-`results[].primary_location.source.display_name`→저널 · `results[].doi`→DOI.
-
-**주의:** `fulltext.search`는 본문 색인분에서 찾고 전체 문헌의 일부만 색인됨 →
-**0건은 "색인 코퍼스에서 미확인"**이지 확정 오류가 아니다(§가드레일).
-
-### ③ Semantic Scholar — 메타/대안 보조만 (WebFetch)
-
-```
+```text
 https://api.semanticscholar.org/graph/v1/paper/search?query={phrase}&limit=5&fields=title,abstract,year,venue,externalIds
 ```
-- **주의:** S2 `total`은 **주제 관련도**지 정확구절 매칭이 아니다(무관 논문도
-  카운트됨). **용례 카운터로 쓰지 말 것.** 오직 (a) 초록에 표현이 그대로 있는지
-  확인, (b) 대안 표현의 DOI·저널 보강용.
-- 익명 429 잦음 → 실패하면 스킵. 인증 불필요, 100 req/5분.
 
----
+- `total`을 용례 수로 쓰지 않는다. 초록 정확일치와 메타데이터 보강에만 쓴다.
+- 429나 오류는 `접근불가`로 기록하며 실행하지 못한 검색을 일치 없음으로 바꾸지 않는다.
 
-## 2. 판정 루브릭 (기본 임계값)
+## 4. 중복 제거와 범위
 
-`Q` = 따옴표 웹검색(①)의 **학술 출처 정확일치**, `C` = OpenAlex 전문검색(②)
-`meta.count` (**없을 수 있음** — 익명 throttle/키 없음 시 `-`).
+DOI → 학술 work/paper ID → 정규화 제목+제1저자+연도 순으로 같은 문헌을 합친다.
+출판사, 저장소, 저자 페이지, 검색 색인의 동일 논문은 한 편으로 센다. 기본 범위는
+동료심사 저널과 정식 학술대회 논문이다. 프리프린트·학위논문·보고서는 별도로
+기록하고 사용자가 허용하지 않으면 고유 출판 논문 수에서 제외한다.
 
-**주력은 `Q`.** `C`는 있으면 판정을 보강·정량화하고, 없으면 `Q`만으로 판정한다.
+## 5. 판정
+
+`U`는 중복 제거한 고유 출판 논문 수, `C`는 OpenAlex 대략 색인 건수다.
 
 | 판정 | 조건 |
 |---|---|
-| ✅ **확인 (ATTESTED)** | `Q` 학술 정확일치 다수(≥3 출처), **또는** `C ≥ 10` |
-| 🔶 **제한적 (RARE)** | `Q` 학술 정확일치 1~2건, **또는** `1 ≤ C ≤ 9` |
-| ⚠️ **미확인 (NOT_FOUND)** | `Q` 정확일치 없음 **그리고** (`C = 0` 또는 `C` 미상) + S2 초록에도 없음 |
-| ❓ **검색불가** | 주력 ①(WebSearch)이 실패 (②③ 실패는 검색불가가 아님) |
+| `ATTESTED` | `U >= 3`, 또는 `C >= 10`이면서 추적 가능한 정확일치 `U >= 1` |
+| `RARE` | `U = 1~2` |
+| `NOT_FOUND` | 웹 검색은 성공했으나 학술 정확일치가 없고, 성공한 보조 검색도 일치 없음 |
+| `INCONCLUSIVE` | 결과·식별 정보·검색 범위가 부족하거나 메타데이터 충돌 |
+| `TOO_COMMON` | 변별력 없는 일반 기능구 |
+| `SEARCH_FAILED` | 주력 웹 검색 자체를 실행하지 못함 |
 
-**과다빈도 예외:** `C`가 수십만 이상으로 지나치게 흔한 기능구
-(`in this study`, `these results` 등)는 변별력이 없다 → 판정 대신
-"너무 일반적 — 변별 의미 없음"으로 표시, 대안 생략.
+OpenAlex 건수만으로 `ATTESTED`를 선언하지 않는다. 니치 분야의 임계값을 낮추면
+이유를 밝힌다. `NOT_FOUND`는 검색 범위에서 미확인이라는 뜻이지 오류 확정이 아니다.
 
-임계값은 분야에 따라 조정 가능(소분야는 코퍼스가 작아 `C`가 낮게 나옴).
-니치 주제면 확인 임계를 `C ≥ 3`로 낮춰도 된다 — 그 판단을 출력에 명시한다.
+## 6. 대안과 오류 처리
 
----
+1. 단수·복수, 철자, 하이픈 같은 `orthographic_variants`를 먼저 확인한다.
+2. `alternative_candidates` 또는 관련 논문에서 찾은 표현을 원문 의미와 대조한다.
+3. 대안을 다시 정확구절 검색해 추적 가능한 출판 용례를 확보한 뒤에만 제시한다.
 
-## 3. 미확인 시 — 대안 검색
-
-표현이 NOT_FOUND면 **뜻은 유지하고 표현만 바꾼** 대안을 찾는다.
-
-1. `phrase_extraction.md`에서 미리 적어둔 `variant_candidates`부터 ①로 검색.
-2. 후보가 없거나 다 미확인이면, 표현의 **의미 키워드**로 주제 검색(② 또는 ③)해
-   같은 개념을 다루는 논문이 **실제로 쓰는 표현**을 추출.
-   예: 의미="서리로 탄소가 방출됨" → 키워드 검색 `freeze thaw carbon release`
-   → 실제 논문 문장에서 `frost-induced carbon release` 발견 → 그 표현을 ①로
-   재검증(건수 확인) → 대안으로 제시.
-3. 대안은 **①로 건수 확인까지 마친, attested된 것만** 제시한다. 확인 안 된
-   표현을 대안으로 내지 않는다.
-
----
-
-## 4. 레이트리밋·에러
-
-| 백엔드 | 한도 | 실패 시 |
-|---|---|---|
-| WebSearch (①·주력) | 엄격 제한 없음 | 쿼리 수정 재시도 |
-| OpenAlex (②) | 익명 검색 throttle 잦음(503) | 키 없으면 조용히 스킵, `C=-` |
-| Semantic Scholar (③) | 익명 429 잦음 | 스킵 |
-
-- 표현 1개당 보통 **WebSearch 1 + (가능하면) OpenAlex 1**. `Q`로 확인이 명확하면
-  거기서 멈춘다. 미확인일 때만 대안 검색으로 확장.
-- **주력 ①(WebSearch)이 실패해야** `검색불가`. ②③ throttle은 정상 흐름의 일부.
-- 어떤 경우에도 **결과를 지어내지 않는다.**
-
----
-
-## 5. 캐시
-
-같은 표현을 세션 내 재점검하지 않도록 판정 결과를 캐시한다
-(`session.attest_cache[phrase] = {verdict, count, examples[], alternative}`).
+표기 변형 결과를 원표현의 정확일치 수에 섞지 않는다. 의미가 달라진 대안은 빈도가
+높아도 추천하지 않는다. 같은 정규화 표현의 결과는 세션 내 재사용한다. Scholar나
+보조 API가 막혀도 웹 검색이 성공했다면 전체 검색 실패로 처리하지 않는다.

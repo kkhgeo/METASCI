@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Rewriting Korean"
+  short_description: "이미 존재하는 한국어 학술 논문·기관·정책 보고서 단락 또는 섹션을 비판적으로 해체하고 다시 쓴다"
+  default_prompt: "Use $meta-rewriting-korean for this task."

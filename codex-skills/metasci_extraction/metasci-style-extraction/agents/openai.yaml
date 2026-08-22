@@ -1,4 +1,0 @@
-interface:
-  display_name: "Metasci Style Extraction"
-  short_description: "META-SCI series"
-  default_prompt: "Use $metasci-style-extraction for this task."

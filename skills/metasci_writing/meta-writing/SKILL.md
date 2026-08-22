@@ -8,7 +8,8 @@ description: >
   prose ("이 그림 기반으로 써줘", "Figure 해석해줘").
   Not for text that already exists — sentence correction goes to meta-proofreading,
   paragraph rewriting to meta-rewriting, section order and outline to
-  meta-writing-mapping, style to meta-styling.
+  meta-writing-mapping, style to meta-styling. A section to be written in
+  Korean goes to meta-writing-korean.
 allowed-tools: [Read, Write, Edit, Glob, Grep, Agent, WebSearch, WebFetch, AskUserQuestion]
 ---
 
@@ -76,7 +77,7 @@ Settings:
   paragraphs: [1-3, default 2]
   words_per_paragraph: [150-250]
   citation_style: APA 7
-  language: [bilingual/english/korean]
+  language: [bilingual/english]
   results_style: [data-only / with-comparison, default with-comparison]
 </task_spec>
 
@@ -373,4 +374,4 @@ the field, restating the abstract, chaining objectives together — are in the m
 
 ---
 
-**Version**: 1.2.0
+**Version**: 1.2.2

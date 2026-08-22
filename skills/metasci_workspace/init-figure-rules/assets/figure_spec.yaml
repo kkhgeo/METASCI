@@ -11,23 +11,80 @@ panels:
   y_mm: 67
   w_mm: 45
   h_mm: 45
+  annotations:
+  - text: 'Carcass
+
+      decomposition'
+    x_mm: 2
+    y_mm: 38
+    pt: 7
+  arrows:
+  - from_mm:
+    - 27
+    - 18
+    to_mm:
+    - 38
+    - 27
 - id: b
   x_mm: 72
   y_mm: 67
   w_mm: 45
   h_mm: 45
+  annotations:
+  - text: Denitrification
+    x_mm: 24
+    y_mm: 26
+  arrows:
+  - from_mm:
+    - 14
+    - 30
+    to_mm:
+    - 24
+    - 17
+  legend:
+    loc: upper right
+    dx_mm: -1
+    dy_mm: -1
 - id: c
   x_mm: 14
   y_mm: 13
   w_mm: 45
   h_mm: 45
+  annotations:
+  - text: 'Fe/Mn
+
+      reduction'
+    x_mm: 22
+    y_mm: 10
+  arrows:
+  - from_mm:
+    - 24
+    - 20
+    to_mm:
+    - 36
+    - 33
 - id: d
   x_mm: 72
   y_mm: 13
   w_mm: 45
   h_mm: 45
+  annotations:
+  - text: 'Sulfate
+
+      reduction'
+    x_mm: 24
+    y_mm: 30
+  arrows:
+  - from_mm:
+    - 22
+    - 32
+    to_mm:
+    - 33
+    - 19
 text:
   font_family: Arial
+  font_fallback:
+  - DejaVu Sans
   axis_label_pt: 8
   tick_label_pt: 7
   legend_pt: 7
@@ -76,7 +133,6 @@ colors:
   spine: '#000000'
 export:
   formats:
-  - svg
   - pdf
   raster_dpi: 600
 markers_by_site:

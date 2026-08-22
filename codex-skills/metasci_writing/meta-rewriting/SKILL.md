@@ -140,6 +140,13 @@ corpus does not contain. Its content is already embedded in the ② bullets,
 so read the file itself only when the user asks for the theory or sources
 behind an information-flow judgment.
 
+**Not a third mandatory read.** The phrase corpus named in Stage 4 is no
+part of this load. It supplies wording while you are drafting an
+alternative and carries no claim about whether a sentence is sound, so it
+never grounds a Stage 3 diagnosis. A paragraph diagnosed as needing better
+phrases has almost always been misdiagnosed — the defect is in the argument
+or the information flow, and reaching for a phrase list hides it.
+
 ## Stage 3 — 진단 (Diagnose) — output blocks ①–③
 
 ### ① 의도 요약
@@ -260,6 +267,29 @@ the original said.
   plain words, mid-strength hedging, C-C-C shape. The author's facts and
   intent are the anchor; the original's phrasing is not. This is the
   principle-exemplar version, not B with synonyms swapped.
+
+**Phrase corpus — on demand, one block at a time.** When an alternative
+needs an expression for a rhetorical move you cannot phrase well —
+interpreting a result, comparing to the literature, framing a limitation,
+hedging a claim — check whether a phrase corpus is present: `Glob` for
+`**/Knowledge*/Academic-Phrasebank*.md` under the project root. If one is
+there, grep its `###` headings first and let them tell you which block to
+open: they name rhetorical functions in the corpus author's vocabulary, not
+yours, so the block you want for hedging may read `Being cautious when
+explaining results`. Then read **only that block**, never the whole file —
+it runs to thousands of phrases across a hundred and fifty blocks, and
+loading it whole crowds out the paragraph you are working on. If none is
+there, write the sentence on your own judgement and say nothing about it:
+the corpus is an aid, not a dependency, and this skill is built to work
+without one.
+
+What comes back is a template, not a sentence. `The present study was
+designed to determine the effect of …` has to take on this paragraph's
+subject, tense, hedging strength, and information flow before it belongs
+here. A phrase carried over intact is the tell that the alternative stopped
+being about this author's argument. C안 is the rung where the corpus earns
+its place — it drafts as if the original's sentences did not exist, so it
+is the one most often short of a phrasing; A안 rarely needs it at all.
 
 **Preservation guardrail (applies to all three):** carry over every data
 point (values, units, uncertainties), every citation, and every

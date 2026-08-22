@@ -94,15 +94,16 @@ list in a standalone folder) unless publishing to the site.
 with your visualization, or delete the demo blocks + script if unused. Keep interactivity spare in
 this register.
 
-**11. 문체 재작성 — meta-mywriting-korean 패스 (발간 전 필수).** 초안의 제목과 설명 산문에는
+**11. 문체 재작성 — meta-rewriting-korean 패스 (발간 전 필수).** 초안의 제목과 설명 산문에는
 AI 티가 남는다. 완성된 HTML의 **모든 한국어 산문** — 제목(h1)·부제·초록·본문 단락·callout·
-캡션 — 을 **meta-mywriting-korean** 스킬로 한 번 재작성한 뒤에야 전달한다.
-- **호출 — 반드시 서브에이전트로 격리한다.** mywriting의 참조 파일(Blueprint 39.6KB +
-  anti-AI 패턴 28.5KB + 출력형식 등 ~97KB)과 초안 원문·재작성본을 메인 컨텍스트에 올리면
+캡션 — 을 **meta-rewriting-korean** 스킬로 한 번 재작성한 뒤에야 전달한다.
+- **호출 — 반드시 서브에이전트로 격리한다.** 그 스킬의 참조 파일(blueprint.md 39.6KB +
+  anti-ai-patterns.md 31.5KB + manual 등 176KB)과 초안 원문·재작성본을 메인 컨텍스트에 올리면
   이 시점에 대화가 요약될 위험이 있다. **Agent(general-purpose)** 하나를 띄우고 프롬프트에
-  다음을 담는다: (a) 브리프 HTML의 절대 경로, (b) "`~/.claude/skills/meta-mywriting-korean/`의
-  SKILL.md와 references를 직접 읽고 그 파이프라인을 따르라"는 지시, (c) 설정 — **Mode B(전면
-  리라이팅)**, 문서 유형 "해설(브리프)", AI 생성 "예", 사용자 프롬프트 대기 없음, (d) 아래
+  다음을 담는다: (a) 브리프 HTML의 절대 경로, (b) "`~/.claude/skills/meta-rewriting-korean/`의
+  SKILL.md와 references를 직접 읽고 그 파이프라인을 따르라"는 지시, (c) 설정 — 모드는
+  **`deep-rewrite`**(그 스킬의 기본값. 구조를 자유롭게 바꾸는 모드이므로 아래 적용 범위로
+  제약한다), 문서 유형 "해설(브리프)", AI 생성 "예", 사용자 프롬프트 대기 없음, (d) 아래
   적용 범위 블록 **전문**. 서브에이전트는 HTML을 제자리 편집하고 **변경 요약표 + 근거
   인벤토리(`[미확인]` 표) + 사후 검증 결과만** 반환한다 — 재작성된 본문을 텍스트로 되돌려보내지
   않는다.
@@ -130,7 +131,7 @@ path and how to open it, plus any placeholders left for the user.
 - [ ] Components used correctly (callout / var-list / data-table / etc.); unused component examples deleted.
 - [ ] Figure captions are objective; interactivity is sparing and lazy-started.
 - [ ] References in APA hanging-indent; DOI URLs where available.
-- [ ] 발간 전 **meta-mywriting-korean 재작성 패스**를 거쳤다 — 제목·부제·초록 포함, 변경 요약표 보존, 구성·수치·APA 불변.
+- [ ] 발간 전 **meta-rewriting-korean 재작성 패스**를 거쳤다 — 제목·부제·초록 포함, 변경 요약표 보존, 구성·수치·APA 불변.
 - [ ] All asset paths local (`assets/…`, `figures/…`); no `../`; no `[REPLACE …]` left; brand assets bundled.
 
 ## Reference files (read on demand)

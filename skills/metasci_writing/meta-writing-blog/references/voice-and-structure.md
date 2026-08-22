@@ -162,5 +162,5 @@ Replace with: a concrete detail, a real number, a specific mechanism, or the ana
 makes it click. When tempted to write "it's important to note that X", just write X.
 
 이 목록은 초안 단계의 1차 방어선이다. 최종 방어선은 선택이 아니라 **SKILL.md 11단계** —
-발간 전에 완성된 산문 전체(제목·초록 포함)를 **meta-mywriting-korean** 스킬로 재작성하는
+발간 전에 완성된 산문 전체(제목·초록 포함)를 **meta-rewriting-korean** 스킬로 재작성하는
 필수 패스다 (한국어 AI 패턴 제거 + 사용자 개인 문체 전이 내장; 적용 범위 제한은 11단계 참조).

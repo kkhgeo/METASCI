@@ -16,12 +16,19 @@
 <meta name="description" content="[REPLACE: 한 줄 요약 — 검색·SNS 미리보기용]">
 <title>[REPLACE: 제목] · KEI AI 융합연구단</title>
 <meta name="theme-color" content="#f6f0e3">
-<link rel="apple-touch-icon" href="assets/KEI_Wordmark.svg">
+<!-- SNS 미리보기 카드. og:image는 스크레이퍼가 절대 URL만 읽으므로,
+     사이트 발간 시 실제 주소로 교체한다 (독립 폴더 상태에서는 이미지 미리보기가 생략될 수 있음). -->
+<meta property="og:type" content="article">
+<meta property="og:title" content="[REPLACE: 제목]">
+<meta property="og:description" content="[REPLACE: 한 줄 요약 — description과 동일하게]">
+<meta property="og:image" content="[REPLACE: 발간 시 https://…/hero-bg.jpg 절대 URL]">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/KEI_Wordmark.svg" type="image/svg+xml">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Orbitron:wght@900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/fonts-archive/Paperlogy/Paperlogy.css">
-<link rel="stylesheet" as="style" crossorigin
+<link rel="stylesheet" crossorigin
   href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable.min.css">
 <style>
   :root{
@@ -214,7 +221,10 @@
   .article-body p{ color:var(--muted-strong); margin-bottom:1.4em; }
   .article-body p:last-child{ margin-bottom:0; }
   .article-body strong{ color:var(--ink); font-weight:700; }
-  .article-body em{ color:var(--ink); font-style:italic; }
+  /* 한글 강조 — 한글 폰트에는 이탤릭이 없어 가짜 오블리크가 되므로 세미볼드로 처리.
+     라틴 학명·서명 등 진짜 이탤릭이 필요하면 <i>를 쓴다. */
+  .article-body em{ color:var(--ink); font-style:normal; font-weight:600; }
+  .article-body i{ font-style:italic; }
   .article-body a{
     color:var(--blue);
     text-decoration:none;
@@ -255,7 +265,7 @@
     padding:6px 0 6px 24px;
     border-left:2px solid var(--line);
     font-family:'Paperlogy','Inter',sans-serif;
-    font-size:19px; font-style:italic;
+    font-size:19px;                 /* 한글 가짜 오블리크 방지 — 이탤릭 대신 크기·선으로 구분 */
     line-height:1.55; letter-spacing:-0.01em;
     color:var(--ink);
   }
@@ -308,7 +318,7 @@
   }
 
   /* ---- Equation block ---- */
-  .figure-equations{ margin:40px 0; }
+  .figure-equations{ margin:40px 0; overflow-x:auto; }  /* 긴 수식은 모바일에서 가로 스크롤 */
   .equations-display{ max-width:460px; margin:0 auto; }
   .eq-line{
     display:flex; align-items:center; gap:16px;
@@ -396,6 +406,23 @@
     color:var(--muted);
   }
 
+  /* ---- Figure with static image (논문 그림·지도·차트 이미지 — 가장 흔한 그림 형태) ---- */
+  .figure-image{
+    margin:40px 0;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .figure-image img{
+    display:block; width:100%; height:auto;
+    margin:18px 0 0;
+  }
+  .figure-image figcaption{
+    padding:14px 4px 14px;
+    font-family:'Paperlogy','Inter',sans-serif;
+    font-size:14px; line-height:1.6;
+    color:var(--muted);
+  }
+
   /* ---- Interactive explorer ---- */
   .explorer-box{
     margin:40px 0;
@@ -455,6 +482,17 @@
     transition:border-color .2s, color .2s;
   }
   .reset-btn:hover{ border-color:var(--ink); }
+
+  /* ---- (선택) 목차 — 다중 논문 등 긴 브리프에서만 사용 ---- */
+  .toc{
+    margin:-24px 0 56px;
+    padding:6px 0 6px 22px;
+    border-left:3px solid var(--line);
+  }
+  .toc ol{ list-style:none; padding:0; margin:0; }
+  .toc li{ margin-bottom:6px; font-size:15px; line-height:1.6; }
+  .toc a{ color:var(--muted-strong); text-decoration:none; transition:color .2s; }
+  .toc a:hover{ color:var(--blue); }
 
   /* ---- References (APA hanging indent) ---- */
   .article-refs{
@@ -545,6 +583,23 @@
   }
   .mail-icon{ width:18px; height:18px; flex:none; opacity:.9 }
 
+  /* ---- Reduced motion ---- */
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    .page-label .dot, .topbar .logo .dot{ animation:none; }
+  }
+
+  /* ---- Print / PDF ---- */
+  @media print{
+    html,body{ background:#fff; }
+    .hero-band, .site-footer, .article-end-nav{ display:none; }
+    .article{ max-width:100%; padding:0 0 24px; }
+    .article-body a, .references a{ color:var(--ink); border-bottom:none; }
+    .figure-canvas, .explorer-box{ display:none; }  /* canvas는 인쇄 시 빈 상자로 나온다 */
+    .callout, .figure-image, .figure-equations, .data-table, .var-list, .comparison-card{ break-inside:avoid; }
+    .article-body h2, .article-body h3{ break-after:avoid; }
+  }
+
   /* ---- Responsive ---- */
   @media (max-width:768px){
     .topbar{ padding:16px 24px }
@@ -613,6 +668,16 @@
     [REPLACE: 초록 1–3문장. 무엇을 다루고 왜 중요한지 격식 있게.]
   </p>
 
+  <!-- (선택) 목차 — 다중 논문 브리프 등 섹션이 많을 때만 주석 해제. href는 섹션 id와 일치.
+  <nav class="toc" aria-label="목차">
+    <ol>
+      <li><a href="#opening">여는 섹션 제목</a></li>
+      <li><a href="#idea">핵심 개념</a></li>
+      <li><a href="#closing">전망</a></li>
+    </ol>
+  </nav>
+  -->
+
   <div class="article-body">
     <!-- 각 <section>은 서사의 한 beat. 문제→방법 순서 유지. voice-and-structure.md §2 참고.
          안 쓰는 컴포넌트 예시는 통째로 삭제한다. -->
@@ -666,6 +731,13 @@
           <span class="data-note">[REPLACE: 설명]</span>
         </div>
       </div>
+
+      <!-- figure-image: 정적 그림(논문 figure·지도·차트 이미지). 가장 흔한 그림 형태.
+           파일은 figures/에 두고, 외부 출처면 캡션에 출처를 표기한다. -->
+      <figure class="figure-image">
+        <img src="figures/[REPLACE: 파일명.png]" alt="[REPLACE: 스크린리더용 설명]" loading="lazy">
+        <figcaption>[REPLACE: 그림 1. 그림이 무엇을 보여주는지 객관적으로. (출처: …)]</figcaption>
+      </figure>
 
       <!-- figure-canvas: 스크롤 도달 시 그려지는 시각화. 아래 스크립트는 도메인 중립 예시 —
            본인 시각화로 교체하거나 figure 블록과 스크립트를 함께 삭제한다. -->
@@ -745,43 +817,59 @@
 
 <script>
   // ── Demo visualizations ──────────────────────────────────────────────────
-  // 도메인 중립 예시(감쇠하는 진행파 + 주파수 슬라이더). 브라우저에서 실시간으로
-  // 그려지며 lazy-start(IntersectionObserver) 패턴을 보여준다. 본인 시각화의 draw()
-  // 함수만 바꾸면 된다. 시각화를 쓰지 않으면 위 figure-canvas / explorer-box 블록과
-  // 이 스크립트 전체를 삭제한다.
+  // 도메인 중립 예시(감쇠하는 진행파 + 주파수 슬라이더). 본인 시각화의 draw 함수만
+  // 바꾸면 된다. 시각화를 쓰지 않으면 위 figure-canvas / explorer-box 블록과
+  // 이 스크립트 전체를 삭제한다. 유지해야 할 패턴 세 가지:
+  //   1) lazy-start — IntersectionObserver로 스크롤 도달 시 시작
+  //   2) 고DPI 보정 — devicePixelRatio만큼 백버퍼를 키우고 setTransform으로 되돌림
+  //   3) 절전·모션 배려 — 화면 밖에서 애니메이션 정지, prefers-reduced-motion이면 정지 프레임 1장
   document.addEventListener('DOMContentLoaded', () => {
     const BLUE = '#009fde', AMBER = '#ff8a2a', LINE = 'rgba(15,22,36,.12)';
+    const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 공통: CSS 픽셀 좌표계를 유지한 채 백버퍼만 DPR 배로 키운다.
+    function fitCanvas(canvas, ctx, cssHeight) {
+      const dpr = window.devicePixelRatio || 1;
+      const w = canvas.parentElement.clientWidth;
+      canvas.width = w * dpr;
+      canvas.height = cssHeight * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { w, h: cssHeight };
+    }
 
     // ---- figure-canvas: 감쇠하는 진행파 애니메이션 ----
     const cvs = document.getElementById('demo-canvas');
     if (cvs) {
       const ctx = cvs.getContext('2d');
-      let t = 0, running = false;
+      let t = 0, rafId = null, vw = 0, vh = 0;
       function resize() {
-        cvs.width = cvs.parentElement.clientWidth;
-        cvs.height = window.innerWidth < 768 ? 260 : 320;
+        ({ w: vw, h: vh } = fitCanvas(cvs, ctx, window.innerWidth < 768 ? 260 : 320));
       }
-      function draw() {
-        const w = cvs.width, h = cvs.height;
-        if (!w || !h) { requestAnimationFrame(draw); return; }
-        ctx.clearRect(0, 0, w, h);
+      function frame() {
+        if (!vw || !vh) return;
+        ctx.clearRect(0, 0, vw, vh);
         ctx.beginPath();
-        for (let x = 0; x <= w; x++) {
-          const y = h / 2 + Math.sin(x / 48 + t) * (h / 5) * Math.exp(-x / (w * 1.6));
+        for (let x = 0; x <= vw; x++) {
+          const y = vh / 2 + Math.sin(x / 48 + t) * (vh / 5) * Math.exp(-x / (vw * 1.6));
           x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
         }
         ctx.strokeStyle = BLUE; ctx.lineWidth = 1.6;
         ctx.lineJoin = 'round'; ctx.lineCap = 'round';
         ctx.stroke();
-        t += 0.03;
-        requestAnimationFrame(draw);
       }
+      function loop() { frame(); t += 0.03; rafId = requestAnimationFrame(loop); }
       const fig = cvs.closest('.figure-canvas');
       const obs = new IntersectionObserver(es => es.forEach(e => {
-        if (e.isIntersecting && !running) { running = true; resize(); draw(); obs.disconnect(); }
+        if (e.isIntersecting) {
+          if (!vw) resize();
+          if (REDUCE) { frame(); obs.disconnect(); }        // 정지 프레임 1장으로 대체
+          else if (rafId === null) loop();
+        } else if (rafId !== null) {                        // 화면 밖 → 정지
+          cancelAnimationFrame(rafId); rafId = null;
+        }
       }), { threshold: 0.1 });
       obs.observe(fig);
-      window.addEventListener('resize', () => { if (cvs.width) resize(); });
+      window.addEventListener('resize', () => { if (vw) { resize(); if (rafId === null) frame(); } });
     }
 
     // ---- explorer-box: 슬라이더로 파형의 주파수 조작 ----
@@ -791,21 +879,19 @@
       const slider = document.getElementById('demo-slider');
       const valEl = document.getElementById('demo-val');
       const resetBtn = document.getElementById('demo-reset');
-      let freq = parseFloat(slider.value);
+      let freq = parseFloat(slider.value), vw = 0, vh = 0;
       function resize() {
-        eCvs.width = eCvs.parentElement.clientWidth;
-        eCvs.height = window.innerWidth < 768 ? 320 : 380;
+        ({ w: vw, h: vh } = fitCanvas(eCvs, ectx, window.innerWidth < 768 ? 320 : 380));
         drawStatic();
       }
       function drawStatic() {
-        const w = eCvs.width, h = eCvs.height;
-        if (!w || !h) return;
-        ectx.clearRect(0, 0, w, h);
-        ectx.beginPath(); ectx.moveTo(0, h / 2); ectx.lineTo(w, h / 2);
+        if (!vw || !vh) return;
+        ectx.clearRect(0, 0, vw, vh);
+        ectx.beginPath(); ectx.moveTo(0, vh / 2); ectx.lineTo(vw, vh / 2);
         ectx.strokeStyle = LINE; ectx.lineWidth = 1; ectx.stroke();
         ectx.beginPath();
-        for (let x = 0; x <= w; x++) {
-          const y = h / 2 + Math.sin((x / w) * freq * Math.PI * 2) * (h / 4);
+        for (let x = 0; x <= vw; x++) {
+          const y = vh / 2 + Math.sin((x / vw) * freq * Math.PI * 2) * (vh / 4);
           x === 0 ? ectx.moveTo(x, y) : ectx.lineTo(x, y);
         }
         ectx.strokeStyle = AMBER; ectx.lineWidth = 1.8;
@@ -824,7 +910,7 @@
         if (e.isIntersecting) { resize(); obs.disconnect(); }
       }), { threshold: 0.1 });
       obs.observe(box);
-      window.addEventListener('resize', resize);
+      window.addEventListener('resize', () => { if (vw) resize(); });
     }
   });
 </script>

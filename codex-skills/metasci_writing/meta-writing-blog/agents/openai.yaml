@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Writing Blog"
-  short_description: "Turn a paper, a manuscript, or a topic into a KEI AI 융합연구단 '브리프' — a polished, self-contained Korean HTML explainer in the KEI editorial house style (quiet Dist"
+  short_description: "Turn a paper, a manuscript, or a topic into a KEI AI 융합연구단 '브리프' — a self-contained Korean HTML explainer in the KEI house style, output as a portable folder"
   default_prompt: "Use $meta-writing-blog for this task."

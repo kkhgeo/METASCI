@@ -4,6 +4,11 @@ KEI AI 융합연구단 **브리프** 본문 HTML의 형식·컴포넌트 규칙.
 `Z:\KKH_Server\Emagine\KEI_AICR\release\briefs_files\`의 캐노니컬 브리프
 **`brief-lorenz-chaos-climate.html`** 를 기준으로 하되, **독립 이식형 폴더**로 출력한다.
 
+> 이 스킬의 `assets/brief-template.html`은 캐노니컬을 다음 항목에서 **확장**한다
+> (디자인 토큰·크기는 동일): OG 메타태그, figure-image 컴포넌트, 한글 이탤릭 제거,
+> `@media print`, `prefers-reduced-motion` 대응, canvas 고DPI 보정·화면 밖 정지,
+> 선택형 목차(.toc). 캐노니컬로 역이식하기 전까지는 템플릿 쪽이 최신이다.
+
 > 이 파일은 *형식·컴포넌트·토큰* 레퍼런스다. 글의 **보이스·서사 구조**는
 > `voice-and-structure.md`, **오케스트레이션(소스 확보·스캐폴드·체크리스트)** 은
 > `SKILL.md`를 본다.
@@ -42,9 +47,12 @@ brief-{slug}/
 
 ### 3.1 `<head>`
 - `<title>{제목} · KEI AI 융합연구단</title>`
-- `<meta name="description">` 한 줄 요약 (검색·SNS 미리보기용)
+- `<meta name="description">` 한 줄 요약 (검색용)
+- **OG 태그** (SNS 미리보기 카드): `og:type`/`og:title`/`og:description`/`og:image` +
+  `twitter:card`. `og:image`는 스크레이퍼가 **절대 URL만** 읽으므로 사이트 발간 시 실제
+  주소로 교체한다 (독립 폴더 상태에서는 이미지 미리보기 생략 가능).
 - `<meta name="theme-color" content="#f6f0e3">`
-- `<link rel="apple-touch-icon" href="assets/KEI_Wordmark.svg">` (로컬)
+- `<link rel="icon" href="assets/KEI_Wordmark.svg" type="image/svg+xml">` (로컬)
 - 폰트 link: Archivo, Inter, JetBrains Mono, Space Grotesk + Paperlogy + Pretendard
 - **`../manifest.json` 링크는 넣지 않는다** (독립 폴더).
 
@@ -88,7 +96,11 @@ brief-{slug}/
 ```
 좌측 KEI 블루 선 + 18px 본문체.
 
-### 3.5 본문
+### 3.5 (선택) 목차
+다중 논문 브리프 등 섹션이 많을 때만, abstract 바로 뒤에 `.toc`를 넣는다
+(템플릿에 주석 처리된 블록이 있다). 기본 6섹션 브리프에서는 생략.
+
+### 3.6 본문
 섹션 단위로 묶어 `<div class="article-body">` 내부에 배치:
 ```html
 <div class="article-body">
@@ -108,7 +120,9 @@ brief-{slug}/
 
 ### 4.1 헤딩 / 강조
 - `<h2>` 섹션, `<h3>` 하위 섹션
-- `<strong>` 굵게(ink), `<em>` italic(ink)
+- `<strong>` 굵게(700, ink), `<em>` 세미볼드(600, ink) — **한글 이탤릭 금지**: 한글 폰트에
+  이탤릭이 없어 가짜 오블리크가 되므로 `em`은 굵기로 강조한다. 라틴 학명·서명 등 진짜
+  이탤릭이 필요하면 `<i>`를 쓴다 (References의 저널명 `<em>`은 라틴이므로 그대로 italic).
 - `<a>` KEI 블루 + 점선 밑줄
 
 ### 4.2 리스트 · 인용 · 코드
@@ -175,7 +189,18 @@ KaTeX/MathJax 없이 직접 조판한다. 유니코드 기호(σ, ρ, ≈, ²)�
 </div>
 ```
 
-### 4.8 캔버스 도해 (figure-canvas)
+### 4.8 정적 그림 (figure-image)
+논문 figure·지도·차트 이미지 등 **가장 흔한 그림 형태**. 파일은 `figures/`에 둔다:
+```html
+<figure class="figure-image">
+  <img src="figures/파일명.png" alt="스크린리더용 설명" loading="lazy">
+  <figcaption>그림 1. 그림이 무엇을 보여주는지 객관적으로. (출처: …)</figcaption>
+</figure>
+```
+- 캡션에 번호를 매긴다 (`그림 1.`, `그림 2.` …); 외부 출처 이미지는 캡션 끝에 출처 표기.
+- 애니메이션이 필요 없는 모든 그림은 figure-canvas가 아니라 이것을 쓴다.
+
+### 4.9 캔버스 도해 (figure-canvas)
 JS로 그리는 시각화:
 ```html
 <figure class="figure-canvas">
@@ -183,9 +208,13 @@ JS로 그리는 시각화:
   <figcaption>설명</figcaption>
 </figure>
 ```
-스크립트는 `IntersectionObserver`로 스크롤 도달 시 시작 (lazy-start).
+스크립트 필수 패턴 세 가지 (템플릿의 데모 스크립트가 모두 구현하고 있다 — 유지할 것):
+1. **lazy-start** — `IntersectionObserver`로 스크롤 도달 시 시작
+2. **고DPI 보정** — `devicePixelRatio`만큼 백버퍼를 키우고 `setTransform`으로 좌표계 복원
+3. **절전·모션 배려** — 화면 밖으로 나가면 `cancelAnimationFrame`으로 정지,
+   `prefers-reduced-motion: reduce`면 애니메이션 대신 정지 프레임 1장
 
-### 4.9 슬라이더 explorer (explorer-box)
+### 4.10 슬라이더 explorer (explorer-box)
 사용자 매개변수 조작:
 ```html
 <div class="explorer-box">

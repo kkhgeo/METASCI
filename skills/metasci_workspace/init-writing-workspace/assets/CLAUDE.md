@@ -22,6 +22,9 @@ abbreviate its steps or override its output formats with your own defaults.
 - Write revision text in the language of the manuscript (English manuscripts
   in English, Korean in Korean). Write meta-commentary about the review in
   Korean.
+- If `AGENT_communication.md` exists in this folder, read it at the start of
+  the session and apply it to everything you write to the author. It governs
+  the dialogue with the author, never the manuscript prose.
 
 ## Review Completeness
 

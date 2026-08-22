@@ -1,68 +1,88 @@
 ---
 name: init-communication-rules
 description: >
-  Append a "Communication Rules" block (AI-tell removal for agent↔author
-  dialogue, adapted from pstack's unslop) to an existing CLAUDE.md and
-  AGENTS.md in a manuscript workspace, without touching anything else in
-  those files. Use when the user says "대화 규율 추가해줘", "대화 스킬 넣어줘",
-  "unslop 규칙 적용해줘", "AI 말투 빼는 규칙 넣어줘", "init communication
-  rules", "대화 규칙 초기화", "이 폴더 클로드 코드 대화 개선", or complains that the agent's
-  review reports sound like a chatbot. Sibling of init-writing-workspace:
-  that one creates the workspace, this one adds a rule block on demand.
-  Also use to update or remove the block.
+  Install the author-dialogue communication rules (AI-tell removal, adapted
+  from pstack's unslop) into a manuscript workspace as one standalone
+  `AGENT_communication.md`, so CLAUDE.md and AGENTS.md stay short and the
+  rules survive a workspace regeneration. Use when the user says "대화 규율
+  추가해줘", "대화 규칙 파일 만들어줘", "unslop 규칙 적용해줘", "AI 말투 빼는 규칙
+  넣어줘", "init communication rules", "대화 규칙 초기화", or complains that the
+  agent's replies sound like a chatbot. Sibling of init-writing-workspace:
+  that one creates the workspace, this one drops in the dialogue rules.
+  Also use to update the file, migrate an older inline block out of
+  CLAUDE.md, or remove it.
 ---
 
 # Init Communication Rules
 
-Appends one self-contained rule block to the workspace instruction files so
-the agent's own replies (review reports, explanations, recommendations)
-drop chatbot tells. It governs dialogue only; manuscript text stays under
-the meta-* skills and their approval flow.
+Writes one standalone file, `AGENT_communication.md`, holding the rules that
+strip chatbot tells from the agent's own replies (review reports,
+explanations, recommendations). It governs dialogue only; manuscript text
+stays under the meta-* skills and their approval flow.
 
-The block lives in `assets/communication-rules.md`. **Never rewrite it from
-memory** — copy it verbatim, markers included:
+The content lives in `assets/AGENT_communication.md`. **Never rewrite it from
+memory** — copy it verbatim, version comment included.
 
-```
-<!-- metasci:communication-rules v1 -->
-...
-<!-- /metasci:communication-rules -->
-```
+## Why a separate file
 
-The markers make the operation idempotent, versionable, and reversible.
+Earlier versions appended the rules into `CLAUDE.md` and `AGENTS.md`. That
+failed twice: `init-writing-workspace` regenerates those files from its own
+canonical asset and wiped the block, and a 50-line block doubled the length
+of a 63-line CLAUDE.md in every project. A standalone file is untouched by
+regeneration, and the author loads it when they want it.
+
+**Do not append the rules into CLAUDE.md or AGENTS.md.** Not "just this
+once", not "because the project is small", not as a copy "for safety". One
+file, one place.
 
 ## Procedure
 
 1. Identify the target project root. If unclear, ask — do not guess.
-2. Confirm `CLAUDE.md` exists there. If it does not, stop and offer
-   `init-writing-workspace` instead; this skill never creates a workspace.
-3. If `AGENTS.md` is missing, create it as an exact copy of `CLAUDE.md`
-   first, so both files end up identical.
-4. Read `assets/communication-rules.md` and note the version in its opening
-   marker.
-5. For each of `CLAUDE.md` and `AGENTS.md`:
-   - **No marker present:** append the block verbatim. Place it before
-     `## Project-Specific` if that section exists, otherwise at the end.
-     One blank line before the block.
-   - **Same version present:** report "already installed" and change
-     nothing.
-   - **Older version present:** show a diff of the existing block against
-     the asset, recommend replacing, and on approval replace only the text
-     between the markers.
-   - Never edit anything outside the markers.
-6. If a `.claude/` directory already exists in the project root, also write
-   the block to `.claude/rules/communication-rules.md` (Codex CLI reads this
-   directory automatically). Do not create `.claude/` if it is absent; the
-   CLAUDE.md/AGENTS.md copy is what all agents share.
-7. Confirm: list the files touched and state in one sentence what changes
-   in the agent's replies from the next session.
+   `CLAUDE.md` does not need to exist; this file stands on its own.
+2. Copy `assets/AGENT_communication.md` to `<root>/AGENT_communication.md`.
+   - **Absent:** write it verbatim.
+   - **Present, same version:** report "already current", change nothing.
+   - **Present, older version or hand-edited:** show a diff against the
+     asset, recommend replacing, and wait for the decision.
+3. Migrate any inline copy: if `CLAUDE.md` or `AGENTS.md` contains
+   `<!-- metasci:communication-rules` … `<!-- /metasci:communication-rules -->`,
+   delete that block, markers inclusive, and nothing else. Report the line
+   count removed from each file.
+4. Report which files changed, and tell the author how the rules get loaded
+   (next section) in one sentence.
+
+Do not create `.claude/rules/`, do not write a second copy anywhere, and do
+not edit CLAUDE.md or AGENTS.md beyond the migration deletion in step 3.
+
+## How the rules get loaded
+
+Default is manual: the author types `@AGENT_communication.md` in the prompt
+when they want the rules in play for that session. Nothing loads on its own,
+nothing costs context until used.
+
+A workspace created by `init-writing-workspace` already carries one line in
+its canonical `CLAUDE.md` telling any agent to read `AGENT_communication.md`
+at session start if it exists, so those projects pick it up without further
+wiring.
+
+Offer permanent auto-loading only if the author asks for it, and name the
+cost: the rules then enter context at launch in every session.
+
+- **A runtime that expands `@path` imports inside CLAUDE.md:** append a line
+  containing `@AGENT_communication.md` (no backticks) to `CLAUDE.md`. It
+  expands at launch.
+- **A runtime that reads AGENTS.md literally:** `@` stays text. Append a plain
+  instruction to `AGENTS.md` instead: read `AGENT_communication.md` first and
+  follow it.
 
 ## Removing
 
-On request, delete from `<!-- metasci:communication-rules` through
-`<!-- /metasci:communication-rules -->` inclusive in both files, and
-`.claude/rules/communication-rules.md` if present. Touch nothing else.
+Delete `<root>/AGENT_communication.md`, and any auto-load line added above.
+Touch nothing else.
 
 ## Updating the rules
 
-To change the rules themselves, edit `assets/communication-rules.md` and bump the
-version in both markers, then offer to re-run this skill on active projects.
+Edit `assets/AGENT_communication.md`, bump the version in its opening
+`<!-- metasci:communication-rules vN -->` comment, mirror the change into the
+`codex-skills/` and `hermes-skills/` copies of this skill, then offer to
+re-run the skill on active projects.

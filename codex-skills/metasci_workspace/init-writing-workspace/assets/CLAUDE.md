@@ -50,6 +50,9 @@ must not become a license for over-editing.
 
 ## File Rules
 
+- If `FIGURES.md` exists in this folder, read it before any figure work —
+  drafting, revising, auditing, or exporting. Figure numbers come from
+  `figure_spec.yaml`, never from literals in the plotting code.
 - Never overwrite a manuscript original: save a copy (e.g., to an archive
   location) before applying any edit.
 - Keep working files separate from the manuscript. At the start of a review

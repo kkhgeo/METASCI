@@ -33,10 +33,10 @@ In the target project root:
    Claude-specific self-reference if any (the canonical text is already
    agent-neutral, so normally this is a pure copy).
 
-The canonical text tells the agent to read `AGENT_communication.md` if that
-file is present, but this skill never writes it. The author-dialogue rules
-are owned by the sibling skill `init-communication-rules`; regenerating the
-workspace leaves that file untouched.
+The canonical text points at two companion files if they are present,
+`AGENT_communication.md` and `FIGURES.md`, but this skill writes neither.
+They are owned by the sibling skills `init-communication-rules` and
+`init-figure-rules`; regenerating the workspace leaves both untouched.
 
 Both files must be byte-identical in their instruction content. Do not let
 them diverge; if the user asks for a project-specific rule, add it to BOTH

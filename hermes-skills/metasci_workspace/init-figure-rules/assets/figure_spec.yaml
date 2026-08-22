@@ -1,0 +1,88 @@
+meta:
+  project: fig
+  journal: elsevier
+canvas:
+  width_mm: 120
+  height_mm: 122
+  background: '#FFFFFF'
+panels:
+- id: a
+  x_mm: 14
+  y_mm: 67
+  w_mm: 45
+  h_mm: 45
+- id: b
+  x_mm: 72
+  y_mm: 67
+  w_mm: 45
+  h_mm: 45
+- id: c
+  x_mm: 14
+  y_mm: 13
+  w_mm: 45
+  h_mm: 45
+- id: d
+  x_mm: 72
+  y_mm: 13
+  w_mm: 45
+  h_mm: 45
+text:
+  font_family: Arial
+  axis_label_pt: 8
+  tick_label_pt: 7
+  legend_pt: 7
+  annotation_pt: 7
+  panel_label_pt: 9
+  panel_label_weight: bold
+  panel_label_dx_mm: -12
+  panel_label_dy_mm: 1.5
+lines:
+  axis_pt: 0.5
+  data_pt: 0.75
+  errorbar_pt: 0.5
+  errorbar_cap_mm: 1.0
+  grid: false
+  grid_pt: 0.25
+  grid_color: '#D9D9D9'
+ticks:
+  length_mm: 1.2
+  width_pt: 0.5
+  direction: out
+  pad_mm: 0.8
+  minor: false
+  minor_length_mm: 0.6
+  minor_width_pt: 0.4
+  top_right_spines: true
+markers:
+  size_pt: 4.3
+  edge_pt: 0.3
+  alpha: 1.0
+legend:
+  frame: false
+  handle_length_mm: 4
+  handle_text_gap_mm: 1.5
+  row_gap_pt: 1.5
+  loc: upper right
+colors:
+  roles:
+    impacted: '#E64B35'
+    background: '#3C5488'
+    neutral: '#333333'
+    accent1: '#00A087'
+    accent2: '#4DBBD5'
+    accent3: '#F39B7F'
+    accent4: '#8491B4'
+  text: '#000000'
+  spine: '#000000'
+export:
+  formats:
+  - svg
+  - pdf
+  raster_dpi: 600
+markers_by_site:
+  A: ^
+  B: o
+  C: s
+layout:
+  shared_x_rows: true
+  shared_y_cols: false

@@ -83,6 +83,6 @@ Touch nothing else.
 ## Updating the rules
 
 Edit `assets/AGENT_communication.md`, bump the version in its opening
-`<!-- metasci:communication-rules vN -->` comment, mirror the change into the
-`codex-skills/` and `hermes-skills/` copies of this skill, then offer to
-re-run the skill on active projects.
+`<!-- metasci:communication-rules vN -->` comment, rebuild the generated trees
+(`node tools/build-agent-skills.mjs`), then offer to re-run the skill on
+active projects.

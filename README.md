@@ -7,7 +7,7 @@ A personal Claude Code skill collection in two domains: **academic research** (p
 Skills in use are organized into five packs under `skills/`:
 
 ```
-skills/                                                              26 skills
+skills/                                                              30 skills
 ├── persona/             virgil · beatrice · socrates · picasso · feynman-digest
 ├── metasci_writing/     meta-writing · meta-writing-mapping · meta-writing-blog · Meta_Introduction ·
 │                        meta-writing-korean · meta-rewriting-korean · meta-proofreading-korean ·
@@ -16,7 +16,8 @@ skills/                                                              26 skills
 ├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
 │                        extraction-style · meta-styling
 ├── metasci_slide/       meta-slide-content · meta-slide-design
-└── metasci_workspace/   init-writing-workspace
+└── metasci_workspace/   init-writing-workspace · init-communication-rules · init-figure-rules ·
+                         init-review-lessons
 
 codex-skills/            generated Codex build of the five packs above
 hermes-skills/           generated Hermes build of the same
@@ -187,6 +188,22 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 | meta-styling | Apply a style corpus to a draft: structural diff, then candidate revisions | a style corpus (N≥1) |
 | meta-rewriting-antiai | Strip AI writing tells across 4 layers | nothing |
 | meta-mywriting-korean | Korean draft → the author's own style Blueprint | Blueprint |
+
+### Workspace — set up a manuscript folder
+
+| Skill | Installs | Read |
+|-------|----------|------|
+| init-writing-workspace | `CLAUDE.md` + `AGENTS.md`: scholarly-reviewer identity, ledger-based completeness, file rules | always |
+| init-communication-rules | `AGENT_communication.md`: chatbot-tell removal for replies to the author | session start |
+| init-figure-rules | `AGENT_figures.md` + `figure_spec.yaml` + `figspec.py`: figures drawn from a pt/mm spec and audited against it | before figure work |
+| init-review-lessons | `AGENT_review_lessons.md` + `review_lessons/`: one lesson line per outside-AI review finding, one file per section | when a review comes in |
+
+File naming inside a workspace: `CLAUDE.md` and `AGENTS.md` are the fixed
+entry points the runtimes look for. Every other file the agent reads as
+instructions carries the `AGENT_` prefix followed by lowercase words joined
+with `_` (`AGENT_communication.md`, `AGENT_figures.md`,
+`AGENT_review_lessons.md`). Data and code keep plain names
+(`figure_spec.yaml`, `figspec.py`, `review_lessons/`).
 
 Each skill's `description` names where to send work that belongs to a different
 one, so routing between them is in the skills themselves, not only here.

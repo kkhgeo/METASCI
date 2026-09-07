@@ -1,4 +1,4 @@
 interface:
   display_name: "Init Review Lessons"
-  short_description: "Install a review-lessons ledger into a manuscript workspace: drops one standalone `REVIEW_LESSONS.md` that tells the agent, whenever the author pastes another A"
+  short_description: "Use when a manuscript folder should keep what outside-AI reviews (ChatGPT, Gemini, a browser Claude) taught, so accepted points are checked next time and declin"
   default_prompt: "Use $init-review-lessons for this task."

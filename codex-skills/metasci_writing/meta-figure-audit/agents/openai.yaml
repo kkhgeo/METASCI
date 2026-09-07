@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Figure Audit"
-  short_description: "Post-hoc quantitative correction of a publication figure drawn under FIGURES.md / figure_spec.yaml / figspec.py (installed by init-figure-rules)"
+  short_description: "Post-hoc quantitative correction of a publication figure drawn under AGENT_figures.md / figure_spec.yaml / figspec.py (installed by init-figure-rules)"
   default_prompt: "Use $meta-figure-audit for this task."

@@ -2,7 +2,7 @@
 name: meta-figure-audit
 description: >
   Post-hoc quantitative correction of a publication figure drawn under
-  FIGURES.md / figure_spec.yaml / figspec.py (installed by init-figure-rules).
+  AGENT_figures.md / figure_spec.yaml / figspec.py (installed by init-figure-rules).
   Renders, audits the exported PDF (canvas mm, every font size and
   stroke width in pt, text kept as editable text not outlines, font family,
   panel groups), detects overlapping text in mm, presents the full parameter
@@ -12,7 +12,7 @@ description: >
   the user says "그림 교정", "피겨 감사", "수치 교정", "그림 수치 맞춰줘",
   "범례 옮겨줘", "글자 겹쳐", "눈금 길이 바꿔", "figure audit", "check the
   figure", or asks to adjust any number on a figure in this workspace. Not
-  for drawing a new figure (follow FIGURES.md) or for deciding what each
+  for drawing a new figure (follow AGENT_figures.md) or for deciding what each
   panel should show.
 ---
 
@@ -25,10 +25,10 @@ Units: thickness and text in pt, lengths in mm. Never quote inches or px.
 
 ## Preconditions
 
-`FIGURES.md`, `figure_spec.yaml`, `figspec.py` exist in the project root
+`AGENT_figures.md`, `figure_spec.yaml`, `figspec.py` exist in the project root
 and the figure script imports `figspec`. If not, stop and point to
-`init-figure-rules` (for the files) or FIGURES.md "Existing code" (for
-converting a script). Read FIGURES.md before starting.
+`init-figure-rules` (for the files) or AGENT_figures.md "Existing code" (for
+converting a script). Read AGENT_figures.md before starting.
 
 ## Loop
 
@@ -67,7 +67,7 @@ converting a script). Read FIGURES.md before starting.
      panel's bottom-left; `pt`, `ha`, `va`, `color`, `rotation`)
    - arrow → `panels[].arrows[i]` (`from_mm`, `to_mm`)
    - panel box → `panels[].x_mm/y_mm/w_mm/h_mm`; re-check the margin
-     minimums in FIGURES.md rule 10
+     minimums in AGENT_figures.md rule 10
    Show each change as `key: was → now`, then go to step 1.
 6. **Finish** when the audit has no `XX`, the collision list is empty, and
    the author approves the rendered PDF at final physical size. Record the

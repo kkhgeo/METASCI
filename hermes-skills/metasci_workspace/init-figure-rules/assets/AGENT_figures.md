@@ -1,4 +1,4 @@
-# FIGURES.md — Figure rules for this workspace
+# AGENT_figures.md — Figure rules for this workspace
 
 Defaults in `figure_spec.yaml`: Arial throughout; Nature hierarchy shifted up
 one step (8 pt axis titles, 7 pt tick labels, 9 pt bold panel labels, 0.5 pt

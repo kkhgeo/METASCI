@@ -7,7 +7,7 @@ A personal Claude Code skill collection in two domains: **academic research** (p
 Skills in use are organized into five packs under `skills/`:
 
 ```
-skills/                                                              30 skills
+skills/                                                              31 skills
 ├── persona/             virgil · beatrice · socrates · picasso · feynman-digest
 ├── metasci_writing/     meta-writing · meta-writing-mapping · meta-writing-blog · Meta_Introduction ·
 │                        meta-writing-korean · meta-rewriting-korean · meta-proofreading-korean ·
@@ -16,8 +16,8 @@ skills/                                                              30 skills
 ├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
 │                        extraction-style · meta-styling
 ├── metasci_slide/       meta-slide-content · meta-slide-design
-└── metasci_workspace/   init-writing-workspace · init-communication-rules · init-figure-rules ·
-                         init-review-lessons
+└── metasci_workspace/   init-research-principles · init-writing-workspace · init-communication-rules ·
+                         init-figure-rules · init-review-lessons
 
 codex-skills/            generated Codex build of the five packs above
 hermes-skills/           generated Hermes build of the same
@@ -193,7 +193,8 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 
 | Skill | Installs | Read |
 |-------|----------|------|
-| init-writing-workspace | `CLAUDE.md` + `AGENTS.md`: scholarly-reviewer identity, ledger-based completeness, file rules | always |
+| init-research-principles | first block of `CLAUDE.md` + `AGENTS.md`: assumptions first, simplest sufficient approach, surgical changes, verifiable completion, author and file rules | always |
+| init-writing-workspace | second block of `CLAUDE.md` + `AGENTS.md`: scholarly-reviewer identity, ledger-based completeness, `_review/` discipline (installs the principles block too) | always |
 | init-communication-rules | `AGENT_communication.md`: chatbot-tell removal for replies to the author | session start |
 | init-figure-rules | `AGENT_figures.md` + `figure_spec.yaml` + `figspec.py`: figures drawn from a pt/mm spec and audited against it | before figure work |
 | init-review-lessons | `AGENT_review_lessons.md` + `review_lessons/`: one lesson line per outside-AI review finding, one file per section | when a review comes in |
@@ -204,6 +205,10 @@ instructions carries the `AGENT_` prefix followed by lowercase words joined
 with `_` (`AGENT_communication.md`, `AGENT_figures.md`,
 `AGENT_review_lessons.md`). Data and code keep plain names
 (`figure_spec.yaml`, `figspec.py`, `review_lessons/`).
+
+`CLAUDE.md` is built from marker-delimited blocks (`<!-- metasci:<name> vN -->`
+… `<!-- /metasci:<name> -->`), one per skill. Each skill touches only its own
+block, so the order in which the skills are run does not matter.
 
 Each skill's `description` names where to send work that belongs to a different
 one, so routing between them is in the skills themselves, not only here.

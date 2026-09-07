@@ -53,8 +53,9 @@ assets/
      values.
 3. Make sure the always-on instruction file points at `AGENT_figures.md`. Check
    `AGENTS.md`, then `CLAUDE.md`. **If either already mentions `AGENT_figures.md`,
-   change nothing** — a workspace built by `init-writing-workspace` carries
-   that line in its canonical text. If a line mentions the old name
+   change nothing** — a `CLAUDE.md` carrying the research-principles block
+   (`init-research-principles`) has that line already. If a line mentions
+   the old name
    `FIGURES.md` instead, change that name to `AGENT_figures.md` in place and
    nothing else. Otherwise append to the first one that exists:
 

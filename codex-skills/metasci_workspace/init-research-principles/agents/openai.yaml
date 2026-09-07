@@ -1,0 +1,4 @@
+interface:
+  display_name: "Init Research Principles"
+  short_description: "Use when a research folder — data analysis, modelling, figures, or a manuscript — should carry the top-level working rules that every other workspace rule speci"
+  default_prompt: "Use $init-research-principles for this task."

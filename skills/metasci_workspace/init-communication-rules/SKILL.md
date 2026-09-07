@@ -60,10 +60,11 @@ Default is manual: the author types `@AGENT_communication.md` in the prompt
 when they want the rules in play for that session. Nothing loads on its own,
 nothing costs context until used.
 
-A workspace created by `init-writing-workspace` already carries one line in
-its canonical `CLAUDE.md` telling any agent to read `AGENT_communication.md`
-at session start if it exists, so those projects pick it up without further
-wiring.
+A `CLAUDE.md` carrying the research-principles block (installed by
+`init-research-principles`, and by `init-writing-workspace` alongside its
+own block) already has one line telling any agent to read
+`AGENT_communication.md` at session start if it exists, so those folders
+pick it up without further wiring.
 
 Offer permanent auto-loading only if the author asks for it, and name the
 cost: the rules then enter context at launch in every session.

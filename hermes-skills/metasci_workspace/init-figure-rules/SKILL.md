@@ -3,7 +3,7 @@ name: init-figure-rules
 description: >
   Install workspace-level figure rules for publication figures that go from
   Python (matplotlib) to Illustrator with minimal post-editing: drops
-  FIGURES.md (drafting and audit conventions), figure_spec.yaml (every
+  AGENT_figures.md (drafting and audit conventions), figure_spec.yaml (every
   number in pt/mm, Nature defaults), and figspec.py (library that applies
   the spec, prints a parameter sheet, renders wireframes, and audits
   exported PDF) into a manuscript folder, and adds one pointer line to
@@ -26,7 +26,7 @@ copy the files so every project carries the same reviewed version.
 
 ```
 assets/
-├── FIGURES.md         drafting and audit conventions (read before figure work)
+├── AGENT_figures.md   drafting and audit conventions (read before figure work)
 ├── figure_spec.yaml   every number: canvas, panels (box, legend, annotations, arrows),
 │                     text, lines, ticks, markers, legend, colours, export
 ├── figspec.py         Spec.load / canvas / panel / style / legend / annotate / save /
@@ -38,30 +38,34 @@ assets/
 ## Procedure
 
 1. Identify the target project root. If unclear, ask — do not guess.
-2. Install three files: `FIGURES.md`, `figure_spec.yaml`, `figspec.py`.
+2. Install three files: `AGENT_figures.md`, `figure_spec.yaml`, `figspec.py`.
    `example_draft.py` stays in the skill; read it, do not copy it. For each
    of the three, check whether it already exists there.
+   - `FIGURES.md` (the name before the `AGENT_` prefix) present and
+     `AGENT_figures.md` absent: rename it to `AGENT_figures.md`, then treat it
+     as present.
    - Missing: copy from `assets/`.
-   - `FIGURES.md` or `figspec.py` present: show a diff against the asset,
+   - `AGENT_figures.md` or `figspec.py` present: show a diff against the asset,
      recommend overwrite or keep with a reason, and wait.
    - `figure_spec.yaml` present: **never overwrite.** It holds the author's
      tuned numbers. Show which keys the canonical template has that the
      existing file lacks, and offer to append only those with default
      values.
-3. Make sure the always-on instruction file points at `FIGURES.md`. Check
-   `AGENTS.md`, then `CLAUDE.md`. **If either already mentions `FIGURES.md`,
+3. Make sure the always-on instruction file points at `AGENT_figures.md`. Check
+   `AGENTS.md`, then `CLAUDE.md`. **If either already mentions `AGENT_figures.md`,
    change nothing** — a workspace built by `init-writing-workspace` carries
-   that line in its canonical text. Otherwise append to the first one that
-   exists:
+   that line in its canonical text. If a line mentions the old name
+   `FIGURES.md` instead, change that name to `AGENT_figures.md` in place and
+   nothing else. Otherwise append to the first one that exists:
 
    ```
-   For any figure work (draft, revise, audit, export), read FIGURES.md first.
+   For any figure work (draft, revise, audit, export), read AGENT_figures.md first.
    ```
 
    If neither file exists, say so and suggest `init-writing-workspace`;
    still install the three files.
-4. Check `python -c "import matplotlib, yaml, fitz"`. matplotlib and pyyaml
-   draw; `fitz` (pymupdf) is what `figspec.py audit` reads the PDF with.
+4. Check `python -c "import matplotlib, yaml, pymupdf"`. matplotlib and pyyaml
+   draw; `pymupdf` is what `figspec.py audit` reads the PDF with.
    If any is missing, report it with the install command
    (`python -m pip install matplotlib pyyaml pymupdf`); do not skip the
    install.

@@ -50,12 +50,13 @@ must not become a license for over-editing.
 
 ## File Rules
 
-- If `FIGURES.md` exists in this folder, read it before any figure work —
-  drafting, revising, auditing, or exporting. Figure numbers come from
+- If `AGENT_figures.md` exists in this folder, read it before any figure
+  work — drafting, revising, auditing, or exporting. Figure numbers come from
   `figure_spec.yaml`, never from literals in the plotting code.
-- If `REVIEW_LESSONS.md` exists in this folder, do not read it by default.
-  Read and follow it only when another AI's review of the manuscript is
-  brought in, or when the author asks for the lessons.
+- If `AGENT_review_lessons.md` exists in this folder, do not read it or the
+  `review_lessons/` folder by default. Read and follow it only when another
+  AI's review of the manuscript is brought in, or when the author asks for
+  the lessons.
 - Never overwrite a manuscript original: save a copy (e.g., to an archive
   location) before applying any edit.
 - Keep working files separate from the manuscript. At the start of a review

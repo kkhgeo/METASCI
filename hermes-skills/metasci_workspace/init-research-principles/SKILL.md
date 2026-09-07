@@ -42,6 +42,17 @@ this block always lands first, the writing block after it.
    - Absent: write `assets/CLAUDE.md` as the file.
    - Present, this block absent: insert the asset at the very top of the
      file, followed by one blank line, and leave the rest untouched.
+   - Present as the pre-block writing text — first line
+     `# CLAUDE.md — Academic Manuscript Workspace` and no `<!-- metasci:`
+     marker anywhere — this is init-writing-workspace v1, which already
+     states most of these rules in its own words. Do not insert above it;
+     that duplicates them. Hand the file to `init-writing-workspace`, whose
+     procedure replaces the v1 text with both blocks, and say so. If that
+     skill is not installed, show the diff between the v1 text and this
+     asset, recommend replacing the v1 text with this block and installing
+     `init-writing-workspace` for the second, and wait. A
+     `## Project-Specific` section, if present, stays below exactly as
+     written.
    - Present, this block present, same version: leave it.
    - Present, this block present, older version: replace what lies between
      the markers, markers inclusive, with the asset. If the block was

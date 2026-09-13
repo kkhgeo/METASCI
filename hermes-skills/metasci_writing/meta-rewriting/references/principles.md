@@ -1,107 +1,258 @@
-# 학술 논문 단락의 논리·명확성 원칙 — Deep Research 보고서
+# Principles for Reviewing and Rewriting Academic English
 
-2026-07-11 | 검증 방식: 5개 검색 각도 병렬 조사 → 22개 소스 수집 → 100개 주장 추출 → 상위 25개를 각각 3명의 독립 검증자가 원문 대조 (24개 확인 3-0, 1개 반박 1-2)
+## Purpose and scope
 
-목적: meta-rewriting 스킬(영어 학술 단락 진단·리라이팅)의 진단 기준을 뒷받침할 인용 가능한 원칙 확립.
+Use these principles to assess academic paragraphs within the context actually available. Preserve the author’s facts, intended meaning, and contribution. Identify a concrete problem before prescribing a change; an effective paragraph may need no revision.
 
-> 이 파일의 가치는 위 검증 방식 — 22개 소스, 3중 독립 검증 — 이 보증하는 출처 신뢰도에 있다. 검증 절차를 거치지 않은 항목을 섞으면 그 보증이 무너지므로, 새 항목은 이 파일이 아니라 `section-checklists.md`에 배치한다. 겹치는 지점에서는 이 파일이 더 정밀하므로 충돌 시 이 파일이 우선한다. 개정 이력은 `CHANGELOG.md`.
+This guide replaces the former shared manuals in version 3.0.0. Their source records remain available for attribution. Section-specific requirements belong in the [section manuals](sections/); execution order belongs in the skill instructions.
 
----
+## Contents
 
-## 총론: 네 갈래 전통의 수렴
+- **1. Argument and evidence:** 1.1 Claim–support links · 1.2 Sound inference · 1.3 Claim strength · 1.4 Author contribution
+- **2. Paragraph and information flow:** 2.1 Function · 2.2 Progression · 2.3 Familiar and new information · 2.4 Emphasis · 2.5 Logical connections
+- **3. Sentence clarity:** 3.1 Participants and actions · 3.2 Voice · 3.3 References · 3.4 Complexity · 3.5 Parallel structure
+- **4. Concision:** 4.1 Purpose · 4.2 Redundancy · 4.3 Modifiers · 4.4 Detail
+- **5. Academic expression:** 5.1 Vocabulary · 5.2 Consistency · 5.3 Source representation · 5.4 Local accuracy
+- **6. Application:** 6.1 Priorities · 6.2 Defects and preferences · 6.3 Context limits · 6.4 Preservation and disclosure
 
-영어 학술 산문의 단락 수준 원칙은 서로 독립적으로 발전한 네 전통이 같은 결론으로 수렴한다:
+## How to read the basis notes
 
-1. **심리언어학** — Clark & Haviland (1977) given-new contract: 독자의 이해 과정 자체가 원칙의 근거
-2. **문장 수준 처방** — Gopen & Swan (1990) reader expectations; Williams & Bizup, *Style: Lessons in Clarity and Grace*
-3. **텍스트언어학** — Halliday & Hasan (1976) cohesion 프레임워크; Cooper (1988) cohesion ≠ coherence
-4. **과학 논문 실무** — Mensh & Kording (2017) "Ten simple rules for structuring papers" (PLOS Comp Biol)
+Each principle identifies its lineage and the kind of support recorded in the source files:
 
----
+- **Theory / research:** an account of language or comprehension, sometimes drawing on empirical work. The label does not imply that this exact editing rule was experimentally established.
+- **Rhetorical / practical guidance:** a writing principle, professional recommendation, or convention.
+- **Editorial synthesis:** an integration, qualification, or operational check introduced in this guide.
 
-## 원칙 1. Old-before-New 정보 구조 (가장 견고한 원칙)
+**U** refers to [the archived universal guide](source-records/00_universal.md); **P** refers to [the archived principles report](source-records/principles.md). U numbers identify `paragraph-logic` entries unless otherwise stated; P numbers identify its nine principles.
 
-**문장은 독자에게 친숙한(old/given) 정보로 시작하고, 예측 불가능한 새(new) 정보로 끝나야 한다.** 문장 간 흐름은 앞 문장의 끝이 다음 문장의 앞을 준비할 때 생긴다.
+These mappings document provenance, not a fresh verification of the original publications. The archived report describes source checks; quotation agreement is distinct from empirical validation. Editorial qualifications and diagnostic questions are not attributed as verbatim source claims.
 
-- 심리언어학적 근거: 독자는 ① 문장을 given/new로 분할 → ② given의 선행사를 기억에서 탐색 → ③ new를 거기에 부착하는 3단계로 이해한다. new가 given보다 앞서면 독자는 새 정보를 "보류(hold in abeyance)"해야 해서 기억 부담이 커진다 (Clark & Haviland 1977).
-- Gopen & Swan: old/new 오배치는 "미국 전문 글쓰기의 No. 1 problem" (단, 저자 경험 기반 주장).
-- Williams & Bizup Lesson 5: "Begin sentences with information familiar to your readers... End sentences with information that readers cannot anticipate."
+## 1. Argument and evidence
 
-## 원칙 2. Topic Position / Stress Position (Gopen & Swan)
+### 1.1 Connect claims to their support
 
-- 독자는 **문장 끝(stress position)** 에 오는 정보를 자연스럽게 강조해 읽는다 → 강조할 정보는 통사적 종결 지점에 배치.
-- **문장 앞(topic position)** 은 뒤로 연결(linkage backward)하고 앞으로 맥락(context forward)을 제공하는 old information의 자리.
-- 저자들 스스로 "rules가 아니라 principles"라고 명시 — 기계적 적용 금지.
+Make clear what is claimed, what supports it, and how that support leads to the claim. Support may be an observation, an explicit inference, or cited literature.
 
-## 원칙 3. 모호한 지시어 — Maxim of Antecedence (Clark & Haviland)
+A citation is not necessary in every sentence. Consider evidence established elsewhere in the supplied text. Distinguish missing support from support that cannot be assessed from the excerpt.
 
-**Given 정보는 독자의 기억 속에 "하나뿐인(one and only one)" 의도된 선행사를 가져야 한다.**
+**Basis:** Practical guidance — U18; editorial synthesis for excerpt-limited assessment.
 
-- 세 요건: appropriateness(적절성), **uniqueness(유일성)**, computability(계산 가능성).
-- 실험 결과: appropriateness 위반은 "awkward"에 그치지만, **uniqueness 위반(예: "it"의 선행사가 둘)은 복구 전략이 없어 "downright unacceptable"** — 즉 모호한 지시어는 가장 심각한 결함 부류.
-- 진단 우선순위: 선행사가 둘 이상인 지시어(高) > 어색하지만 계산 가능한 지시(中).
+### 1.2 Check whether the inference holds
 
-## 원칙 4. Characters as Subjects, Actions as Verbs (Williams & Bizup)
+Identify causal conclusions based only on association, conclusions broader than their evidence, circular support, false alternatives, and internal contradictions.
 
-- 독자는 (1) 문장의 주요 행위자(characters)가 주어(subject)이고 (2) 핵심 행위(actions)가 동사(verb)일 때 글이 명확하다고 판단한다.
-- 핵심 진단 신호: **nominalization**(동사의 명사화, 예: analyze→analysis), 특히 **주어 자리의 nominalization**이 난해한(turgid) 글의 가장 특징적 표지.
-- 유용한 nominalization도 있으므로 절대 규칙이 아닌 "주요 결함 신호"로 취급.
+**Diagnostic question:** What premise connects the evidence to the conclusion, and is that premise supported? Improving sentence order or transitions cannot supply a missing premise.
 
-## 원칙 5. 원칙 충돌 시 우선순위 (유일한 명시적 tie-breaker)
+**Basis:** Practical guidance — U46; editorial synthesis of specific inference checks.
 
-**"A passage's overall cohesion trumps the clarity of individual sentences"** (Williams & Bizup Lesson 5)
+### 1.3 Match claim strength to evidence
 
-- characters-as-subjects, actions-as-verbs, old-before-new 세 원칙이 충돌하면 **old-before-new(정보 흐름)를 우선**한다. 단락의 흐름이 개별 문장의 명확성보다 중요하다.
-- **Topic string 진단법**: 각 문장의 첫 7-8개 단어(동사 전까지)에 밑줄 → 그 topic들이 좁은 관련 개념 집합을 이루는가? topic이 무작위로 바뀌면 독자는 단락을 unfocused/disorganized로 느낀다.
+Distinguish direct observations, interpretations, proposed mechanisms, and broader implications. State observations precisely and qualify inferences according to the evidence and study design.
 
-## 원칙 6. Hedging의 인식론적 보정 (Williams & Bizup Lesson 9)
+Check both overstatement and excessive qualification. No verb is automatically correct or incorrect: “demonstrates” and “suggests” must be assessed against the particular claim. Neither a universal middle-strength rule nor a blanket preference for assertiveness is appropriate.
 
-- 학술 규범은 무조건적 단정("proves")도, 과잉 완화("seems to suggest that certain... could")도 아닌 **중간 강도("suggests", "indicates")**.
-- 과잉 hedging은 "mealy-mouthed", 무단정은 "only a fool"의 태도. Crick & Watson조차 "We wish to suggest **a** [not **the**] structure"로 헤지했다.
-- **"The most common intensifier is the absence of a hedge"** — hedge의 부재 자체가 가장 흔한 강조 장치. → 진단은 양방향이어야 한다: 과잉 주장(hedge 추가)과 과잉 완화(hedge 삭제) 모두.
-- APA 스타일도 동일: 단일 연구는 이론을 "증명"할 수 없으므로 "suggests/indicates" 사용 처방.
+**Basis:** Rhetorical guidance — U7 and P6 (Williams and Bizup); editorial qualification informed by P’s caveat about disciplinary variation.
 
-## 원칙 7. Cohesion의 5범주와 Cohesion ≠ Coherence
+### 1.4 Make the author’s contribution identifiable
 
-- Halliday & Hasan (1976): cohesion은 문장 간 **의미 관계**이며 텍스트를 텍스트로 만드는 구성 자원. 5범주 체크리스트 — **reference, substitution, ellipsis, conjunction, lexical cohesion**. (모호한 지시어 = Reference 범주, 연결어 오용 = Conjunction 범주.)
-- Cooper (1988): **coherence는 독자가 인지적으로 구성하는 통합적 의미이고, cohesion은 그것을 돕는 표면 장치일 뿐.** cohesive tie를 늘린다고 자동으로 coherent해지지 않는다 — 연결어를 덧붙이는 것보다 논리 자체를 고치는 것이 우선.
-- Kuo (1995): 주제 전개에 중요한 문장일수록 lexical tie가 많다 (tie 밀도 = 주제적 중심성 신호; 단일 코퍼스 연구라 medium confidence).
+Distinguish the author’s interpretation from the findings and positions of cited authors. Literature summaries should advance the paragraph’s purpose rather than replace an argument.
 
-## 원칙 8. 과학 논문 단락의 구조 (Mensh & Kording 2017)
+Address competing explanations when they materially affect that argument. Do not add a counterargument merely to fill a checklist.
 
-- **C-C-C 구조**: 첫 문장이 topic/context 설정 → 본문이 novel content → 마지막 문장이 독자가 기억할 conclusion.
-- **Zig-zag 회피 (one point per place)**: 논문의 중심 아이디어만 여러 곳에서 반복하고, 그 외 각 주제는 정확히 한 곳에서만 다룬다.
-- **Parallelism**: 병렬 아이디어는 병렬 문법 형태로 (Strunk & White "Express coordinate ideas in similar form"과 일치).
-- **Results 단락 템플릿**: 질문 설정 문장으로 열고 → data와 logic 제시 → 질문에 답하는 문장으로 닫는다 (question–data–answer). 이것이 claim-evidence linkage의 실무 형태.
+**Basis:** Practical guidance — U28 and U33; editorial qualification of applicability.
 
-## 원칙 9. 문법적 정확성 ≠ 소통 기능 (Kuo 1995, medium)
+## 2. Paragraph purpose and information flow
 
-동등하게 문법적인 두 문장도 텍스트 내 배치와 정보구조에 따라 다른 communicative value를 가진다. 문장 수정은 문법이 아니라 담화 맥락 기준. 단락의 given/new 패턴은 수사적 기능(정의, 비교, 결과 보고)에 따라 달라지므로 규칙의 차등 적용 여지가 있다.
+### 2.1 Give the paragraph a coherent function
 
----
+Identify its contribution: context, procedure, result, comparison, interpretation, or qualification. Keep supporting ideas directed toward a coherent purpose.
 
-## 반박된 주장 (규칙으로 쓰면 안 됨)
+Move material when it interrupts the argument or belongs elsewhere. A paragraph can contain several related ideas without having several competing purposes.
 
-- ❌ "주어와 동사는 최대한 빨리 이어져야 하며, 개입 자료는 **어떤 길이든** 부담이다" — 검증 1-2로 반박. 짧은 삽입은 문제없음. 무조건적 형태로 규칙화 금지 (긴 개입만 문제 삼을 것).
+**Basis:** Practical / rhetorical guidance — U25, U section-structure-20, and P8 (Mensh and Kording).
 
-## 유의 사항 (caveats)
+### 2.2 Build an appropriate progression
 
-1. Gopen & Swan의 원칙들은 수사학적 원칙이지 통제 실험으로 직접 측정된 발견이 아님 — 인용 시 단서 유지.
-2. Maxim of antecedence는 "try to" 수준의 위반 가능 원칙 — bridging inference 등 의도적 위반은 협력적. 불가침은 uniqueness와 computability.
-3. Hedging 적정 강도는 분야별로 다를 수 있음 (Hyland의 분야별 코퍼스 연구가 후속 과제).
-4. Topic string의 "좁은 개념 집합"에 대한 정량 기준은 없음 — 질적 판단.
+A useful default is context → substantive content → takeaway. Orient the reader, develop the evidence or reasoning, and establish what matters.
 
-## 핵심 소스 (primary)
+Adapt the shape to the paragraph’s role. Do not append a closing summary that only repeats an already clear point, or require every paragraph to contain the full section’s elements.
 
-- Gopen & Swan (1990), "The Science of Scientific Writing," *American Scientist* — https://www.gatsby.ucl.ac.uk/~pel/misc/gopen_swan.pdf
-- Williams & Bizup, *Style: Lessons in Clarity and Grace* (11th ed.)
-- Clark & Haviland (1977), "Comprehension and the Given-New Contract"
-- Halliday & Hasan (1976), *Cohesion in English*
-- Cooper (1988), "Cohesion and Coherence," *Written Communication* 5(3)
-- Kuo (1995), *RELC Journal* 26(1)
-- Mensh & Kording (2017), "Ten simple rules for structuring papers," *PLOS Computational Biology* — https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1005619
-- Hyland (1998), *Hedging in Scientific Research Articles*
+**Basis:** Rhetorical guidance — U9 and P8 (Mensh and Kording); editorial qualifications concerning repetition and scope.
 
----
+### 2.3 Connect familiar information to new information
 
-**Version**: 2.0.0 (원칙 본문은 1.0.0과 동일 — 주석·이력만 정리)
+Where possible, introduce new information through a topic the reader can identify from preceding text or relevant background knowledge.
+
+**Topic-string check:** Place the opening phrase of each sentence side by side. Do the topics form a recognizable progression? Can the reader explain the link at each topic change? The first seven or eight words can be a useful starting sample, but the meaningful opening phrase matters more than a fixed count.
+
+Familiar-before-new is a default, not a fixed word-order rule. Definitions, contrasts, and deliberate emphasis may justify other arrangements.
+
+**Basis:** Theory / research — P1 (Clark and Haviland); rhetorical guidance — P2 and P5 (Gopen and Swan; Williams and Bizup); contextual qualification — P9 (Kuo). The practical check adapts P5 and has no numerical pass threshold.
+
+### 2.4 Place emphasis deliberately
+
+Readers often assign emphasis near a sentence’s syntactic completion. Compare the point the author intends to stress with the information that occupies that position.
+
+If an incidental detail receives the strongest emphasis, consider reordering. Retain the arrangement when it serves the intended contrast or prepares the next sentence.
+
+**Basis:** Rhetorical guidance — P2 (Gopen and Swan), not a universal experimental law; editorial diagnostic question.
+
+### 2.5 Clarify actual logical connections
+
+Use transitions that accurately express contrast, consequence, qualification, or sequence. Reference, lexical continuity, and parallel structure can also connect sentences.
+
+**Diagnostic question:** If the connective is removed, what relationship remains between the propositions? If no defensible relationship can be stated, revise the reasoning before adding a transition.
+
+**Basis:** Linguistic theory — P7 (Halliday and Hasan; Cooper); practical guidance — U4; editorial diagnostic question. Cohesive devices do not by themselves establish coherence.
+
+## 3. Sentence clarity
+
+### 3.1 Make participants and actions identifiable
+
+Prefer constructions that reveal the main participants and their actions. Consider replacing cumbersome nominalizations or abstract noun chains with direct verbs.
+
+Retain a nominalization when it names an established concept, summarizes previous information, or maintains continuity.
+
+**Basis:** Rhetorical guidance — P4 (Williams and Bizup) and U14. Nominalization is a diagnostic clue, not an error category.
+
+### 3.2 Choose voice for the sentence’s purpose
+
+Use active voice when it clarifies responsibility. Use passive voice when the process or affected entity is the appropriate topic or the agent is irrelevant.
+
+Compare alternatives by their connection to adjacent sentences. Choose person according to communicative purpose and relevant publication conventions.
+
+**Basis:** Practical guidance — U3 and U17; rhetorical priority — P5. Application depends on information flow rather than a blanket voice preference.
+
+### 3.3 Keep references recoverable
+
+The intended referent of “this,” “these findings,” or a pronoun should be identifiable in the available context.
+
+**Antecedent check:** Substitute each plausible referent. If two substitutions remain plausible and produce materially different meanings, identify the ambiguity. Clarify it only when the intended reading is supported; otherwise apply §6.4.
+
+Do not diagnose a pronoun as defective solely because the referent is outside the isolated sentence. Context and reasonable inference may resolve it.
+
+**Basis:** Comprehension theory / research as summarized in P3 (Clark and Haviland); practical guidance — U11. The archived account does not establish that every ambiguous pronoun makes comprehension impossible.
+
+### 3.4 Manage sentence complexity
+
+Give the sentence a clear main proposition while keeping related conditions and qualifications together.
+
+**Diagnostic question:** Can the reader identify the main clause and attach each condition or qualification to its intended claim on one reading? Split or reorder when competing clauses or long interruptions obscure those relations.
+
+Do not impose a word-count cutoff or require one simple clause per sentence. Short subject–verb interruptions are not automatically defects.
+
+**Basis:** Practical guidance — U8 and U21; correction of U14 using P’s rejected-rule record. The claim that interruptions of *any* length are burdensome was rejected in that report’s source-verification process. This does not establish that every short interruption is cost-free.
+
+### 3.5 Use parallel structure for parallel ideas
+
+Express coordinated items in compatible grammatical forms. Check that compared items share a relevant dimension and that their comparison uses a consistent basis.
+
+**Basis:** Practical / rhetorical guidance — U26 and P8.
+
+## 4. Concision and necessary information
+
+### 4.1 Make each element serve a purpose
+
+Retain language that contributes meaning, evidence, orientation, qualification, or necessary context. Assess economy by what the reader needs, not by length alone.
+
+**Basis:** Practical guidance — U1; editorial clarification of useful sentence functions.
+
+### 4.2 Remove redundant content
+
+Combine or remove repeated claims and explanations that add no useful distinction. Preserve repetition that maintains terminology or a necessary connection.
+
+**Deletion check:** Temporarily remove the sentence. What is lost: a claim, evidence, a condition, context, or a transition? If nothing relevant is lost, it is a candidate for deletion. If only one function is lost, consider preserving that function more briefly.
+
+**Basis:** Practical guidance — U10; editorial diagnostic extending the original skill’s deletion check beyond claims and evidence.
+
+### 4.3 Remove empty modifiers
+
+Delete intensifiers and prefatory phrases that do not change the proposition. Retain modifiers that specify magnitude, uncertainty, conditions, or scope.
+
+**Diagnostic question:** Does removing the modifier change a scientifically relevant meaning? If so, its deletion is substantive rather than cosmetic.
+
+**Basis:** Practical guidance — U20; editorial semantic check.
+
+### 4.4 Limit detail without losing substance
+
+Reduce details that distract from the paragraph’s purpose. Retain what is needed to interpret the evidence, assess the argument, or understand the procedure. Substantive omissions are governed by §6.4.
+
+**Basis:** Practical guidance — U31; editorial preservation boundary.
+
+## 5. Vocabulary and academic expression
+
+### 5.1 Prefer precise, accessible vocabulary
+
+Use familiar words when they convey the meaning accurately. Retain technical terms that supply needed precision; explain unfamiliar concepts when the intended reader needs that support.
+
+Replace inflated wording and vague labels. Do not change a technical term to a synonym for variety or introduce an ornamental metaphor.
+
+**Basis:** Practical guidance — U2, U5, U11, U36, U40, and U45; editorial restriction on unnecessary metaphor.
+
+### 5.2 Maintain conceptual and grammatical consistency
+
+Use stable terms for the same concept. Check whether a change in tense, person, or label signals an actual change in time, perspective, or referent.
+
+Different functions may require different tenses: completed procedures, observations, established knowledge, and current interpretations need not share one tense.
+
+**Basis:** Practical guidance — U16, U17, and U29; editorial clarification of consistency.
+
+### 5.3 Represent sources faithfully
+
+Preserve a cited source’s meaning, scope, and uncertainty. Select reporting verbs that reflect its contribution and stance.
+
+Use quotations selectively and explain their relevance. A paraphrase must preserve meaning, not merely replace words.
+
+**Basis:** Practical guidance — U23 and U37. Verification and revision disclosure are covered in §§6.3–6.4.
+
+### 5.4 Correct local language errors
+
+Correct grammar, spelling, punctuation, and ambiguous constructions. Follow relevant publication conventions.
+
+When two forms are grammatical, compare their interpretation in context. Does the change clarify a referent, relationship, or emphasis? If it only changes the level of formality, treat it as a convention or preference rather than a logical correction.
+
+**Basis:** Practical guidance — U12, U13, and U30; discourse-oriented qualification — P9 (Kuo); editorial diagnostic question.
+
+## 6. Applying the principles
+
+### 6.1 Resolve conflicts by their consequences
+
+Factual fidelity and intended meaning constrain the revision. Address misleading reasoning before local polish.
+
+Among otherwise accurate alternatives, favor the version that sustains paragraph continuity. A clearer isolated sentence is not an improvement if its placement makes the passage harder to follow.
+
+**Basis:** Rhetorical priority — P5 (Williams and Bizup); editorial priority for factual fidelity.
+
+### 6.2 Distinguish defects from preferences
+
+A substantive diagnosis identifies the affected text and explains a likely misunderstanding or reading difficulty. Equally effective alternatives are choices, not corrections.
+
+The absence of a preferred construction is not itself evidence of a defect.
+
+**Basis:** Editorial review standard; supported conceptually by the contextual limits in P2 and P9.
+
+### 6.3 Respect the limits of available context
+
+Use relevant supplied context and literature when needed. When a judgment depends on unavailable information, identify the uncertainty rather than declare a defect.
+
+Distinguish internal consistency, bibliographic accuracy, and verification of source support. State which was actually assessed.
+
+**Basis:** Editorial scope and verification standard.
+
+### 6.4 Preserve substance and disclose changes
+
+Preserve factual values, units, uncertainty estimates, citations, figure and table references, and the relationship between evidence and claims.
+
+Do not invent missing evidence or resolve source ambiguity by guessing. Mark unsupported proposed additions with an evidence-needed note.
+
+Disclose proposed additions or omissions of substantive information and changes to causal meaning, certainty, or generality. Explain the reason so the author can judge whether the revision preserves the intended claim. Routine grammatical edits need no such disclosure.
+
+**Basis:** Editorial preservation standard consolidated from the original skill and the earlier draft. This is an operational constraint, not an empirical claim about reading.
+
+## Source records and status
+
+The [universal guide](source-records/00_universal.md) and [principles report](source-records/principles.md) are archived provenance records for this revision. Their historical wording does not override the revised guidance here.
+
+The source corpus includes recommendations as well as research and theory. Repetition across sources is not a measure of evidential strength. Verify original publications before quoting them or making stronger claims about empirical support.
+
+This revision has been reviewed for internal organization and source lineage, but its effect on paragraph-review quality has not yet been tested.

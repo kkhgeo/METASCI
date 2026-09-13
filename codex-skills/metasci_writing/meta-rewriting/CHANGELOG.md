@@ -1,3 +1,16 @@
+# Changelog
+
+## 3.0.0, 2026-09-13
+
+- Replace the fixed A/B/C output with one diagnosis-led revision. This supersedes the previous decision to retain three alternatives: diagnosis now determines whether and how extensively to rewrite, while comparison versions remain available on request.
+- Introduce an explicit keep-or-rewrite decision. Keep effective originals when only stylistic preferences remain, while honoring explicit translation or revision requests.
+- Make Korean-to-English handling explicit: do not invent relationships or conditions to resolve ambiguous source wording.
+- Replace the former shared manuals with the integrated principles guide and revised section-specific guides. Retain original records for provenance.
+- Preserve full sentence-level assessment while reporting detailed findings for affected sentences and grouping sentences without findings.
+- Add item-by-item preservation checks and distinguish citation preservation from source verification.
+
+Principle identifiers and basis notes are included in the packaged references. Section guidance remains conditional on paragraph role. Behavioral evaluation on three representative paragraphs has not yet been run.
+
 # CHANGELOG — meta-rewriting
 
 이전에는 버전 표기가 없고 참조 파일의 날짜 헤더(2026-07-11, 2026-07-16)만 있었다.

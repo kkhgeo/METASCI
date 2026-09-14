@@ -1,529 +1,348 @@
-# Style Revision Guide (meta-styling v4.0)
+# Style Revision Guide
 
-Stage-by-stage procedure. Read this whole file before Stage 0.
+Guide version: 5.0.0 (2026-09-14).
 
-**What changed from v3.0:** prescriptions come from a structural diff against the
-reference's `logic.md`, not from steering three numbers toward the card's values. Numbers
-are a sanity check at the end. Output is 2–3 candidate revisions with a recommendation.
+Paired entrypoint: `meta-styling` SKILL.md 5.0.0. Do not use this guide with the 4.1.1 entrypoint: its candidate, tier, band, and stage-file rules no longer apply.
 
----
+Apply useful features of the selected style corpus to an English draft while preserving its substance. Compare both wording and structure. A difference from a reference is an observation; decide whether it is relevant before turning it into an edit.
 
-## Stage 0 — Separate, check, segment
+Use this guide for the revision workflow. Consult the frame taxonomy only when classifying sentence frames, and the quantitative helper only when a measurement would resolve a useful question. Development history is not required reading.
 
-A real manuscript is rarely a clean block of prose. Do these five steps **in this order** —
-the ordering is the fix for a defect that aborted a live run.
+## 1. Establish the input and working text
 
-### 0.1 Separate manuscript prose from scaffolding
+Identify the requested draft, section, corpus, and scope from the user's files and conversation. Honor a selected paragraph, section, or subset of reference papers. Use neighboring prose to interpret the target without expanding the revision scope.
 
-Working drafts carry material that is *about* the manuscript but is not manuscript:
+The corpus is an existing input. Do not rebuild it as part of styling. Resolve a supplied corpus path first; otherwise look for a recognizable style corpus in the project. If several plausible corpora remain, ask which to use. If none is available, request its location. If the user has not built one, explain that `extraction-style` creates it from reference papers; do not silently substitute another collection or start extraction.
 
-| scaffolding | examples seen in practice |
-|-------------|---------------------------|
-| the author's own working rules | `## A) Approach Checklist / 작업 기준` |
-| source or evidence summaries | `## B) Source Summary` |
-| open questions / author queries | `## D) 미해결 / 저자 확인 대기` |
-| ledgers and transfer tables | `Caption_Transfer_Ledger.md` cross-references |
-| a translation mirror | Korean text paralleling the English master |
-| drafting notes | 집필 메모, TODO, bracketed reminders |
+### Prepare the workspace before writing files
 
-**None of it is measured, tagged, compared, or revised.** Extract the manuscript prose to
-`0-draft.prose.txt` and list what you excluded, with line ranges, in `0-draft.repr.md` so
-the author can dispute the cut.
+Create `<draft-dir>/run/<draft-stem>/<run-id>/` before extracting the prose. Use `YYYYMMDD-HHMMSS` as the run ID, adding a suffix if that directory already exists. For pasted text, use a descriptive draft name in the current project. A changed draft, corpus selection, or scope starts a new run. Reuse an existing run only for a follow-up to that same recorded input.
 
-Where the draft names its own scope ("현재 집필분은 3.1 전체(P1–P3)"), follow it — that is
-the author telling you what exists, not you narrowing the job.
+Write `0-draft.prose.txt` containing only the manuscript prose in scope, preserving its original paragraph breaks, values, citations, and wording. Keep the supplied draft unchanged.
 
-### 0.2 Check the language — on the PROSE, never on the raw file
+Exclude working rules, evidence summaries, drafting notes, unresolved author questions, ledgers, and parallel translations from the text being measured or revised. Keep them available as context. If a bracketed phrase might be intended manuscript content rather than a note, do not silently discard it.
 
-```bash
-py -3.10 "<skills-dir>/meta-styling/scripts/quant_check.py" profile 0-draft.prose.txt
-```
+Check the extracted prose by reading it; use the helper's `profile` language result as a diagnostic if uncertain. Never run that check on the raw working document: a recorded live run returned `ko` because Korean notes and a translation mirror surrounded an entirely English manuscript. An English manuscript with Korean notes is in scope. For prose intended to remain Korean, use `meta-rewriting-korean`. Translation into English is a separate request; do not silently turn styling into translation.
 
-Stop only if **the extracted prose** is not English, and point to
-`meta-rewriting-korean`.
+### Record the scope and applicable rules
 
-> **Never run the language check on the raw file.** Measured on a live draft: a 3,458-word
-> working document whose manuscript prose is entirely English returned `lang: ko`, because
-> 43% of the *file* was Korean scaffolding. Checking the raw file would have aborted the
-> run before Stage 1 on a manuscript this skill is built for.
+Use `review-notes.md` for a compact working record:
 
-### 0.3 Read the draft's own style spec, if it has one
+- Draft source, target section, and included paragraphs; excluded material with source locations when available.
+- Corpus path, selected paper slugs, and the number of papers actually used.
+- Relevant author rules and any conflict with a corpus observation.
+- Material context limits, missing corpus files, and any section substitution.
 
-Many working drafts carry explicit style rules (§A above is one). They are a **competing
-authority** and they win.
+The user's current instructions and explicit manuscript requirements govern stylistic choices. Keep a corpus habit that conflicts with them as an unapplied observation, not an edit silently included in a candidate. Treat cited support for a manuscript rule as unverified unless actually inspected.
 
-| case | handling |
-|------|----------|
-| draft rule **agrees** with the corpus | FIRM — cite both |
-| draft rule **conflicts** with the corpus | **the draft rule wins.** Never apply the corpus habit silently. Log it as a CHOICE item naming both sides, so the author can relax their own rule if they want to |
-| draft rule covers something the corpus is silent on | adopt it as a BAND or FIRM item, sourced to the draft |
-| draft rule cites its own reference evidence | treat as strongest — the author has already done an extraction |
+Briefly state the scope and selected references before proceeding. Ask only when unresolved ambiguity would materially change the work.
 
-A real conflict, for the record: a draft rule read *"`[관찰]` 단락에서 suggest·indicate
-금지"* while the corpus showed `indicat*` as the author's own-inference lane in **both**
-cards. The draft rule governed; the corpus habit was offered as a candidate, not imposed.
-
-Record the spec verbatim in `0-draft.repr.md`. A rule you did not record is a rule the
-author cannot check you against.
-
-### 0.4 Resolve the corpus and count N
-
-```bash
-ls -d <corpus-root>/papers/*/          # slugs available
-ls <corpus-root>/style_profile.md      # optional cache; absence is normal
-```
-
-The draft may reference a corpus this skill was not given (the example above cites a
-`choi-2007` corpus). **Do not go looking for it.** Note that the draft-side rules rest on
-evidence you cannot see, and treat those rules as authoritative anyway.
-
-### 0.5 Segment
-
-Create the run folder **next to the draft**, never inside the corpus:
-
-```
-<draft-dir>/run/<draft-stem>/
-```
-
-Number paragraphs `P1…Pn` and sentences `S1…Sn` within each paragraph. That address is
-what joins every later artifact.
-
-**Artifact `0-draft.repr.md`** — draft path, section, token count of the *prose*, paragraph
-count, the excluded-scaffolding list with line ranges, the draft's own style spec verbatim,
-and the numbered text.
-
-**Announce before continuing:** `N=<n> tier=<tier> cards=[…] section=<X>`, plus one line
-naming what was excluded as scaffolding. The user must be able to object to both the scope
-and the cut before a pass is spent on them.
-
----
-
-## Stage 1 — Three independent analyses
-
-Runs in parallel. Each reads little and returns little.
-
-### 1a — Structure tag (reads the DRAFT ONLY)
-
-Tag the draft in the same taxonomy `logic.md` uses.
-
-**Paragraph functions** — *Introduction*: Background · Literature-Review · Gap · Question ·
-Purpose · Scope · Contribution. *Methods*: Study-Area · Design · Sample · Procedure ·
-Instrument · Statistical · Quality. *Results*: Overview · Finding · Comparison · Trend ·
-Pattern · Anomaly · Summary. *Discussion*: Interpretation · Mechanism · Lit-Comparison ·
-Agreement · Disagreement · Limitation · Implication · Future · Conclusion.
-
-**Relations between paragraphs** — Continuation · Contrast · Cause-Effect · Specification ·
-Generalization · Sequence · Concession · Problem-Solution · Evidence-Claim · Question-Answer.
-
-**Sentence roles** — Topic · Claim · Evidence · Elaboration · Example · Transition ·
-Qualification · Reference · Method · Conclusion · Bridge.
-
-**Frame codes** — A1–L4 plus `Z` for anything the taxonomy does not name. The table is
-bundled in this skill: `references/frame-codes.md` (a synced copy of `extraction-style`'s
-`lens-architecture.md` §A.4 — edits happen upstream, then re-copy; the copy's header
-records the rule). **Do not invent codes.** Expect a high `Z` rate — on
-the two papers measured so far it ran 39.5% and 26.5%, an order of magnitude above the
-taxonomy's illustrative 3%. A high `Z` rate is the interesting part, not a tagging failure.
-
-> **Do not read the reference in this stage.** Tagging a draft against a known target
-> pulls the tags toward it and manufactures a match that isn't there. Tag blind.
-
-**Artifact `1a-structure.md`** (≤ 55 lines):
+Use this minimum skeleton; add rows as the review proceeds rather than creating a separate file for every intermediate step:
 
 ```markdown
-draft: my_methods.txt   section: M   tokens: 112   paragraphs: 3
+# Review notes
+run: <run-id>
+draft: <source path>; section: <section>; scope: <paragraphs>
+corpus: <path>; N: <papers used>; papers: <full slugs>
+excluded: <material and source locations, or none>
+author rules: <applicable rules, or none>
+analysis: <independent context / isolation by ordering / informed follow-up>
+section mapping: <exact / explicit fusion evidence / unresolved>
 
-## P1  function=Procedure  relation-to-next=Sequence
-S1  role=Method     frame=E1  "A total of 88 groundwater samples were collected …"
-S2  role=Reference  frame=F5  "Fig. 2 shows the sampling network …"
+## Draft map
+P1: <function>; next: <relation>
+P1-S1: <role>; frame: <code, when used>
+
+## Evidence and decisions
+EDIT-1: <draft location and wording>
+Reference: <slug, file section, source address, example>
+Observation: <difference and its scope>
+Decision: <apply / retain / unresolved>; reason: <applicability>
+Change: <before -> after>; preserve: <content boundary>
+
+## Preservation
+Mechanical: <PASS / FAIL / BLOCKED>; inventory and exceptions: <details>
+Semantic: <PASS / FAIL / BLOCKED>; checked relationships: <details>
+Unapplied or unresolved: <items, or none>
 ```
 
-Over ~1,500 tokens: tag paragraph functions for all, sentence roles for two
-representative paragraphs only, and record that sampling was applied.
+## 2. Understand the draft independently
 
-### 1b — Vocabulary measure
+Before opening reference prose, frames, or style findings, identify what the draft is doing. Assess all paragraphs in the target, including each paragraph's function and its connection to adjacent text. For paragraph-level work, examine every sentence; for a long section, record sentence-level detail where it informs a comparison or proposed edit. Review all revised text at completion regardless of how much tagging was recorded.
 
-Build `profile_vocab.txt` from the cards' §V items (reporting verbs, hedges, stance,
-connectives, register habits) plus every Red-Flag term. **Add a trailing `*` to every
-inflectable item** (`show*`, `suggest*`, `prove*`) — without it `show` misses `showed` and
-the diagnosis falsely reports zero.
+Use `P1…Pn` for draft paragraphs and `S1…Sn` within each paragraph. Qualify reference addresses with the full paper slug, for example `kim-2015-nitrate-iso:P19-S3`, so they cannot be confused with draft addresses. Declare any slug abbreviations in the notes before using them.
 
-The script lives in this skill's own `scripts/` directory — **use its absolute path**, not
-a relative one; the working directory is the user's project, not the skill folder.
+### Tag functions without forcing a fit
 
-```bash
-Q="<skills-dir>/meta-styling/scripts/quant_check.py"
-py -3.10 "$Q" profile draft.txt
-py -3.10 "$Q" count --items profile_vocab.txt draft.txt
-```
+Start with the shared vocabulary from `extraction-style`'s `lens-architecture.md` §§A.2–A.3, reproduced here so that skill need not be installed:
 
-Record, per item: hits, and — for reporting verbs — **which lane the draft used it in**
-(literature / own inference / display item). The lane, not the count, is the finding.
+| Level | Shared labels |
+|---|---|
+| Introduction paragraphs | Background, Literature-Review, Gap, Question, Purpose, Scope, Contribution |
+| Methods paragraphs | Study-Area, Design, Sample, Procedure, Instrument, Statistical, Quality |
+| Results paragraphs | Overview, Finding, Comparison, Trend, Pattern, Anomaly, Summary |
+| Discussion paragraphs | Interpretation, Mechanism, Lit-Comparison, Agreement, Disagreement, Limitation, Implication, Future, Conclusion |
+| Paragraph relations | Continuation, Contrast, Cause-Effect, Specification, Generalization, Sequence, Concession, Problem-Solution, Evidence-Claim, Question-Answer |
+| Sentence roles | Topic, Claim, Evidence, Elaboration, Example, Transition, Qualification, Reference, Method, Conclusion, Bridge |
 
-**Artifact `1b-vocab.tsv`** (≤ 30 rows) — keep items with a hit or a lane violation.
+Common extensions include Decision, Aim, and Signpost for paragraphs, and Condition, Decision, Purpose, and Contribution for sentences. Use a function appropriate to a separate Conclusion or another section rather than forcing it into an unrelated category.
 
-### 1c — Absence check
+These function and role labels are open-ended. Extend them when a sentence or paragraph has a distinct function; use combinations such as `Decision+Qualification` when warranted. Define an unfamiliar label briefly. An accurate new label is more useful than a forced match.
 
-Count every Red-Flag term from `card.md`. **Artifact `1c-absence.tsv`** (≤ 30 rows) —
-hits only, never the zero rows.
+For sentence **frame codes**, use [frame-codes.md](frame-codes.md). Assign one primary frame code per tagged sentence using its family descriptions and tie-breaking rules. Keep the established codes. For an uncovered shape, record `Z`, a `Capitalized-Hyphenated` provisional name, and one `[SLOT]` template; reconcile names with the corpus during §3, after independent tagging. Extensible function labels and the fixed frame-code namespace serve different purposes. Do not force a high or low `Z` rate.
 
----
+Record only the structural detail needed to support the comparison. A short draft can still have a meaningful purpose, closer, or reporting-verb use; do not skip qualitative review because it falls below a token threshold.
 
-## Stage 2 — Compare (one worker per reference paper)
+### Keep the independence claim accurate
 
-Reads `1a-structure.md` plus that paper's `logic.md` and `style-vocab.md`. **This is the
-only stage that opens a large file, and nothing large leaves it.**
+When isolated workers are available and their use is authorized, a draft-analysis worker needs the draft, its context and rules, and the taxonomy, but no reference findings. Otherwise perform this analysis before reading the reference findings in the same session.
 
-Emit exactly these eight dimensions, in this order, each `MATCH` / `MISMATCH` / `n/a`
-with one concrete observation on a mismatch.
+The default is to tag the draft first. Record whether separation was by independent context or by reading order. The exception is a follow-up revision to a draft already compared: reuse its analysis and disclose that reference findings are known. If a first-pass analyst has already seen the references, do not call the analysis blind; use a fresh context when available and authorized, or disclose the limitation.
 
-| # | dimension | source on the reference side |
-|---|-----------|------------------------------|
-| D1 | paragraph-function spine | `logic.md` §C |
-| D2 | paragraph closers — what the last sentence of each paragraph does | `logic.md` §C, §F |
-| D3 | sentence-role chains | `logic.md` §D |
-| D4 | frame-code distribution for that section | `logic.md` §F |
-| D5 | gap type (I / D only) — which C-codes the reference uses and never uses | `logic.md` §E, §F |
-| D6 | reporting-verb lanes | `style-vocab.md` §C.1 |
-| D7 | hedge & qualification placement | `style-vocab.md` §C.2, `logic.md` §F |
-| D8 | absences | `1c-absence.tsv` |
+## 3. Read relevant corpus evidence and compare
 
-**Artifact `2-diff.<slug>.md`** (≤ 90 lines). All eight dimensions always appear, each with
-its verdict. **On overflow, compress prose — never drop a `[P#-S#]` address, a verbatim
-quote, or a whole dimension.**
+For each selected paper, consult `manifest.json` (`prep.section_scheme`, `prep.detection_notes`, and extraction metadata) and `card.md` for an overview. Follow the section pointers below into `logic.md` and `style-vocab.md`. Inspect headings first if the extraction uses different numbering, then record the corresponding section; do not silently assume a missing heading means a missing feature.
 
-> The earlier bound was 30 lines with the instruction "keep only the strongest observation
-> per dimension". Measured on a live run, the useful artifact came out at 80 lines and
-> every line carried an address, a quote or a role chain. Following the old rule would have
-> deleted exactly the content that made the diff actionable. A bound that degrades the
-> artifact is worse than no bound.
+Use the corresponding `sections/*.txt` for lexical counts and their denominators. Use `body.txt` only to verify a quotation or recover its context: it includes abstract/front matter and is not a substitute for the section counting basis.
+
+When authorized isolated workers are used, give each reference-comparison worker the draft map, draft prose, author rules, and draft vocabulary/absence observations from `review-notes.md`, plus its paper's corpus files. It reads the indicated sections and returns compact observations and source evidence, not adoption decisions or whole files. Each observation identifies its paper, section/address, measured scope, and any missing evidence. Decide whether to apply a change only in §4, after combining the selected papers; a zero count in one paper cannot overrule occurrences in another. Without workers, read those same sections sequentially; avoid loading a large `logic.md` or `body.txt` in full. Record the execution method. Worker use is a context-management choice, not a condition for completing the task.
+
+A card selects findings; it is not a substitute for the supporting passage when an edit depends on a specific use. Treat its Red Flags as observations or inherited recommendations to assess, not as automatically binding rules.
+
+### Match the comparison to the draft's function
+
+Use the corresponding section and, within it, passages performing a comparable job. A complete reference Methods section is not a template that every short Methods paragraph must reproduce.
+
+When manifest metadata documents a combined Results and Discussion section, use that material for the relevant comparison and disclose the substitution. Locate passages doing the matching work where possible; do not treat a mixed section's whole distribution as a pure Discussion norm.
+
+If metadata is absent or unclear, inspect explicit source headings such as “Results and Discussion” and record that evidence. Do not infer fusion from prose content or the section code alone. If no explicit evidence establishes the mapping, omit judgments that require that section match. Missing data is not a measured zero.
+
+An `index.md` or `style_profile.md` may help locate relevant papers. Reuse summary measurements only when their source selection, section, counting basis, and version match the present task. No precomputed band is required.
+
+### Compare structure and vocabulary
+
+Use these dimensions when relevant; there is no requirement to fill an eight-row verdict table for every draft.
+
+| Dimension | Evidence to compare | Question for the revision |
+|---|---|---|
+| Paragraph functions | Draft map; `logic.md` §C, inter-paragraph logic | Do comparable passages organize the same kind of material differently? |
+| Paragraph closers | `logic.md` §§C, F; retrieve the addressed last sentence from §E or section text | Would a reference's way of ending fit what this paragraph actually establishes? |
+| Sentence-role chains | Draft roles; `logic.md` §D, intra-paragraph logic | Can existing material be connected or ordered more effectively? |
+| Sentence frames | `logic.md` §E, catalog and source examples; §F, distributions and named `Z` shapes | Is a useful frame available for content already present in the draft? |
+| Gap presentation | `logic.md` §§E–F, C-family frames in Introduction/Discussion | Can the same actual gap be expressed in the reference's manner? |
+| Reporting verbs | Draft uses; `style-vocab.md` §C.1, reporting verbs and their reserved-for table | Are prior findings, current observations, interpretations, and display references expressed appropriately? |
+| Other style vocabulary | `style-vocab.md` §C.2 for hedges and the named §C subsections for adverbs, connectives, self-mention, and set phrases; §D for cross-section observations | Does an alternative express the same relationship or stance in the selected style? |
+| Presence and absence | `card.md` Red Flags; `logic.md` §§C, F for structure; `style-vocab.md` §§C–D for lexical evidence; scoped draft observations in the notes | Is the difference relevant, and would changing it preserve the paragraph's function? |
+
+For an actionable finding, retain the draft location, reference source and example, the observed difference, and why it matters here. This working evidence is the input to revision; do not leave useful vocabulary findings outside the prescription process.
+
+### Use lexical measurements selectively
+
+Count a word family or phrase when a count would clarify an impression. The helper is `<skill-dir>/scripts/quant_check.py`; resolve its absolute path and use an available Python interpreter (`python`, `python3`, or a suitable Windows `py` launcher). A fixed Python 3.10 installation is not required by this guide.
+
+Run draft measurements on `0-draft.prose.txt`, never on the raw working document, notes, or a candidate file containing metadata. If needed, create `profile_vocab.txt` with the items relevant to the current comparison and use the helper's `count --items` mode. Use `profile` only when broad descriptive measures would help.
+
+For suffix variants, an item such as `show*` can capture `showed` and `shown`. Inspect the matches: wildcards can also capture unrelated forms. Irregular forms need explicit alternatives: `find*` misses `found`. A frequency count does not distinguish a reporting verb from another use of the same word.
+
+Record the function of important occurrences, not just totals. For example, determine whether `show` introduces a figure, an observed result, or an inference. Do not equate every modal or adverb with hedging: capability, statistical significance, magnitude, and uncertainty are different meanings.
+
+Sentence length and word frequencies are descriptive evidence, not quotas. Do not derive mandatory bands, prescribe a hedge count, or edit solely to move a metric toward the corpus. Count or normalize across texts only when the comparison has a compatible basis and is useful at the draft's length.
+
+### Assess structural absences by reading
+
+Separate searchable terms from structural patterns. Lists, a standalone Limitations section, a future-work ending, and citation placement require inspection at the relevant scope. Section-conditioned observations, such as `however` in Methods, require the correct section boundary.
+
+For each relevant absence claim, record what was inspected and distinguish `not observed`, `observed`, and `not assessable`. Do not report a whole-section absence from an isolated paragraph. A roadmap announcing the paper's organization and a local signpost guiding the current argument are separate features.
+
+Record a measured zero with the inspected section, text size, counting method, and matched forms. A verified zero across a substantial inspected passage is strong evidence of absence **in that passage**; an unread file, missing field, or failed search is not evidence of absence. Neither observation alone establishes an author-wide prohibition.
+
+Always report N and the selected papers. For N≤2, label applied structural habits as choices observed in those named papers, not as a general style norm. For larger corpora, identify the supporting papers and any material disagreement; do not label an item corpus-wide if some papers were not assessed for it. Paper count does not automatically turn a habit into a prohibition.
+
+## 4. Decide what to apply
+
+For each useful difference, ask:
+
+1. Does the reference passage perform a comparable function?
+2. Can the feature be applied using the draft's existing content and supported meaning?
+3. Does it advance the user's requested style while respecting their explicit rules?
+
+Apply the feature only when all three answers are yes. Retain a difference when it follows from the draft's subject, purpose, evidence, or author preference. Mark it unresolved when the needed context is unavailable.
+
+Use the same decision process for vocabulary, frames, gap presentation, and paragraph structure. No comparison dimension is excluded from revision, and no measured absence bypasses the applicability check.
+
+Distinguish:
+
+- **Required constraints:** content preservation, the user's explicit requirements, and applicable confirmed publication rules.
+- **Selected style edits:** reference-supported features that fit the present draft.
+- **Unapplied or unresolved differences:** features that are unnecessary, incompatible, or insufficiently supported.
+
+Keep decisions in `review-notes.md`. For a substantial revision, assign edit identifiers such as `EDIT-1` and `EDIT-2`; these are separate from frame codes. Each edit records the draft location, reference evidence, proposed change, and any content boundary. Small local revisions need no elaborate prescription table.
+
+Do not create a missing condition, mechanism, limitation, or study decision merely to fill a reference's sentence-role chain. If that information is necessary but absent, identify the gap outside the manuscript text.
+
+### Two edit-record examples
+
+These examples illustrate observations recorded in the SCI_kkh cards (`card.md` of kim-2015-nitrate-iso and kim-2024-redox-leachate). The draft text below is synthetic, not a quotation from either paper. In a live run, confirm the corpus entry and record its actual source address; do not invent an address to complete the template.
 
 ```markdown
-section: M   reference: kim-2015-nitrate-iso
+EDIT-1 — display-reference form
+Draft P1-S2: “Figure 2 shows the sampling locations.”
+Reference: kim-2015-nitrate-iso and kim-2024-redox-leachate,
+           card.md §P display-item form / Red Flags.
+Observation: the documented cards favor “Fig.” over “Figure”.
+Decision: apply if no user or publication rule requires “Figure”.
+Revision: “Fig. 2 shows the sampling locations.”
+Preserve: one reference to figure 2 and the same statement about it.
+Mechanical result: figure:2 — before 1, after 1.
 
-D1 paragraph-function spine   MISMATCH
-   draft:     [Procedure, Procedure, Claim]
-   reference: 13 ¶; 2 close on a procedural DECISION
-D2 paragraph closers          MISMATCH
-   draft closes on Method, Method, hedged Claim — no decision anywhere
-D3 sentence-role chains       MISMATCH
-   draft P2:      Method → Method
-   reference P19: Method → Condition → Method → Method+Purpose → Decision+Qualification
-   missing: Condition, Qualification
-D4 frame-code distribution    MISMATCH
-   draft E×2 F×1 Z×2  |  reference M: E×23 Z×19 A×4 F×2  → E under-used
-D5 gap type                   n/a (Methods)
-D6 reporting-verb lanes       MATCH   draft `indicate` governs own inference — correct lane
-D7 hedge placement            MISMATCH
-   draft 0 clause-final riders | reference 5 Assumption-Riders, all clause-final
-D8 absences                   MISMATCH — 11 hits (see 1c-absence.tsv)
+EDIT-2 — placement of an existing assumption
+Draft P2-S1: “Assuming that [ASSUMPTION], [PROCEDURE].”
+Reference: kim-2015-nitrate-iso, logic.md §§E–F,
+           Assumption-Rider examples with clause-final assumptions.
+Observation: the source uses a clause-final assumption rider.
+Decision: apply only if the assumption still qualifies the same procedure.
+Revision: “[PROCEDURE], assuming that [ASSUMPTION].”
+Preserve: the assumption itself and its scope; introduce no new condition.
+Evidence label: observed choice in this paper, not a general requirement.
 ```
 
----
+## 5. Write the revision
 
-## Stage 3 — Prescribe (barrier)
+Produce one recommended revision by default. Preserve effective original wording when no useful style change is supported. If no changes are warranted, return the original with that judgment; do not create differences to demonstrate activity.
 
-Reads every `2-diff.*`, `1b-vocab.tsv`, `1c-absence.tsv`. Nothing large.
+Offer additional candidates when the user requests comparison or when materially different, supported style choices deserve presentation. Explain the actual choice between them. Do not fill fixed conservative/standard/deep slots or vary hedge density to manufacture alternatives.
 
-### Partition
+Work from the selected edits and their evidence. A separate revision worker needs `0-draft.prose.txt`, relevant author constraints and context, and the selected evidence and edits from `review-notes.md`. The full corpus need not be reread during drafting. If evidence is insufficient, resolve the comparison before applying that edit.
 
-| class | rule | tier gate |
-|-------|------|-----------|
-| **FIRM** | absences / Red Flags | N=1: applies. N=2: needs 0 in **both** cards. N≥3: convergent, cite the count |
-| **BAND** | numeric sanity targets | same at every tier |
-| **CHOICE** | structural and stance habits from D1–D3, D7 | the candidate axis at every tier |
+### Preserve meaning while adopting style
 
-**A Red Flag that fails its tier gate is demoted to CHOICE, never dropped.** If one card
-records an absence at 0 and another does not, the absence is that paper's habit, not a
-corpus norm — move it to the candidate axis and name both sides in the report.
+- Preserve values, units, uncertainty, citations, figure/table/equation identifiers, and the entities and claims they refer to.
+- Treat certainty, causality, scope, polarity, and consequential conditions as substance. Do not replace `proves` with `suggests`, or the reverse, merely because the reference favors one verb.
+- Reorder or combine sentences when the same argument and evidential dependencies remain clear. Explain substantial restructuring. Do not turn sequence into causation or change which evidence supports which conclusion.
+- If a proposed edit would change the scientific claim, leave it outside the style-only revision and explain the issue. Proceed with a substantive change only when the user's request covers it and supporting evidence is available.
 
-This is not hypothetical. On the two-paper corpus measured so far, four Red Flags carried
-firm by the 2015 card did **not** survive the 2024 card: `whereas` (0 → 5), a future-work
-close (0 → 4 ¶), a standalone Limitations section (absent → present), and roadmap/signpost
-sentences (absent → 3). At N=1 all four would have been imposed on a draft as rules.
+### Reuse language with context
 
-At N≥3 a dimension classified `divergence` (spread rule below) adds a second axis: a
-low-lean and a high-lean variant of the same candidate.
+Imitate useful frame shapes without mechanically reproducing a source sentence. A word or phrase occurring once is not forbidden, and a recurrent phrase is not automatically appropriate.
 
-### Band derivation — two steps, in this order
+Before making a recurrence-based recommendation, read the relevant frame's Singleton/Recurrent status in `logic.md` §E.5. `anchors.txt` contains one anchor phrase per line for counting; it does not store these status labels. During §3, bring the frame identifier, status, source address, and anchor wording into the compact evidence notes so §5 can use them without reopening the full corpus. Reuse a Singleton's structural pattern rather than its distinctive anchor wording. A Recurrent label permits considering the wording in context; it is not an instruction to insert it. Do not use aggregate `manifest.frames.singleton_rate` to infer an individual expression's status. If §E.5 is missing or unreadable, record the individual status as unassessed and make no recurrence claim.
 
-**Step 1, base band:**
+Save the manuscript text alone in `revision.txt`. Keep edit identifiers, explanations, and measurement results in `review-notes.md`, not in that text file. Additional candidates, when needed, use separate prose-only files such as `revision-option-2.txt`.
 
-| N | base band | label |
-|---|-----------|-------|
-| 1 | card's point value **for that section**, ±20% | `soft` |
-| ≥2 | `[min, max]` if `relative_spread ≤ 0.30` or absolute gap `< 2.0/1k` | `firm` |
-| ≥2 | otherwise → no target; record the spread | `divergence` |
+For a legacy candidate file containing a metadata header, extract only the manuscript body after its documented header delimiter into a prose-only file before comparing it. Exclude placeholders such as “unchanged from the draft”; use the actual original prose in that case.
 
-`relative_spread = (max − min) / ((max + min) / 2)`
+## 6. Check the result and report
 
-**Step 2, length widening (REQUIRED before the band is written anywhere):**
+The required inputs here are `0-draft.prose.txt`, `review-notes.md`, and `revision.txt` (plus any additional prose-only candidates). Compare the original prose with every candidate before recommending it.
 
-| draft tokens | effective band |
-|--------------|----------------|
-| ≥ 300 | base band unchanged |
-| < 300 | base band widened a further ±20% |
-| < 100 | no numeric check at all |
+### Gate 1 — Mechanical preservation
 
-Derive the effective band **once, here**, and reuse it in Stage 5. Re-deriving a narrower
-band at verification manufactures a failure that isn't there — measured: a 112-token draft
-at `avg_sent_len 22.4` reads as failing the base band 26.5–39.7 when its effective band is
-21.2–47.7.
+Run a machine count and item-by-item comparison on the prose-only files. Never count edit IDs, report headings, or metadata. The old workflow once satisfied “Figure 2 -> Fig. 2” by deleting the reference altogether; a successful vocabulary edit must not hide that loss.
 
-**Never average. Never mix sections. Never use a whole-paper figure.**
+Run the bundled standalone script from the run folder (replace `<skill-dir>` with the actual path; use `python`, `python3`, or `py -3` as available):
 
-### Rules
+```text
+python "<skill-dir>/scripts/preservation_inventory.py" --before "0-draft.prose.txt" --after "revision.txt" --citation-style author-year --output "inventory.tsv"
+```
 
-- **No prescription may cite a metric gap as its sole justification.** Every one names a
-  D1–D8 dimension or an absence.
-- Every prescription = original fragment + issue + evidence + proposed revision.
-- Assign each prescription an id: `F1…` (firm), `B1…` (band), `C1…` (choice).
+Choose `author-year`, `numeric` (square-bracket citation numbers), or `none` from the manuscript's notation. The script writes the before/after table and an overall result to `inventory.tsv` and stdout; exit codes are 0 = PASS, 1 = FAIL, 2 = BLOCKED. Keep the actual output and reference it in `review-notes.md`. The script has no dependencies and does not involve `quant_check.py`.
 
-**Artifact `3-prescriptions.md`** (≤ 110 lines; merge prescriptions sharing a fix, never
-drop a FIRM item):
+Supported forms: display references `Figure 2`/`Fig. 2`, `Table S1`, `Fig. 4A and B`, `Fig. 1B–D`, `Figures 2–4`, `Fig. 2(a)`, `Eq. (2)`, `Eqs. (6) and (7)`; author-year citations (`Smith et al., 2020`; `Smith (2020)`; `Jones & Lee, 2021`); numeric citations (`[8,23,77]`, `[1–3]`); numbers with sign, decimals, thousands separators, exponents (`1.2e-3`, `3 × 10^-4`), ranges and chains (`2–5%`, `11–12–10`), and `±`; identifiers, meaning any remaining letter–digit token (`δ15N`, `NO3-N`, `Ca2+`, `PC1`, `10th`, `A-02`, `10⁻³`). Reference and citation digits are excluded from the number inventory. A bare year outside a recognised citation is counted as a number and listed in a `note` row so it can be inspected.
+
+BLOCKED means the extractor could not assign something reliably: a singular reference followed by a numeric list (`Figure 2 and 10 samples`), a name particle before an author (`van Smith (2020)`, where the particle may belong to the name), a bracket citation in author-year mode or an author-year citation in numeric or `none` mode, a digit that could not be assigned, empty prose, or a metadata header, delimiter, or placeholder in the prose file. Before accepting PASS, inspect the extracted keys against the manuscript's notation. For an unsupported form, extend the extractor and add a regression case to `scripts/test_inventory.py`; do not remove troublesome prose or claim an unperformed check. Validation record: on the SCI_kkh corpus (two papers, nine section files, author-year and numeric), identical texts PASS, and single deletions of a panel range, a citation, an isotope identifier, and a changed value each FAIL. Parser coverage and the semantic gate remain required even when the command exits 0.
+
+Build inventories for both texts and record the results in `review-notes.md`:
+
+| Inventory | Comparison key | Default pass condition |
+|---|---|---|
+| Figure, table, equation references | Object type and full identifier, including panels and supplements | Every item's occurrence count is unchanged |
+| Citations | Source identity or citation key; expand grouped citations into individual cited sources | Every cited source's occurrence count is unchanged |
+| Numeric expressions | Complete expression, retaining sign, decimals, exponent, range, and percent marker | Every expression's occurrence count is unchanged |
+| Identifiers | Letter–digit tokens (isotopes, ions, components, ordinals, sample IDs) with dashes unified | Every token's occurrence count is unchanged |
+
+Normalize only identity-preserving formatting: `Figure 2` and `Fig. 2` map to the same figure identifier. Do not collapse different panel labels or normalize away a minus sign. For citation or reference ranges, account for every identified item. Inspect the source text to ensure the extractor covers the manuscript's actual notation, including Unicode signs and superscripts; a parser returning no matches is not proof that there are no items.
+
+**PASS:** all three inventories match. The script never grants authorization exceptions. If the user already authorized a specific change, preserve its raw FAIL result and record a separate `PASS WITH USER-AUTHORIZED EXCEPTION` adjudication only when every differing row exactly matches the recorded authorization and no BLOCKED issue remains; never relabel the script output as PASS. If a category is genuinely absent, record “none present” after checking the prose.
+
+**FAIL:** an item's count falls, an identifier or numeric expression changes, or an unapproved item is added. Restore the original item and rerun the affected comparison. Do not satisfy the gate by inserting an unrelated duplicate elsewhere.
+
+**BLOCKED:** the comparison cannot reliably identify the items in the notation used. Improve the extractor or explicitly resolve the unparsed items before declaring a pass. Do not replace an unperformed mechanical check with a claim of verification.
+
+Consolidating repeated references requires user authorization covering that consolidation. Record the affected identity, before/after counts, and authorization in the notes; compare against that explicit exception. Without authorization, preserve the occurrences. This gate does not require an approval request for ordinary edits that preserve the inventories.
+
+Minimum verification record:
 
 ```markdown
-tier: single-source   N: 1   cards: [kim-2015-nitrate-iso]   section: M
-
-## FIRM — every candidate
-F1  D8  "Figure 2" → "Fig. 2"                    card Red flag #5 (Fig. 31 : Figure 0)
-F2  D8  bulleted list → inline (1); (2); and (3) card Red flag #6
-F3  D8  remove "This paper is organized as follows"  card Red flag #2
-
-## BAND — every candidate (sanity only)
-B1  passive/1k  6.5 → 13.6–30.7 effective   manifest M row 21.3, widened (<300 tok)
-
-## CHOICE — candidate axis
-C1  D2  close the paragraph on a procedural decision   reference: 2 of 13 M ¶
-C2  D7  move the assumption to a clause-final rider    reference: 5, all clause-final
-C3  D3  insert a Condition sentence before the method   reference chain P19
+| Kind | Item | Before | After | Authorized exception | Result |
+|---|---|---:|---:|---|---|
+| figure | figure:2 | 1 | 1 | none | PASS |
+| citation | <source key> | 2 | 2 | none | PASS |
+| number | -0.25 | 1 | 1 | none | PASS |
+| identifier | δ15N | 40 | 40 | none | PASS |
+Mechanical gate: PASS; extractor coverage checked against the prose.
 ```
 
-### The same artifact at N=2
+### Gate 2 — Semantic preservation
 
-At two or more cards the header changes, BAND rows carry a verdict from the spread rule,
-and CHOICE gains items that were FIRM at N=1. Real values from the `SCI_kkh` corpus,
-Methods section:
+After Gate 1 passes (or has the explicitly documented user-authorized exception above), compare the texts sentence by sentence, mapping merged or reordered sentences back to their originals. Confirm:
+
+- Each value remains attached to the same entity, group, time, unit, and uncertainty estimate.
+- Each citation or display reference remains attached to the same supported claim or object.
+- Negation, conditions, certainty, causal meaning, and generalization scope are preserved.
+- No material claim, condition, or evidence has been introduced or omitted without authorization.
+
+“A = 10, B = 20” and “A = 20, B = 10” pass the numeric inventory and fail this gate. Record the affected sentence mapping and reason for any failure.
+
+**PASS:** every original substantive statement and support relationship is preserved, or changed only within a documented, supported user-authorized exception. **FAIL:** a relationship or meaning changed unintentionally. **BLOCKED:** the intended meaning cannot be established. Repair introduced errors and recheck; if repair depends on author intent, retain the original wording and flag the choice.
+
+Both gates must pass before a candidate is recommended. Meaning-preservation checks remain mandatory even when optional style measurements are omitted.
+
+Then confirm that the selected style edits were actually realized and still fit their contexts. Inspect the revised paragraph transitions and vocabulary uses, not only the absence of old wording. Reuse existing measurements if the prose has not changed; do not run a second quantitative pass by default.
+
+### Present a useful result
+
+Write the explanation in the user's language. Give:
+
+1. A brief scope statement identifying N and the selected references, the section mapping, and the analysis method. For N≤2, explicitly label adopted structural habits as choices in those papers. State any context limitations or reference-informed follow-up.
+2. The important wording or structural differences and why the selected edits fit.
+3. The complete recommended revision, or the original if retained.
+4. Meaningful alternatives and deliberately unapplied differences. If none remain, say so briefly; do not invent an omitted feature to fill the record.
+5. A concise statement of what preservation checks were performed and what remains unresolved.
+
+Use this compact report skeleton. Headings may be translated or combined, but retain the scope, evidence qualification, complete prose, and gate results:
 
 ```markdown
-tier: provisional   N: 2   cards: [kim-2015-nitrate-iso, kim-2024-redox-leachate]   section: M
+N: <n>; references: <full slugs>; section: <section>
+Section mapping: <exact / explicitly documented fusion / unresolved>
+Analysis: <independent context / isolation by ordering / informed follow-up>
+Evidence scope: <for N≤2: structural habits are choices in these papers>
 
-## FIRM — every candidate (0 in BOTH cards)
-F1  D8  "Figure 2" → "Fig. 2"              Fig.:Figure = 31:0 and 30:0
-F2  D8  remove attitude markers            0 and 0
-F3  D8  no bulleted list in the body       0 and 0
-F4  D8  no citation in the Conclusions     0 and 0
+## Main edits
+<Important lexical and structural changes, with source evidence and reasons.>
 
-## BAND — every candidate (sanity only)
-B1  avg_sent_len  [25.3, 33.1]  spread 0.267  FIRM
-B2  passive/1k    [21.3, 22.2]  spread 0.041  FIRM
-B3  hedges/1k     8.9 vs 2.7    spread 1.069  DIVERGENCE — no target; see C4
+## Recommended revision
+<Complete manuscript prose, or the original if retained.>
 
-## CHOICE — candidate axis
-C1  D2  close the paragraph on a procedural decision   2015 only; 2024 uses a semicolon form
-C2  D7  clause-final assumption rider                  2015: 5; 2024: 1
-C3  D8  `whereas`                                      2015: 0 (was a Red Flag) | 2024: 5
-C4  B3  hedging density                                low-lean (2.7) or high-lean (8.9)
+## Unapplied choices and open questions
+<Material differences, alternatives, or a brief “none”.>
+
+## Preservation
+Mechanical: <PASS / FAIL / BLOCKED>; semantic: <PASS / FAIL / BLOCKED>.
+Authorized exceptions: <details, or none>.
+Source checking: <what was actually inspected; scientific citations unverified
+unless their support was checked separately>.
 ```
 
-Note `C3`: an item the 2015 card carried as a firm Red Flag, demoted to a choice because
-the second card contradicts it. Note `C4`: a divergent BAND row becomes a candidate axis
-rather than a target — this is where the low/high variants of candidate B come from.
+A failed or blocked candidate is a diagnostic draft, not the recommended revision. There is no fixed candidate count or mandatory numeric style table. Preserved citations have not thereby been verified against their original publications. Clearly distinguish style-corpus inspection from checking the scientific support for the draft's claims.
+
+### Re-entry
+
+For a wording adjustment, reuse the recorded comparison and recheck the changed prose. A changed source draft invalidates its extraction and affected comparisons. A new reference requires examining that reference and revisiting the affected decisions, not blindly replaying every step.
+
+File existence alone does not establish freshness. Before reusing a run, check that its recorded draft, selected references, scope, and author instructions still match the current request.
 
 ---
 
-## Stage 4 — Generate candidates (one worker each)
-
-Each worker reads the draft and **its own prescription subset only**.
-
-| id | applies |
-|----|---------|
-| A conservative | FIRM + BAND |
-| B standard | A + the CHOICE items natural to that section |
-| C deep | B + sentence-role chain rearrangement (D3) |
-
-Maximum 3. Fewer when the diagnosis supports fewer; if there are no CHOICE mismatches,
-emit A alone and say the draft already matches structurally. **Never pad to three.**
-
-> **Do not read reference files in this stage.** Every finding is already translated into
-> a prescription. Re-reading the source produces verbatim copying — and on the papers
-> measured so far 98.2% and 98.7% of anchors are Singletons, so there is essentially no
-> wording to copy, only frame types and their positions. Check the paper's own
-> `manifest.frames.singleton_rate` rather than assuming.
-
-**Constraints for every candidate:**
-
-- Never alter claims, data values, citations, or the logical order of arguments.
-- **Claim precedence**: claim *strength* is style (hedging "proves" down to "suggests" is
-  allowed and often required); claim *direction* is content. A prescription that would
-  reverse the draft's assertion is flagged as content-tension and **not applied**.
-- **Singleton constraint**: a frame marked `Singleton` in `anchors.txt` appears at most
-  once per candidate, as its author used it. If Singleton status was not loaded, fall back
-  to the card's aggregate ratio and **say that the fallback was used**.
-
-**Artifact `4-candidate.<id>.md`** — the revised text plus the prescription ids applied.
-
-**Emit one file per candidate, including an empty candidate A.** When A applies nothing,
-the file still exists and says so:
-
-```markdown
-applied: (none — 0 FIRM prescriptions; BAND alone is not grounds for a rewrite)
----
-(unchanged from the draft)
-```
-
-Without it the comparison table cannot be reproduced from disk, and Stage 4b has nothing
-to run the content-preservation gate against.
-
----
-
-## Stage 4b — Compare and recommend (barrier)
-
-### Filename check — runs first
-
-The artifact names below are a **literal contract**, not a suggestion. Verify every file
-exists under its exact name before comparing anything:
-
-```
-0-draft.repr.md   0-draft.prose.txt   profile_vocab.txt
-1a-structure.md   1b-vocab.tsv        1c-absence.tsv
-2-diff.<slug>.md  3-prescriptions.md
-4-candidate.<id>.md   4b-comparison.md   5-verify.tsv
-```
-
-A name that drifts (`cand_B.txt` for `4-candidate.B.md`) **silently breaks re-entry**: a
-later run looking for the contract name finds nothing and redoes the stage. Observed on a
-live run — the artifacts existed and re-entry was broken anyway.
-
-### Content-preservation gate
-
-A prescription of the form "remove X" or "replace X with Y" can be satisfied by deleting
-the sentence that contained X. That is content loss wearing a style fix, and the
-Red-Flag count does not catch it — the flag is gone either way.
-
-Measured: on the test draft, prescription `F1 "Figure 2" → "Fig. 2"` produced a candidate
-with **no figure reference at all**. Red-Flag hits read 0 and the candidate looked clean.
-
-So check these multisets, draft vs candidate. Each must be **preserved or transformed,
-never smaller**:
-
-```bash
-# display-item references
-grep -oE '\b(Fig\.|Figure|Table|Eq\.|Equation)\s*[0-9]+[A-Za-z]?' draft.txt | sort | uniq -c
-# citation keys
-grep -oE '\([A-Z][^()]{0,80}[0-9]{4}[a-z]?\)|[A-Z][a-z]+(?: et al\.)? \([0-9]{4}' draft.txt
-# numerals (data values)
-grep -oE '[0-9]+\.?[0-9]*' draft.txt | sort | uniq -c
-```
-
-| result | action |
-|--------|--------|
-| count preserved, form changed (`Figure 2` → `Fig. 2`) | correct — the prescription was applied |
-| count reduced | **disqualify the candidate**; regenerate it with the item restored |
-| numeral changed | **stop** — a data value was altered, which is never permitted |
-
-A candidate that fails this gate is not reported as an option, even if every other
-measure is good.
-
-### Comparison
-
-Measure every candidate. **Artifact `4b-comparison.md`** (≤ 35 lines; table only):
-
-```markdown
-| id | applied | avg_sent_len | hedges/1k | passive/1k | Red-Flag hits |
-|----|---------|--------------|-----------|------------|---------------|
-| A  | F1-F3, B1        | 24.1 | 9.8  | 19.4 | 0 |
-| B  | + C1, C2         | 27.6 | 8.9  | 23.1 | 0 |
-| C  | + C3             | 29.0 | 8.4  | 24.8 | 0 |
-recommend: B — reason tied to a specific diagnosis line
-```
-
-The recommendation must cite a diagnosis line, not an impression. "It reads better" is not
-a reason; "your draft already had a decision sentence buried mid-paragraph, and promoting
-it to the closer costs nothing and is this author's most consistent habit (D2)" is.
-
----
-
-## Stage 5 — Verify (sanity only)
-
-Re-measure the recommended candidate against the **same effective band** Stage 3 derived.
-
-**Artifact `5-verify.tsv`** (≤ 12 rows). Out of band is a **warning**, surfaced to the
-author — it never triggers an automatic rewrite. There is no corrective loop in v4.0:
-numbers are not the target, so a number is not grounds for redoing the work.
-
----
-
-## Stage 6 — Report
-
-```markdown
-## Style Revision Report
-**tier**: single-source · **N**: 1 · **cards**: kim-2015-nitrate-iso · **section**: Methods
-> Numbers are a sanity check, not the target.
-
-### A. Structural diagnosis
-[the D1–D8 table, mismatches first]
-
-### B. Candidates
-[4b-comparison.md table]
-
-### C. Recommended revision (B)
-[full text, with the reason]
-
-### D. The other candidates — differences only
-A: keeps "…" instead of "…"     C: additionally rewrites P2 as …
-(never reprint a full paragraph three times)
-
-### E. Not imposed
-N=1  → "합의 판정 불가 (N=1). 아래는 이 논문 한 편의 선택이며 학술 규범이 아님."
-        then every CHOICE item candidate A omitted, with the card's value.
-N=2  → same, labelled provisional.
-N≥3  → divergence list: dimension, each paper's side, which lean was kept.
-
-### F. Verification (sanity)
-[5-verify.tsv]
-
-### G. Optional next steps
-- Argument soundness → meta-review
-- AI-trace removal → meta-rewriting-antiai
-- Raise confidence: extract more reference papers → extraction-style
-(mention only; do not run)
-```
-
-**Write the report in the user's language.** The draft and the corpus are English; the
-report is for the person reading it. The template's headings are labels, not required
-wording.
-
-**Section E is never empty.** At N=1 it carries the honesty of the whole report — it is
-where the reader learns which of the card's habits were deliberately *not* imposed.
-
----
-
-## Section mapping
-
-The reference's `manifest.prep.section_scheme` may not contain the draft's section. An
-`IMRC` corpus fuses Results and Discussion, so a Discussion draft has no `D` row.
-
-1. Exact match → use it.
-2. **Fused-section match**: if `prep.detection_notes` records the fusion (e.g. "R and D
-   appear fused"), use the fused section and **declare the substitution in the report
-   header**. Legitimate — that `R` genuinely contains discussion prose.
-3. No match, no fusion note → do not substitute another section's band or spine. Say which
-   sections the corpus covers and run D6–D8 only.
-
-Rule 2 is the only permitted cross-section substitution, and only on evidence `prep.py`
-already recorded. **Never infer fusion from the content.**
-
----
-
-## Not supported
-
-**Korean drafts and Korean corpora.** Stop and point to `meta-rewriting-korean`. The frame taxonomy, paragraph-function tags, and sentence-role list
-are all derived from English academic prose; applied to Korean they produce tags that look
-authoritative and mean nothing. The v3.0 experimental Korean path was removed rather than
-carried forward — a half-working path that labels itself experimental still gets used.
-
----
-
-**Guide Version**: 4.1.1
-**Design spec**: `../docs/2026-08-17-v4-design.md`
+**Guide version:** 5.0.0 (2026-09-14).  
+**Paired SKILL.md:** meta-styling 5.0.0.  
+**Corpus contract:** extraction-style v3.x; verify actual headings and anchor format when reading older extractions.

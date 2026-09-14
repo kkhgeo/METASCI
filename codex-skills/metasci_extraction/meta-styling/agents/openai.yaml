@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Styling"
-  short_description: "Use when an academic draft in English — a paragraph, section, or report chapter, including a bilingual working document whose manuscript prose is English — must"
+  short_description: "Match an English draft to an extracted style corpus (extraction-style output): compare structure and wording with the reference papers, apply what fits, keep ev"
   default_prompt: "Use $meta-styling for this task."

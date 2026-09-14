@@ -1,16 +1,63 @@
-# Frame Codes A1–L4 + Z (bundled copy)
+# Sentence frame codes A1–L4 + Z
 
-**Provenance.** This is a copy of `extraction-style/references/lens-architecture.md`
-§A.4 "Reference taxonomy", copied 2026-08-18 so that Stage 1a can tag a draft without
-`extraction-style` being installed. The taxonomy is shared with `extraction-logic` and
-`extraction-style`; **edits happen upstream in `lens-architecture.md`, then re-copy here.**
-Editing this copy directly means the next re-copy silently reverts it. If a corpus was
-extracted under a newer taxonomy than this copy, trust the corpus's codes and re-copy.
+Guide companion: 5.0.0 (2026-09-14).
 
-**How Stage 1a uses this.** Assign each draft sentence the code whose template matches its
-skeleton. **Do not invent codes** — anything the taxonomy does not name is `Z`, and a high
-`Z` rate is a finding, not a failure (measured on real papers: 26.5% and 39.5%, an order
-of magnitude above the taxonomy's illustrative 3%).
+**Provenance.** The code/name/template table below is bundled from
+`extraction-style/references/lens-architecture.md` §A.4 so draft tagging does not
+require installing that skill. Code and name pairs are also shared with
+`extraction-logic/references/extraction_template.md`. The table remains unchanged;
+the usage rules below are local revision guidance. Update the table from upstream,
+then review these usage rules separately rather than replacing this entire file.
+A shared taxonomy version and build-time comparison are still pending repository
+integration; a copy date alone does not establish compatibility. If a corpus uses a
+different code/name mapping, record the conflict and resolve it before comparing
+code distributions. Do not silently reinterpret existing corpus labels.
+
+**How draft tagging uses this (revision guide §2).** Assign one primary frame code
+to each sentence being tagged. Match its skeleton—connectives, reporting verbs,
+clause arrangement, and slot order—before considering its subject matter. Templates
+are structural examples, not literal string patterns. If multiple templates fit,
+use the sentence's rhetorical function to break the tie. For a multi-clause sentence,
+choose the frame organizing the whole sentence; note subordinate shapes separately
+without counting the sentence twice. If none fits, use `Z`; do not invent a new
+A–L code or force a fit. A high Z rate is a finding, not a failure or a target.
+
+## Code families
+
+| Family | Main function |
+|---|---|
+| A | Background and definition |
+| B | Literature citation and attribution |
+| C | Research gap |
+| D | Study purpose and scope of action |
+| E | Methods |
+| F | Results |
+| G | Interpretation |
+| H | Comparison |
+| I | Concession and limitation |
+| J | Implications and future work |
+| K | Cause and consequence |
+| L | Summary and synthesis |
+
+Families describe rhetorical functions, not mandatory section locations. An F frame
+can occur in Discussion. Do not rewrite a sentence to achieve a family distribution.
+
+## Distinguishing neighboring codes
+
+Apply these distinctions only after checking the sentence skeleton:
+
+| Candidates | Decision rule |
+|---|---|
+| G4 / K4 | G4 presents a likely causal explanation of an observation; K4 asserts the causal link without that hedge. Preserve the original certainty: never delete or add `likely` to obtain a code. |
+| G3 / B6 | G3 aligns a finding with a theory or explanatory expectation; B6 explicitly aligns a claim with an attributed author/study. A citation merely appended to a theory does not automatically make it B6. |
+| H2 / I1 / B4 | H2 contrasts two propositions; I1 acknowledges a concession before the main point; B4 contrasts findings attributed to two studies. A temporal `while` is not H2 merely because it uses that word. |
+| A3 / F7 | A3 establishes a field/topic trend as background; F7 reports a trend in the study's own data. Use function and evidence ownership, not section heading alone. |
+| L2 / D5 | L2 states what the study demonstrates as a conclusion; D5 states what the study undertakes or aims to do. `This study` alone cannot distinguish them. |
+
+If a genuine ambiguity remains, retain one provisional primary code and record the
+alternative and reason in `review-notes.md`. Do not base an edit on that unresolved
+difference. The one-code rule applies to frames; extensible function/role labels may
+still use combinations such as `Decision+Qualification`.
 
 ## Reference taxonomy
 
@@ -92,13 +139,35 @@ of magnitude above the taxonomy's illustrative 3%).
 | L4 | Collectively | `"Collectively, [EVIDENCE] indicate [CONCLUSION]."` |
 | **Z** | **Uncategorized** | anything the taxonomy does not cover — **mandatory** |
 
-## Z is where the style is
+## Z shapes: name, template, and comparison
 
-The taxonomy is a reference, not a boundary. When a draft sentence's shape recurs but has
-no code, that recurring `Z` shape is itself style evidence — the reference cards name such
-shapes explicitly (examples measured on a real paper: Enumerated-Inventory
-`"There are [N] forms of [X]: (1) …; (2) …; and (3) …"`, Assumption-Rider
-`"…, assuming that [ASSUMPTION]."` clause-final, Therefore-Decision
-`"Therefore, [DATA] was used to [PURPOSE], regardless of [FACTOR]."`). In `1a-structure.md`
-tag them `Z` and note the shape in a word or two; Stage 2 matches them against the
-reference's own named Z shapes in `logic.md`.
+Use `Z` when the taxonomy does not cover the sentence's organizing shape. Name the
+shape in `Capitalized-Hyphenated` form and add one abstracted `[SLOT]` template line.
+The name is a description under Z, not an additional frame code. One occurrence can
+be named; call it recurrent only when evidence supports recurrence.
+
+During independent draft tagging (revision guide §2), assign a provisional descriptive
+name without opening the reference findings. During comparison (§3), look for the
+same shape in the reference's `logic.md` §F and check its catalog evidence in §E.
+When skeleton and function agree, reuse the reference's existing name and record the
+mapping from the provisional name. A matching name alone is not proof of the same
+shape. If two papers use different names for the same shape, record an alias mapping
+with both source addresses; preserve the corpus files and their original names.
+
+Record Z entries in the draft map within `review-notes.md`, for example:
+
+```text
+Location: draft:P2-S3
+Frame: Z
+Shape: Assumption-Rider
+Template: [MAIN_CLAIM], assuming that [ASSUMPTION].
+Comparison: <paper-slug>:<§F entry and §E sentence address>, or unassessed
+```
+
+Other descriptive examples are `Enumerated-Inventory`:
+`There are [N] forms of [X]: (1) [A]; (2) [B]; and (3) [C].`
+and `Therefore-Decision`:
+`Therefore, [DATA] was used to [PURPOSE], regardless of [FACTOR].`
+These illustrate shapes, not wording to insert or verified source quotations.
+Do not assign a desired Z percentage; report corpus measurements only with their
+paper, section, denominator, and measurement basis when that comparison is needed.

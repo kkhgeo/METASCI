@@ -7,10 +7,10 @@ A personal Claude Code skill collection in two domains: **academic research** (p
 Skills in use are organized into five packs under `skills/`:
 
 ```
-skills/                                                              31 skills
+skills/                                                              32 skills
 ├── persona/             virgil · beatrice · socrates · picasso · feynman-digest
-├── metasci_writing/     meta-writing · meta-writing-mapping · meta-writing-blog · Meta_Introduction ·
-│                        meta-writing-korean · meta-rewriting-korean · meta-proofreading-korean ·
+├── metasci_writing/     meta-writing · meta-writing-insight · meta-writing-mapping · meta-writing-blog ·
+│                        Meta_Introduction · meta-writing-korean · meta-rewriting-korean · meta-proofreading-korean ·
 │                        meta-rewriting · meta-rewriting-antiai · meta-rewriting-loop · meta-review ·
 │                        meta-proofreading · meta-proofreading-evidence
 ├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
@@ -170,6 +170,7 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 |-------|-------------|--------|
 | meta-writing-mapping | Settle section/paragraph composition before any prose | `outline.md` |
 | meta-writing | Draft a section from own figures/tables/data + literature | English + Korean draft |
+| meta-writing-insight | Interview the author, author picks the argument frame, then draft (or rebuild an existing draft) with meta-writing | English + Korean draft, `insight/` |
 | meta-writing-blog | Paper or manuscript → KEI Korean HTML brief | portable folder |
 | Meta_Introduction | Environmental-science Introduction blueprint → draft → CARS evaluation | Introduction package |
 | meta-slide-content | Source material → approved slide content specification | content spec |

@@ -22,6 +22,7 @@ skills/
 │   └── feynman-digest/      # Teach-Back comprehension digest
 ├── metasci_writing/     # academic writing, rewriting, multi-reviewer proofreading
 │   ├── meta-writing/
+│   ├── meta-writing-insight/
 │   ├── meta-writing-mapping/
 │   ├── meta-writing-blog/
 │   ├── meta-mywriting-korean/

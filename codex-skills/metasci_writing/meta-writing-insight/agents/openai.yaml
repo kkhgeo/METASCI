@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Writing Insight"
+  short_description: "Interview the author, then write or rebuild an English section around the insight only the author has, so it reads as their argument rather than the average sec"
+  default_prompt: "Use $meta-writing-insight for this task."

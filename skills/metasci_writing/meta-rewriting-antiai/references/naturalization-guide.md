@@ -99,12 +99,15 @@ AI는 비슷한 길이의 문장을 연속 생산한다.
   3. SD < 5 → Major (강한 균일성)
   4. SD 5-8 → Minor (약한 균일성)
   5. SD ≥ 8 → OK (자연스러운 변동)
+  6. 국소 검사: 인접 문장 길이 차이 ±3 words 이내가 3문장 이상 연속 → Minor
+     (단락 SD ≥ 8이어도 별도로 판정한다. 단락 전체 SD는 국소 균일 구간을 가린다)
 
 교정 방법:
   A. 긴 복문 1개를 짧은 문장 2개로 분리
   B. 짧은 문장 2개를 1개 복문으로 결합
   C. 핵심 발견/주장에 짧고 강한 문장 배치 (This is significant.)
   D. 설명/맥락에 긴 복문 배치
+  E. 국소 균일 구간: 3연속 구간의 가운데 문장을 분리하거나 앞뒤 문장과 결합
 
 패턴 예시:
   Before: [22w] [19w] [21w] [20w] [23w]  (SD ≈ 1.6)
@@ -180,6 +183,22 @@ After:  "This concern extends beyond theory into practice."
 규칙: 단락당 "not just/merely X, but (also) Y" 1회 초과 → 반드시 교정
 ```
 
+### 2.6 예시 나열 (such as / for instance) 정리
+
+```
+AI는 일반 진술 뒤에 "such as X, Y, and Z" / "for instance, X and Y"로 예시를 덧붙인다.
+Rule of Three와 겹치는 경우가 많다. (출처: DetectorScope para_antitell (Dugan et al., EMNLP 2026) 규칙 5)
+
+Before: "Several factors, such as temperature, humidity, and wind speed, affected the yield."
+After:  "Temperature, humidity, and wind speed affected the yield." (예시를 주어로 직접 진술)
+또는:   "Temperature affected the yield most; humidity and wind speed mattered less." (차이를 서술 — 원문에 근거가 있을 때만)
+
+규칙:
+  - 단락당 such as / for instance 예시 나열 2회 이상 → Minor, 최소 1개 해소
+  - 예시가 실제 측정·분석 대상 목록이면 유지 (Methods의 변수 나열 등)
+  - 예시 항목·수치를 새로 만들거나 빼지 않는다 (Preservation Rules)
+```
+
 ---
 
 ## Layer 3: Discourse Naturalization (담화 자연화)
@@ -193,7 +212,7 @@ After:  "This concern extends beyond theory into practice."
 | Hedges | "may" 과다, 다양성 부족 | may, might, could, appear to, suggest, seem, likely, possible |
 | Boosters | 거의 부재 | clearly, certainly, demonstrate, establish, confirm, undoubtedly |
 | Self-mentions | 거의 부재 | we, our, this study, the present work, the authors |
-| Attitude markers | 거의 부재 | importantly, surprisingly, interestingly, notably, remarkably |
+| Attitude markers | 거의 부재 | surprisingly, unexpectedly, interestingly — **문장 안쪽 위치** (3.4 참조) |
 | Engagement markers | 거의 부재 | consider, note that, as shown in, see Figure X |
 
 ### 3.2 Hedging 보강
@@ -250,25 +269,31 @@ After:  "We conducted an analysis to determine..."
 ### 3.4 Attitude Marker 추가
 
 ```
-핵심 발견이나 중요한 전환점에 attitude marker를 삽입한다:
+핵심 발견이나 예상 밖 결과에 저자의 평가를 드러낸다. 단, **문장 첫머리 부사로 넣지 않는다.**
+문장 첫머리 Notably, / Importantly, / Overall, / Ultimately, / Finally, 는 탐지 신호다
+(DetectorScope para_antitell (Dugan et al., EMNLP 2026) 규칙 1). 평가는 문장 안쪽, 술어, 또는 구체적 대비로 표현한다.
 
 Before: "The concentration was 10 times higher than expected."
-After:  "Surprisingly, the concentration was 10 times higher than expected."
+After:  "The concentration was, surprisingly, 10 times higher than expected."
+또는:   "The concentration was 10 times higher than we expected."
 
 Before: "This finding has implications for..."
-After:  "Importantly, this finding has implications for..."
+After:  "This finding matters most for..." (평가를 술어로)
+또는:   "The implication for X is direct: ..." (무엇이 중요한지 구체적으로)
 
-사용 가능한 markers:
-  - Importantly, (핵심 포인트)
-  - Surprisingly, / Unexpectedly, (예상 밖 결과)
-  - Interestingly, (주목할 패턴)
-  - Critically, (핵심 제한/조건)
-  - Remarkably, (두드러진 결과)
+사용 가능한 표현 (문장 안쪽 위치):
+  - surprisingly, / unexpectedly, (예상 밖 결과)
+  - interestingly, (주목할 패턴) — 남용 쉬움, 섹션당 1회 이하
+  - "than we expected", "contrary to X", "the larger effect was..." (구체적 대비)
+
+금지:
+  - 문장 첫머리 Importantly, / Notably, / Critically, / Remarkably, / Overall, / Ultimately, / Finally, 신규 삽입
+  - 원문에 이미 있으면 Layer 3 Scan의 Sentence-initial Opener로 진단해 삭제 또는 위치 이동
 
 규칙:
-  - 전체 텍스트에서 attitude marker 0개 → Major
+  - 전체 텍스트에서 저자 평가 표현 0개 → Major
   - 단락당 1개 이하 (과다 방지)
-  - Results/Discussion에 집중 삽입
+  - Results/Discussion에 집중
 ```
 
 ### 3.5 Transition 다양화
@@ -282,14 +307,38 @@ AI 전형적 전환어와 자연스러운 대안:
 | Moreover, | Equally important, / A related finding is / Beyond this, |
 | Additionally, | [삭제하고 문장 직접 연결] / Also noteworthy is / Another aspect is |
 | In addition, | [삭제] / A further consideration is |
-| However, | Yet, / Still, / That said, / On the other hand, / Conversely, |
+| However, | Still, / That said, / On the other hand, / Conversely, / [삭제하고 문장 순서로 대조 표현] — **Yet, 은 쓰지 않는다** (ai-lexicon 2-B: 대조 전환어 순환) |
 | Therefore, | Thus, / Accordingly, / As a result, / Consequently, / It follows that |
-| In conclusion, | To summarize, / Taken together, / In sum, / Overall, |
+| In conclusion, | Taken together, / In sum, / [삭제하고 결론 직접 진술] — **Overall, 은 쓰지 않는다** |
 
 규칙:
   - 같은 전환어가 2회 이상 → 대안으로 교체
   - 문장 시작 "Additionally," / "Furthermore," → 삭제 가능 (대부분 불필요)
   - 논리 관계가 명확하면 전환어 자체 삭제 (문맥으로 충분)
+  - 문장 첫머리 Ultimately, / Overall, / Finally, / Notably, / Importantly, → 삭제 우선, 필요하면 문장 안쪽으로
+  - 대안 전환어도 같은 기능끼리 돌려 쓰지 않는다 (ai-lexicon 2-B)
+```
+
+### 3.6 되풀이형 마무리 문장 정리
+
+```
+AI는 단락 끝에 앞 내용을 요약·일반화하거나 전망하는 문장을 붙인다.
+(출처: DetectorScope para_antitell (Dugan et al., EMNLP 2026) 규칙 2)
+
+학술 단락의 결론 문장은 정당한 기능을 할 때가 많으므로 **전부 지우지 않는다.**
+다음 두 조건을 모두 만족할 때만 플래그한다:
+  (a) 단락 마지막 문장이 요약·일반화·전망형이다
+      ("These findings highlight...", "Taken together, ...", "This opens new avenues...", "...for future research")
+  (b) 새 정보·해석 없이 앞 문장들의 내용을 되풀이한다
+
+Before: "...the yield fell by 12%. These results highlight the importance of temperature control in crop management."
+After:  "...the yield fell by 12%." (되풀이 문장 삭제)
+
+규칙:
+  - Minor. 단락당 1개만 판정
+  - 새 해석·한계·다음 단락 연결 기능이 있으면 유지 (판단 근거 기록)
+  - 섹션 마지막 단락, Abstract·Conclusion의 결론 문장은 판정 대상에서 제외
+  - 교체할 때 원문에 없는 해석·수치를 만들어 넣지 않는다 (삭제가 기본)
 ```
 
 ---
@@ -407,6 +456,8 @@ Layer [N] corrections: X items | Preserved: Y items (with justification)
 3. 전환어를 기계적으로 삽입하지 않았는가?
 4. Em dash를 새로 사용하지 않았는가?
 5. 지나치게 매끄럽고 우아한 문장을 쓰지 않았는가?
+6. 문장 첫머리 Notably / Importantly / Overall / Ultimately / Finally 를 넣지 않았는가?
+7. 대체어로 essential / vital / critical 을 새로 도입하지 않았는가?
 
 **교정 후 텍스트에 새로운 AI 패턴이 도입되면 안 된다.**
 

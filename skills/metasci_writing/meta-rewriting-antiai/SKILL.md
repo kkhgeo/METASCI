@@ -128,6 +128,8 @@ OUTPUT: Naturalized Final Draft + Session Log
 | -ing Tail Pattern | "~, highlighting...", "~, emphasizing..." 꼬리 구문 | Major |
 | Rule of Three | "X, Y, and Z" 3항목 나열 2회 이상 | Minor |
 | "Not just X, but also Y" | 부정 병렬 구문 반복 | Minor |
+| Local Length Run | 인접 문장 길이 차 ±3 words 이내가 3문장 이상 연속 (단락 SD와 별도) | Minor |
+| Example Enumeration | "such as / for instance" + 예시 나열, 단락당 2회 이상 | Minor |
 | Uniform Paragraph Length | 단락 길이 표준편차 < 15 words → 균일함 의심 | Minor |
 
 ### Layer 3: Discourse Scan (담화)
@@ -137,7 +139,9 @@ OUTPUT: Naturalized Final Draft + Session Log
 | Hedge Deficit | may/might/could/suggest 부족 (학술 글에서 필수) | Major |
 | Booster Deficit | clearly/certainly/undoubtedly/demonstrate 부재 | Major |
 | Self-mention Absence | we/our/this study 같은 저자 개입 표현 부재 | Major |
-| Attitude Marker Absence | importantly/surprisingly/interestingly 부재 | Minor |
+| Attitude Marker Absence | surprisingly/unexpectedly 등 저자 평가 표현 부재 (문장 안쪽 기준) | Minor |
+| Sentence-initial Opener | 문장 첫머리 Notably/Importantly/Overall/Ultimately/Finally | Major |
+| Restating Closer | 단락 끝 요약·일반화·전망 문장이 새 정보 없이 앞 내용을 되풀이 | Minor |
 | Transition Overuse | Furthermore/Moreover/Additionally 과다 (단락당 2+ 시) | Major |
 | Excessive Balance | 불필요한 양면 제시 ("while X, Y also...") | Minor |
 
@@ -210,15 +214,19 @@ OUTPUT: Naturalized Final Draft + Session Log
 | Rule of Three 해소 | 3항목 중 1개 삭제하거나 별도 문장으로 전개 |
 | 구문 다양화 | 단문/복문/도치/분사구문 교차 사용 |
 | 부정 병렬 재구성 | "Not just X, but Y" → 독립 문장 2개로 분리 |
+| 국소 균일 구간 해소 | 3연속 비슷한 길이 구간의 가운데 문장을 분리/결합 |
+| 예시 나열 정리 | "such as X, Y, Z" → 예시를 직접 진술 (항목 추가·삭제 금지) |
 
 ### Layer 3: Discourse Naturalization (담화 자연화)
 
 | Action | Method |
 |--------|--------|
 | Hedging 보강 | 주장에 적절한 hedging 삽입 (may, could, suggest, appear to) |
-| Booster 삽입 | 핵심 발견에 booster 삽입 (clearly, notably, demonstrate) |
+| Booster 삽입 | 핵심 발견에 booster 삽입 (clearly, demonstrate, confirm) |
 | Self-mention 회복 | "We found...", "Our results...", "This study..." 삽입 |
-| Attitude Marker 추가 | "Importantly,", "Surprisingly,", "Notably," 적소에 삽입 |
+| Attitude Marker 추가 | 저자 평가를 문장 안쪽에 표현 ("was, surprisingly, ...", "than we expected"). 문장 첫머리 Notably/Importantly 삽입 금지 |
+| Opener 정리 | 문장 첫머리 Notably/Importantly/Overall/Ultimately/Finally → 삭제 또는 문장 안쪽으로 이동 |
+| Restating Closer 정리 | 되풀이형 마무리 문장 삭제 (섹션 마지막 단락·Abstract·Conclusion 제외) |
 | Transition 다양화 | Furthermore/Moreover → 구체적 논리 관계 표현으로 대체 |
 
 ### Layer 4: Formatting Naturalization (서식 자연화)
@@ -403,6 +411,8 @@ meta-rewriting-antiai를 시작합니다.
 
 ---
 
-**Version**: 1.1.0 — 한국어 패턴 체계(ko-patterns) + 결정적 게이트 흡수
+**Version**: 1.2.0 — DetectorScope para_antitell 대조 반영: 문장 첫머리 attitude marker 삽입 폐기,
+대체어에서 essential/vital/critical 제거, 국소 문장 길이 검사, 예시 나열·되풀이형 마무리 문장 항목 추가
+(1.1.0 — 한국어 패턴 체계(ko-patterns) + 결정적 게이트 흡수)
 ([epoko77-ai/im-not-ai](https://github.com/epoko77-ai/im-not-ai) humanize-korean v2.3, MIT)
 **Skill by**: KEI / meta-rewriting-antiai

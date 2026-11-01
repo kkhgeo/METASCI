@@ -4,10 +4,11 @@ description: >
   Review the reasoning of an academic paragraph or section with a three-model
   council: Claude, Codex, and Gemini review independently through their logged-in
   CLIs, rank each other's anonymized reviews, and the current session synthesizes
-  the verdict as chairman. Needs no API keys or extraction files. Use when the user
-  says "council 리뷰", "카운슬 리뷰", "모델 회의", "세 모델로 리뷰", or
-  "meta-review-council". Plain "리뷰해줘" goes to meta-review; sentence correction
-  goes to meta-proofreading.
+  the verdict as chairman. Needs no API keys or extraction files. Invoke only when
+  the user names the council: "council", "카운슬", "카운실", or "meta-review-council".
+  Never start it without one of those words, even for logic or multi-model review
+  requests. Plain "리뷰해줘" goes to meta-review, one paragraph's logic to
+  meta-rewriting, and sentence correction to meta-proofreading.
 ---
 
 # Meta-Review-Council

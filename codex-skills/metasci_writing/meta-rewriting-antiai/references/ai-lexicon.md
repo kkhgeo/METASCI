@@ -19,7 +19,7 @@ Kobak et al. (2024/2025, PNAS) 15.1M PubMed 초록 분석 + Gray (2024) 37M 논�
 | intricate | +117% (2022→2023) | complex, detailed, elaborate, fine-grained |
 | meticulous | +59% | careful, rigorous, thorough, systematic |
 | commendable | +83% / 9.8× in reviews | praiseworthy, notable, valuable, strong |
-| pivotal | High excess | critical, essential, key, central, important |
+| pivotal | High excess | key, central, important, main |
 | comprehensive | High excess | extensive, thorough, broad, wide-ranging |
 | notably | High excess | in particular, especially, specifically |
 | tapestry | Very high (non-scientific) | framework, network, system, interplay |
@@ -42,13 +42,14 @@ Kobak et al. (2024/2025, PNAS) 15.1M PubMed 초록 분석 + Gray (2024) 37M 논�
 | vibrant | Adjective | active, dynamic, lively, diverse |
 | profound | Adjective | significant, substantial, deep, considerable |
 | innovative | Adjective | novel, new, creative, original |
-| crucial | Adjective | important, essential, critical, vital |
+| crucial | Adjective | important, key, central, necessary |
 | robust | Adjective | strong, reliable, solid, well-supported |
 | seamlessly | Adverb | smoothly, efficiently, effectively |
 | profoundly | Adverb | significantly, substantially, greatly |
 | inherently | Adverb | fundamentally, intrinsically, by nature |
 | facilitate | Verb | enable, support, help, allow |
 | leverage | Verb | use, exploit, draw on, apply |
+| multifaceted | Adjective | complex, varied (또는 어떤 측면인지 구체적으로 서술) |
 | Yet (sentence-initial) | Contrastive connector | However, But (or restructure sentence). 학술 논문에서 드물게 사용(논문당 0-2회), AI가 과다 사용 |
 
 ### Tier 3: Minor (단독으로는 문제 없지만 Tier 1-2와 공기 시 교정)
@@ -63,6 +64,8 @@ Kobak et al. (2024/2025, PNAS) 15.1M PubMed 초록 분석 + Gray (2024) 37M 논�
 | plays a crucial role | Phrase | "is important for" 또는 구체적 역할 서술 |
 | a wide range of | Phrase | "various", "many", "diverse" 또는 구체화 |
 | in the context of | Phrase | "in", "for", "regarding" 또는 삭제 |
+| Ultimately, / Overall, / Finally, / Notably, / Importantly, (문장 시작) | Sentence-initial opener | 문장 첫머리 사용 시 교정 — 삭제하거나 문장 안쪽으로 이동. DetectorScope para_antitell (Dugan et al., EMNLP 2026)가 금지 목록에 포함 |
+| essential / vital / critical (형용사) | Adjective | 원문 단독 사용은 OK. **대체어로 새로 도입하지 않는다** — DetectorScope para_antitell (Dugan et al., EMNLP 2026) 금지어(crucial, vital, essential)와 겹친다 |
 
 ### Tier 2-B: Contrastive Connector Density (대조 전환어 밀도)
 
@@ -253,7 +256,8 @@ For each paragraph:
 | "Yet" 제거 → "However" 삽입 | "However" 과다 | 교정 후 "However" 카운트 |
 | AI 단어 교체 | 같은 대체어 반복 사용 | 대체어 다양성 확인 |
 | -ing tail 분리 | "This [verb]..." 문장 시작 과다 | "This" 문장 시작 빈도 확인 |
-| Attitude marker 삽입 | "Importantly," / "Notably," 과다 | 단락당 1회 초과 시 제거 |
+| Attitude marker 삽입 | 문장 첫머리 "Importantly," / "Notably," 도입 | 문장 첫머리 attitude marker 0회 확인, 단락당 1회 초과 시 제거 |
+| AI 단어 교체 (crucial, pivotal) | essential / vital / critical 도입 | 교정본에 새로 등장한 essential·vital·critical 카운트 |
 
 ### 교정 2차 패턴 검사 규칙
 

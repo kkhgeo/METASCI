@@ -21,6 +21,8 @@ from pathlib import Path
 
 TIMEOUT_SECONDS = 600
 MIN_REVIEWERS = 2
+# An app started before agy was installed keeps its old PATH.
+AGY_DEFAULT = Path.home() / "AppData" / "Local" / "agy" / "bin" / "agy.exe"
 
 COMMANDS = {
     "Claude": ["claude", "-p", "--tools", "", "--no-session-persistence",
@@ -85,6 +87,8 @@ def call_model(name, prompt, workdir):
     """Return (name, text, error). Never raises, so one failure spares the rest."""
     command = list(COMMANDS[name])
     executable = shutil.which(command[0])
+    if executable is None and command[0] == "agy" and AGY_DEFAULT.exists():
+        executable = str(AGY_DEFAULT)
     if executable is None:
         return name, "", f"{command[0]} not found"
     command[0] = executable

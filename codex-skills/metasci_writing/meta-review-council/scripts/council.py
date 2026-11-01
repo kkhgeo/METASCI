@@ -19,7 +19,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-TIMEOUT_SECONDS = 420
+TIMEOUT_SECONDS = 600
 MIN_REVIEWERS = 2
 
 COMMANDS = {
@@ -27,7 +27,9 @@ COMMANDS = {
                "--strict-mcp-config", "--setting-sources", "project"],
     "Codex": ["codex", "exec", "--skip-git-repo-check", "--sandbox", "read-only",
               "--ephemeral", "-"],
-    "Gemini": ["gemini", "-p", "Follow the instructions given on stdin."],
+    "Gemini": ["agy", "--model", "gemini-4-argon-high", "--disable-slash-commands",
+               "-p", "Read prompt.txt in the current directory completely and follow "
+               "it. Do not run commands or change files."],
 }
 
 STAGE1_PROMPT = """You are one member of a review council for an academic draft.
@@ -86,6 +88,9 @@ def call_model(name, prompt, workdir):
     if executable is None:
         return name, "", f"{command[0]} not found"
     command[0] = executable
+    if name == "Gemini":  # agy ignores stdin, and a long prompt overflows the command line
+        (workdir / "prompt.txt").write_text(prompt, encoding="utf-8")
+        prompt = ""
     started = time.time()
     try:
         done = subprocess.run(command, input=prompt.encode("utf-8"), cwd=workdir,

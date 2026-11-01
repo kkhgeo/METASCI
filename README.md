@@ -7,12 +7,12 @@ A personal Claude Code skill collection in two domains: **academic research** (p
 Skills in use are organized into five packs under `skills/`:
 
 ```
-skills/                                                              32 skills
+skills/                                                              33 skills
 ├── persona/             virgil · beatrice · socrates · picasso · feynman-digest
 ├── metasci_writing/     meta-writing · meta-writing-insight · meta-writing-mapping · meta-writing-blog ·
 │                        Meta_Introduction · meta-writing-korean · meta-rewriting-korean · meta-proofreading-korean ·
 │                        meta-rewriting · meta-rewriting-antiai · meta-rewriting-loop · meta-review ·
-│                        meta-proofreading · meta-proofreading-evidence
+│                        meta-proofreading · meta-proofreading-evidence · meta-proofreading-phrasebank
 ├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
 │                        extraction-style · meta-styling
 ├── metasci_slide/       meta-slide-content · meta-slide-design
@@ -185,6 +185,7 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 | meta-rewriting-loop | Monte Carlo optimisation over N references | N references |
 | meta-proofreading | Reviewer panel + judge; whole draft, section, or paragraph | invoked by name |
 | meta-proofreading-evidence | Are these phrases actually used in published papers? | nothing |
+| meta-proofreading-phrasebank | One English paragraph vs the built-in Academic Phrasebank, by rhetorical function | nothing |
 | meta-proofreading-korean | Korean academic/policy draft → rubric-tiered panel proofreading | Korean draft |
 | meta-styling | Apply a style corpus to a draft: structural diff, then candidate revisions | a style corpus (N≥1) |
 | meta-rewriting-antiai | Strip AI writing tells across 4 layers | nothing |

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Proofreading Phrasebank"
+  short_description: "Compare an English academic paragraph with the built-in Manchester Academic Phrasebank, sentence by sentence, by rhetorical function: identify what each sentenc"
+  default_prompt: "Use $meta-proofreading-phrasebank for this task."

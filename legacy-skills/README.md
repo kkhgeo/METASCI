@@ -37,3 +37,7 @@ outside `skills/` rather than inside it as another pack.
 
 To bring one back, `git mv` it into a pack under `skills/` and add that pack to
 the manifest if it is not already listed.
+
+**Retired Hermes build** — `hermes-skills/` was the generated Hermes runtime set.
+Hermes is no longer used, so the build profile and installer step were removed.
+This copy is frozen and no longer tracks `skills/`.

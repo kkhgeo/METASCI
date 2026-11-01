@@ -20,20 +20,19 @@ skills/                                                              33 skills
                          init-figure-rules · init-review-lessons
 
 codex-skills/            generated Codex build of the five packs above
-hermes-skills/           generated Hermes build of the same
 legacy-skills/           superseded — kept for reference, not loaded by the plugin
 ```
 
-`skills/` is the only hand-written copy — the source Claude Code reads. The other
-two are the same skills rewritten for another runtime, **generated, never
+`skills/` is the only hand-written copy — the source Claude Code reads.
+`codex-skills/` is the same skills rewritten for Codex, **generated, never
 hand-edited**:
 
 ```
-node tools/build-agent-skills.mjs           rebuild both
+node tools/build-agent-skills.mjs           rebuild codex-skills/
 node tools/build-agent-skills.mjs --check   fail if the build output is stale
 ```
 
-Edit a skill in `skills/`, rebuild, commit all three. Runtime differences the
+Edit a skill in `skills/`, rebuild, commit both. Runtime differences the
 build cannot express go in `agent-overrides/<profile>/`.
 
 ## Installing on a machine
@@ -49,12 +48,11 @@ Each runtime is pointed at its own build:
 |---|---|---|
 | Claude Code | `skills/` | symlinks in `~/.claude/skills/` |
 | Codex | `codex-skills/` | symlinks in `~/.codex/skills/` |
-| Hermes | `hermes-skills/` | `skills.external_dirs` config |
 
 They are symlinks, so `git pull` is the whole update path. Add `--replace` if
 real directories are shadowing the links (it backs them up first).
 
-`legacy-skills/` holds the earlier `writing/` and `research/` packs. Where a skill
+`legacy-skills/` holds the earlier `writing/` and `research/` packs and the retired Hermes build. Where a skill
 was carried forward, the `metasci_*` version is the current one; see
 `legacy-skills/README.md`.
 

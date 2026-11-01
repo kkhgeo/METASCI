@@ -33,6 +33,8 @@ LAYER 2: SYNTACTIC SCAN                              Score: [X]/10
   -ing tail patterns: [count]
   Rule of Three: [count]
   Syntactic template repeats: [count]
+  Local length runs (±3w, 3+ in a row): [count]
+  Example enumerations (such as / for instance): [count]
 
   Details:
   [1] ¶X: Sentence lengths = [n1, n2, n3, ...] → SD = [X.X]
@@ -44,8 +46,10 @@ LAYER 3: DISCOURSE SCAN                              Score: [X]/10
   Hedges: [count] (target: [X-Y] for this section type)
   Boosters: [count] (target: [X-Y])
   Self-mentions: [count] (target: ≥[N])
-  Attitude markers: [count] (target: ≥[N])
+  Attitude markers (in-sentence): [count] (target: ≥[N])
   Transition overuse: [list of repeated transitions]
+  Sentence-initial openers (Notably/Importantly/Overall/...): [count] (target: 0)
+  Restating closers: [count]
 
   Details:
   [1] ¶X: No self-mention in entire paragraph — [severity]
@@ -125,7 +129,7 @@ LAYER 2 CHANGES (Syntactic):
 
 LAYER 3 CHANGES (Discourse):
   [1] ¶1, S1: [Added] "We found that" (Self-mention recovery)
-  [2] ¶2, S3: [Added] "Surprisingly," (Attitude marker insertion)
+  [2] ¶2, S3: "was 10 times higher" → "was, surprisingly, 10 times higher" (Attitude marker, in-sentence)
   [3] ¶3, S1: "Furthermore," → "Building on this," (Transition diversification)
   [4] ¶4, S2: [Added] "clearly" before "demonstrate" (Booster insertion)
   ...

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Review Council"
+  short_description: "Review the reasoning of an academic paragraph or section with a three-model council: Claude, Codex, and Gemini review independently through their logged-in CLIs"
+  default_prompt: "Use $meta-review-council for this task."

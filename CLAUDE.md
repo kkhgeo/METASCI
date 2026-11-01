@@ -29,7 +29,8 @@ skills/
 │   ├── meta-rewriting/
 │   ├── meta-proofreading/
 │   ├── meta-proofreading-evidence/
-│   └── meta-proofreading-phrasebank/
+│   ├── meta-proofreading-phrasebank/
+│   └── meta-review-council/
 ├── metasci_extraction/  # PDF → structured analysis layers, style transfer
 │   ├── extraction-knowledge/
 │   ├── extraction-logic/

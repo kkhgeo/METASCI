@@ -24,6 +24,8 @@ description: >
 - Codex: `npm install -g @openai/codex` 후 `codex login`
 - Gemini: `npm install -g @google/gemini-cli` 후 `gemini` 실행해 Google 로그인
 - 구독 사용량을 쓴다. 기본 구성은 모델당 2회 호출이다.
+- Codex 샌드박스 안에서는 모델 호출이 멈추거나 실패한다. `council.py`는 샌드박스 밖에서
+  실행한다. 승인을 요청하거나 `codex --sandbox danger-full-access`로 세션을 시작한다.
 
 ## 절차
 

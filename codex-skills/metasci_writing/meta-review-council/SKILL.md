@@ -19,10 +19,10 @@ description: >
 
 ## 준비
 
-- 필요: Python 3.9 이상, 로그인된 `claude`, `codex`, `gemini` CLI. 파이썬 패키지와 API
+- 필요: Python 3.9 이상, 로그인된 `claude`, `codex`, `agy` CLI. 파이썬 패키지와 API
   키는 필요 없다.
 - Codex: `npm install -g @openai/codex` 후 `codex login`
-- Gemini: `npm install -g @google/gemini-cli` 후 `gemini` 실행해 Google 로그인
+- Gemini: Antigravity CLI(`agy`)를 설치하고 `agy install` 후 `agy`를 실행해 Google 로그인
 - 구독 사용량을 쓴다. 기본 구성은 모델당 2회 호출이다.
 - Codex 샌드박스 안에서는 모델 호출이 멈추거나 실패한다. `council.py`는 샌드박스 밖에서
   실행한다. 승인을 요청하거나 `codex --sandbox danger-full-access`로 세션을 시작한다.
@@ -31,7 +31,7 @@ description: >
 
 1. 검토할 글과 문맥(섹션, 분야)을 확인한다. 글이 없으면 요청한다.
 2. 글을 작업 폴더의 `_council/<짧은이름>/draft.txt`에 UTF-8로 저장한다.
-3. 스킬 폴더 기준으로 실행한다. Bash 제한시간은 15분으로 둔다.
+3. 스킬 폴더 기준으로 백그라운드에서 실행한다. Gemini가 느려서 최대 20분이 걸릴 수 있다.
 
    ```bash
    python -I scripts/council.py run --draft <draft.txt> --out <세션폴더> --context "<문맥>"

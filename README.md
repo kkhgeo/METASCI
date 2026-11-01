@@ -180,7 +180,7 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 |-------|-------------|-------|
 | meta-rewriting | One paragraph: diagnose + 3 complete alternatives | nothing |
 | meta-review | Draft vs reference extractions, per-paper reviewer agents | `_logic.md` / `_vocab.md` |
-| meta-review-council | Claude, Codex, and Gemini review the reasoning independently and rank each other anonymously; the session chairs | logged-in `claude`, `codex`, `gemini` CLIs |
+| meta-review-council | Claude, Codex, and Gemini review the reasoning independently and rank each other anonymously; the session chairs | logged-in `claude`, `codex`, `agy` CLIs |
 | meta-rewriting-loop | Monte Carlo optimisation over N references | N references |
 | meta-proofreading | Reviewer panel + judge; whole draft, section, or paragraph | invoked by name |
 | meta-proofreading-evidence | Are these phrases actually used in published papers? | nothing |

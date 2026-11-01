@@ -41,31 +41,30 @@ skills/
     └── meta-slide-design/
 
 codex-skills/            # GENERATED Codex build — do not hand-edit
-hermes-skills/           # GENERATED Hermes build — do not hand-edit
 agent-overrides/         # the few places a build must differ beyond vocabulary
-legacy-skills/           # superseded; NOT in the manifest, never loaded
+legacy-skills/           # superseded, including the retired Hermes build; NOT in the manifest, never loaded
 ```
 
 The plugin manifest registers the four `skills/` packs in its `skills` array, so each skill loads as `skills/<pack>/<name>/SKILL.md`. `legacy-skills/` and the generated builds are deliberately outside that array.
 
 ## Per-runtime builds
 
-`skills/` is the only hand-written copy. The other sets are produced from it:
+`skills/` is the only hand-written copy. `codex-skills/` is produced from it:
 
 ```
-node tools/build-agent-skills.mjs           rebuild both
+node tools/build-agent-skills.mjs           rebuild codex-skills/
 node tools/build-agent-skills.mjs --check   exit 1 if a committed build is stale
 ```
 
 Each profile translates the runtime's tool vocabulary, drops the Claude-only `allowed-tools` frontmatter key, and adds a short "runtime notes" block to any SKILL.md that needs one. The tool names were read off the installed runtimes, not assumed:
 
-| in `skills/` | codex | hermes |
-|---|---|---|
-| `Agent tool` / `Task tool` | `spawn_agent` | `delegation` toolset |
-| `WebSearch` / `WebFetch` | web search / HTTP fetch | `web` toolset |
-| `AskUserQuestion` | no equivalent — numbered list in the message | `clarify` toolset |
-| `Claude Code` | Codex CLI | Hermes |
-| `agents/openai.yaml` | generated if absent | dropped (Codex-only) |
+| in `skills/` | codex |
+|---|---|
+| `Agent tool` / `Task tool` | `spawn_agent` |
+| `WebSearch` / `WebFetch` | web search / HTTP fetch |
+| `AskUserQuestion` | no equivalent — numbered list in the message |
+| `Claude Code` | Codex CLI |
+| `agents/openai.yaml` | generated if absent |
 
 `AskUserQuestion` is never substituted inline. It reads as a proper noun, so a noun phrase in its place breaks the surrounding sentences ("offered as a numbered decision prompt options"). The runtime-notes block carries it instead.
 
@@ -75,7 +74,7 @@ Anything the vocabulary table cannot express belongs in `agent-overrides/<profil
 
 ## Installing on a machine
 
-`tools/install-skills.mjs --apply` points each runtime at its own build: symlinks into `~/.claude/skills` and `~/.codex/skills`, and Hermes' `skills.external_dirs` config. Links mean `git pull` is the whole update path. `--replace` additionally converts shadowing real directories into links, backing them up under `~/.metasci/replaced-skills/` first.
+`tools/install-skills.mjs --apply` points each runtime at its own build: symlinks into `~/.claude/skills` and `~/.codex/skills`. Links mean `git pull` is the whole update path. `--replace` additionally converts shadowing real directories into links, backing them up under `~/.metasci/replaced-skills/` first.
 
 ## Key Conventions
 

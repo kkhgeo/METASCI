@@ -26,7 +26,6 @@ const CHECK = process.argv.includes('--check')
 
 // 각 런타임의 대응 도구는 실물에서 확인한 것이다:
 //   Codex CLI 0.145.0  spawn_agent           (codex exec · mcp-server 양쪽에서 확인)
-//   Hermes             delegation · clarify  (hermes tools list 의 toolset 이름)
 const PROFILES = [
   {
     name: 'codex',
@@ -58,39 +57,6 @@ const PROFILES = [
         line:
           '> - Reviewer/agent fan-out uses `spawn_agent`. Keep the number of roles the skill\n' +
           '>   asks for; if you cannot run them in parallel, run them in sequence.',
-      },
-    ],
-  },
-  {
-    name: 'hermes',
-    out: 'hermes-skills',
-    runtime: 'Hermes',
-    openaiYaml: false, // Hermes 는 SKILL.md 만 읽는다
-    subs: [
-      [/one \*\*Agent tool\*\* call per reviewer/g, 'one **`delegation`** call per reviewer'],
-      [/\bRead, Glob, Grep, WebSearch, WebFetch, Agent, AskUserQuestion\b/g,
-       'the `file`, `terminal`, `web`, `delegation`, and `clarify` toolsets'],
-      [/\bAgent tool\b/g, 'the `delegation` toolset'],
-      [/\bTask tool\b/g, 'the `delegation` toolset'],
-      [/\bWebSearch tool\b/g, 'the `web` toolset'],
-      [/\bWebFetch tool\b/g, 'the `web` toolset'],
-      [/\bWebSearch\b/g, 'web search'],
-      [/\bWebFetch\b/g, 'web fetch'],
-      [/\bClaude Code\b/g, 'Hermes'],
-    ],
-    notes: [
-      {
-        // Codex 와 달리 Hermes 에는 대응 도구가 실제로 있다.
-        when: /\bAskUserQuestion\b/,
-        line:
-          '> - `AskUserQuestion` is Claude Code\'s name for it. Use the `clarify` toolset —\n' +
-          '>   it does the same job. Keep the same choices.',
-      },
-      {
-        when: /delegation/,
-        line:
-          '> - Reviewer/agent fan-out uses the `delegation` toolset. Keep the number of roles\n' +
-          '>   the skill asks for; if you cannot run them in parallel, run them in sequence.',
       },
     ],
   },

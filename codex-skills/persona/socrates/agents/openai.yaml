@@ -1,4 +1,4 @@
 interface:
   display_name: "Socrates"
-  short_description: "Socratic dialogue through maieutics"
+  short_description: "Socratic dialogue through maieutics — draws understanding out of the user one question at a time, with a graded hint ladder for when they are stuck and a closin"
   default_prompt: "Use $socrates for this task."

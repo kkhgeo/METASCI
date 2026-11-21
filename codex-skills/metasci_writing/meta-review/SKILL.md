@@ -2,11 +2,12 @@
 name: meta-review
 description: |
   Review and improve user's draft (paragraph/section) against multiple reference paper
-  extraction files (logic + vocab). Per-paper Reviewer subagents evaluate the draft
+  extraction files (logic + vocabulary). Per-paper Reviewer subagents evaluate the draft
   using four academic writing principles (with extraction files as evidence),
   then Orchestrator synthesizes findings and produces a holistic rewrite.
   Triggers: "초고 점검", "단락 개선", "리뷰해줘", "draft review".
-  Requires reference extraction files (_logic.md / _vocab.md) to review against.
+  Requires reference extraction files to review against: an extraction-style corpus
+  (papers/<slug>/logic.md + style-vocab.md + glossary.md) or extraction-logic _logic.md.
   Without them use meta-rewriting; for Monte Carlo optimization over many
   references meta-rewriting-loop; for a multi-reviewer panel meta-proofreading.
 ---
@@ -18,7 +19,7 @@ description: |
 
 ## Overview
 
-Review a user's academic draft (paragraph or section) by comparing it against pre-extracted reference paper analysis files (`_logic.md`, `_vocab.md`), then produce an improved version through holistic rewrite.
+Review a user's academic draft (paragraph or section) by comparing it against pre-extracted reference paper analysis files (a **logic file** and a **vocabulary set** per paper, see *Extraction files* below), then produce an improved version through holistic rewrite.
 
 **Core Architecture:**
 ```
@@ -40,8 +41,23 @@ Output: Review_{timestamp}/ folder with all reports + improved draft
 - Improved draft is a **complete rewrite**, not patchwork of individual changes
 
 **Relationship to Other Skills:**
-- **Downstream consumer** of `extraction-logic` and `extraction-vocab` outputs
-- **Complementary** to `meta-styling Mode B`: meta-styling uses style databank; meta-review uses logic+vocab extraction files
+- **Downstream consumer** of `extraction-style` and `extraction-logic` outputs
+- **Complementary** to `meta-styling`: meta-styling revises toward a style corpus with candidates; meta-review evaluates four principles with the same files as evidence
+
+### Extraction files
+
+Each reference paper contributes one **logic file** and one **vocabulary set**. Discover them
+in this order and record which form each paper used:
+
+| form | logic file | vocabulary set |
+|------|-----------|----------------|
+| extraction-style corpus (preferred) | `papers/<slug>/logic.md` | `papers/<slug>/style-vocab.md` (register, hedges, reporting verbs, bundles) + `glossary.md` (technical terms, when Lens T ran) + `wordlist.tsv` / `phrases.tsv` (counts, grep only) |
+| extraction-logic output | `{paper}_logic.md` | the same paper's extraction-style folder if one exists, else none |
+| legacy (retired `extraction-vocab`) | `{paper}_logic.md` | `{paper}_vocab.md` — still accepted; its counts predate ligature normalization, so prefer the TSVs when both exist |
+
+`extraction-vocab` is retired; its word layer is `wordlist.tsv`, its phrase layer
+`phrases.tsv`, and its glossary `glossary.md`, all produced by `extraction-style`.
+Wherever this skill says *vocab file* it means the vocabulary set of the row that applies.
 
 ---
 
@@ -71,7 +87,7 @@ Output: Review_{timestamp}/ folder with all reports + improved draft
 2. **Section type**: Introduction / Methods / Results / Discussion (explicit or auto-detected)
 
 ### Optional
-- **Extraction directory**: Path to folder containing `_logic.md` and `_vocab.md` files (default: `./extractions/` or current directory)
+- **Extraction directory**: a style corpus root (containing `papers/`) or a folder of `_logic.md` files (default: `./extractions/`, then the current directory)
 - **Reference papers**: All (default) or specific papers only
 - **Focus**: logic / vocab / both (default: both)
 - **Intensity**: Light (flag only) / Standard (flag + rewrites, default) / Deep (full rewrite)
@@ -127,8 +143,9 @@ Output: Review_{timestamp}/ folder with all reports + improved draft
      - "suggests that", "consistent with" → Discussion
 
 3. Scan extraction directory
-   → Find *_logic.md and *_vocab.md files
-   → Match file pairs by paper name (e.g., ngeo1617_logic.md + ngeo1617_vocab.md)
+   → Style corpus: each papers/<slug>/ with logic.md + style-vocab.md (+ glossary.md)
+   → Otherwise: *_logic.md, paired by paper name with an extraction-style folder
+     or a legacy *_vocab.md (e.g., ngeo1617_logic.md + papers/ngeo1617/style-vocab.md)
 
 4. Confirm reference paper list
    → Display discovered papers to user
@@ -146,15 +163,16 @@ Each Reviewer evaluates the draft against **all four academic writing principles
 ```
 FOR EACH reference paper (i = 1 to N):
     → Launch Task (Subagent): Reviewer-{i}
-    → Input: draft text + paper's _logic.md + _vocab.md
+    → Input: draft text + paper's logic file + vocabulary set
 
     Step A: Read Extraction Files
-        - Read _logic.md: structure, argument flow, sentence frames
-        - Read _vocab.md: terminology, register, POS patterns
+        - Read the logic file: structure, argument flow, sentence frames
+        - Read the vocabulary set: register (style-vocab.md), terminology
+          (glossary.md), bundles and POS (phrases.tsv / wordlist.tsv, grep only)
         - Internalize the reference paper's patterns
 
     Step B: Four-Principle Holistic Evaluation
-        - B1. Argument Architecture (using _logic.md)
+        - B1. Argument Architecture (using the logic file)
               Claim-Evidence-Warrant integrity, Given-New flow,
               transitions, sentence frames
         - B2. Prose Rhythm (using both files)
@@ -163,7 +181,7 @@ FOR EACH reference paper (i = 1 to N):
         - B3. Cohesion & Coherence (using both files)
               Lexical chains, thematic progression, reference
               expressions, conjunctive ties
-        - B4. Academic Register (using _vocab.md)
+        - B4. Academic Register (using the vocabulary set)
               Hedging, active/passive voice, nominalization,
               term accuracy — section-appropriate calibration
 
@@ -246,7 +264,7 @@ N reference papers found
 → Launch N Task (Subagent) calls concurrently
 → Each Subagent:
     1. Read references/review_template.md
-    2. Read assigned paper's _logic.md + _vocab.md
+    2. Read assigned paper's logic file + vocabulary set
     3. Compare against user's draft
     4. Output structured review report
 → After ALL Subagents complete → run Orchestrator (Phase 3)
@@ -264,7 +282,8 @@ a reference paper as evidence.
 **Draft text**: {draft_text}
 **Section type**: {section_type}
 **Logic file**: {logic_file_path}
-**Vocab file**: {vocab_file_path}
+**Vocabulary set**: {style_vocab_path} [+ {glossary_path}] [+ {phrases_tsv_path}]
+                    (or a legacy {vocab_file_path})
 **Focus**: {logic/vocab/both}
 **Intensity**: {Light/Standard/Deep}
 
@@ -293,7 +312,7 @@ Follow the Reviewer Output Template in review_template.md exactly.
 
 | Situation | Response |
 |-----------|----------|
-| No extraction files found | Guide user to run `extraction-logic` / `extraction-vocab` first |
+| No extraction files found | Guide user to run `extraction-style` first (it produces both the logic file and the vocabulary set); add Lens T if terminology will be checked |
 | Only logic files (no vocab) or vice versa | Proceed with available files + warn about limited scope |
 | Section type unclear | Ask user to specify |
 | Draft too short (< 2 sentences) | Warn: "Paragraph-level or longer text recommended" |

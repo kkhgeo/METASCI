@@ -45,11 +45,17 @@ When reading `_logic.md` files, focus on:
 - **Intra-Paragraph Logic** (Section 4): sentence-level argument structure
 - **Sentence Frames** (Section 5): rhetorical templates by function category
 
-When reading `_vocab.md` files, focus on:
-- **Technical/Domain Terms**: correct terminology for the field
-- **Section-specific vocabulary**: which terms appear in which sections
-- **Frequency data**: commonly used vs. rare terms
-- **POS patterns**: verb choices, noun phrases, modifiers
+A paper's logic file is `papers/<slug>/logic.md` (extraction-style) or `{paper}_logic.md`
+(extraction-logic). Its vocabulary set is the extraction-style files below, or a legacy
+`{paper}_vocab.md` from the retired extraction-vocab skill.
+
+When reading the vocabulary set, focus on:
+- **Register** (`style-vocab.md`): reporting verbs with their reserved-for use, hedges,
+  connectives, lexical bundles by function, all per section
+- **Technical/Domain Terms** (`glossary.md`): correct terminology, type and definition
+- **Section-specific vocabulary and frequency** (`wordlist.tsv`, `phrases.tsv`): grep the
+  rows you need; never read the whole file into context
+- **POS patterns**: the `pos` column of `wordlist.tsv` when filled; otherwise style-vocab.md
 
 ### Matching Draft to Section Type
 
@@ -99,7 +105,7 @@ When reading `_vocab.md` files, focus on:
 
 | Situation | Action |
 |-----------|--------|
-| No extraction files found | STOP, guide user to run `extraction-logic` / `extraction-vocab` first |
+| No extraction files found | STOP, guide user to run `extraction-style` first (add Lens T if terminology will be checked) |
 | Extraction file missing or unreadable | STOP, report to main agent |
 | Draft text too short (< 2 sentences) | WARN: "Paragraph-level or longer text recommended", proceed with limited analysis |
 | Section type unclear | Attempt auto-detection based on content, flag uncertainty; ask user if unsure |
@@ -128,10 +134,13 @@ When reading `_vocab.md` files, focus on:
      - Mentions "suggests that", "consistent with" → Discussion
 
 3. Scan extraction directory
-   → Default: look for *_logic.md and *_vocab.md in current directory or extractions/
+   → Default: ./extractions/, then the current directory
    → Custom: user-specified path
+   → Style corpus: every papers/<slug>/ holding logic.md + style-vocab.md
+   → Otherwise *_logic.md, paired by name with a style-corpus folder or a legacy *_vocab.md
    → Build paper list:
-     paper_name → {logic_file: path, vocab_file: path}
+     paper_name → {logic_file: path, vocab_set: [style-vocab.md, glossary.md?, phrases.tsv?]
+                   | legacy vocab_file: path}
 
 4. Confirm with user
    → Display found papers
@@ -170,7 +179,7 @@ Each Reviewer subagent receives:
 - The user's draft text
 - The section type
 - One paper's `_logic.md` file path
-- One paper's `_vocab.md` file path
+- One paper's vocabulary set (style-vocab.md [+ glossary.md, phrases.tsv]) or legacy `_vocab.md`
 - The review focus and intensity
 
 ### Reviewer Step 2A: Read & Internalize Extraction Files
@@ -180,8 +189,10 @@ Each Reviewer subagent receives:
    → Focus on: document structure, inter/intra-paragraph logic, sentence frames
    → Note the reference paper's rhetorical patterns and argument strategies
 
-2. Read the assigned _vocab.md file
-   → Focus on: technical terms, section-specific vocabulary, POS patterns
+2. Read the assigned vocabulary set
+   → style-vocab.md: register, hedges, reporting verbs, bundles by section
+   → glossary.md (if present): technical terms
+   → phrases.tsv / wordlist.tsv: grep specific rows for counts only
    → Note the reference paper's register and terminology conventions
 
 3. Internalize the reference paper's patterns
@@ -249,7 +260,7 @@ Evaluate holistically:
 
 - LEXICAL CHAINS
   Are key concept terms used consistently throughout?
-  Compare against reference paper's technical term usage from _vocab.md.
+  Compare against reference paper's technical term usage from glossary.md (or a legacy _vocab.md).
   Flag: unnecessary synonym switching for technical terms.
 
 - THEMATIC PROGRESSION
@@ -266,7 +277,7 @@ Evaluate holistically:
 Output: Identified chains/progressions + key findings with extraction evidence.
 ```
 
-#### B4. Academic Register (primary evidence: `_vocab.md`)
+#### B4. Academic Register (primary evidence: the vocabulary set)
 
 ```
 Evaluate holistically (section-dependent calibration):
@@ -280,14 +291,14 @@ Evaluate holistically (section-dependent calibration):
 
 - VOICE & PERSON (Active/Passive balance)
   Check section-appropriate voice usage.
-  Compare against reference paper's voice patterns from _vocab.md POS data.
+  Compare against reference paper's voice patterns (manifest passive/1k by section; wordlist.tsv POS when filled).
 
 - NOMINALIZATION
   Appropriate level of abstraction? Not excessive?
 
 - TERMINOLOGY ACCURACY & CONSISTENCY
   Are technical terms used correctly and consistently?
-  Cross-reference against _vocab.md technical term list.
+  Cross-reference against glossary.md (or a legacy _vocab.md technical term list).
   Flag: incorrect terms, informal expressions, inconsistent usage.
 
 Output: Section-calibrated assessment + key findings with extraction evidence.

@@ -72,7 +72,10 @@ Reading judgments (replace English dims):
 ## Cards & synthesis
 
 Same output contract as English: `logic.md`, `anchors.txt`, `style-vocab.md`,
-`wordlist.tsv`, `card.md`, `manifest.json` under `papers/<slug>/`. Add
+`wordlist.tsv`, `phrases.tsv`, `card.md`, `manifest.json` under `papers/<slug>/`.
+`phrases.py` counts eojeol sequences, which are not lexical bundles in Biber's sense
+(particles fuse onto the stem), so do not classify them by Hyland's taxonomy; record
+`vocabulary.bundles` as `{"run": false, "note": "Korean — eojeol n-grams not classified"}`. Add
 `[Korean — experimental]` next to the card title and set
 `manifest.provenance.notes` accordingly. Keep Korean and English corpora in
 SEPARATE corpus roots — never aggregate across languages, and never put both

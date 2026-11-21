@@ -37,7 +37,16 @@ cards by eye:
 py -3.10 scripts/quant_check.py count --items shared_items.txt --per-file \n    papers/*/sections/M.txt      # one section at a time; never mix sections in one range
 ```
 
-The `range` column IS the convergence count (`4/4`, `3/4`…). Card-level judgments still decide
+The `range` column IS the convergence count (`4/4`, `3/4`…).
+
+**Corpus-level bundles.** Each paper's `phrases.tsv` applies a single-paper floor
+(Freq ≥ 2, range ≥ 2 sections). Across papers, apply the published thresholds instead,
+because there they mean what they were defined to mean: a 4-word bundle is a corpus
+bundle at ≥ 20 per million words in ≥ 10% of the papers (Hyland 2008), a 3–4-word bundle
+at ≥ 10 per million in ≥ 5 papers (Biber et al. 1999). Sum the raw `total` columns of
+the papers' rows, divide by the summed `tokens` from each `phrases.stats.json`, and
+report the number of papers as the range. With fewer than five papers, say that the
+Biber floor cannot be met and report the counts. Card-level judgments still decide
 *qualitative* dimensions (tense, person, citation habit); the script decides *lexical* ones.
 Numeric rows (hedges/1k, avg sentence length, passive/1k) line up directly from each
 `manifest.measured.sections` — report the spread (min-max) **per section**, never an

@@ -41,7 +41,7 @@ into one of 6 types:
 |---|---|
 | `extraction_knowledge` | Header contains "Knowledge Extraction", "Knowledge Categories", "Theoretical Foundations", "Empirical Precedents", "Methodological Heritage" |
 | `extraction_logic` | Filename ends `_logic.md` OR header contains "Structure Map", "Inter-Paragraph Logic", "Sentence Frame Catalog" |
-| `extraction_vocab` | Filename ends `_vocab.md` OR header contains "Content Words by Section", "Technical Term Glossary" |
+| `extraction_vocab` | Filename `style-vocab.md` / `glossary.md` (extraction-style corpus) OR ends `_vocab.md` (legacy, retired skill) OR header contains "Technical-term glossary", "Style lexicon by section", "Content Words by Section", "Technical Term Glossary" |
 | `pdf` | Extension is `.pdf` |
 | `freeform_md` | Extension is `.md`/`.txt` but does not match types 1-3 |
 | `html` | Extension is `.html` |
@@ -85,7 +85,7 @@ matching rules), read each selected file in full and parse by type.
 |---|---|---|
 | `extraction_knowledge` | 5-category tables (Theoretical, Empirical, Methodological, Contextual, Critical) | `knowledge_bank.domain_knowledge` |
 | `extraction_logic` | Structure Map, Inter-Paragraph Logic, Sentence Frame Catalog | `knowledge_bank.writing_patterns.structure`, `.expressions` |
-| `extraction_vocab` | Content Words (hedge/booster verbs), Technical Term Glossary | `knowledge_bank.writing_patterns.hedging`, `.terminology` |
+| `extraction_vocab` | style-vocab.md hedges/boosters/bundles, glossary.md terms (legacy: Content Words, Technical Term Glossary) | `knowledge_bank.writing_patterns.hedging`, `.expressions`, `.terminology` |
 | `pdf` | Read relevant pages matching current section; extract text | Both `domain_knowledge` and `writing_patterns` |
 | `freeform_md` | Citations `(Author, Year)`, H2 topic map, data tables, narrative | `domain_knowledge.empirical`, `.contextual` |
 | `html` | Strip HTML tags, then parse as freeform_md | Same as `freeform_md` |

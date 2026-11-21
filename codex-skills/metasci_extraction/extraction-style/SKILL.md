@@ -2,17 +2,21 @@
 name: extraction-style
 description: |
   Build a reusable STYLE CORPUS from reference papers — one folder per paper holding
-  normalized text, per-section splits, an exhaustive sentence-frame catalog, a measured
-  style vocabulary, a lean Style Card, and a machine-readable manifest.
-  Runs three lenses over shared, pre-normalized text —
-  A (architecture + sentence frames), W (style vocabulary, measured by section),
-  C (Style Card: V/L/P indicators + red flags).
+  normalized text, per-section splits, an exhaustive sentence-frame catalog, an
+  exhaustive word list and phrase list (2–4-word n-grams, lexical bundles) counted by
+  script, a measured style vocabulary, an optional technical-term glossary, a lean Style
+  Card, and a machine-readable manifest.
+  Lenses over shared, pre-normalized text — A (architecture + sentence frames),
+  W (word and phrase layers + style vocabulary, measured by section),
+  T (technical-term glossary, optional), C (Style Card: V/L/P indicators + red flags).
   Use whenever the user wants to "extract style", "스타일 추출", "문체 추출",
   "이 논문들 스타일 뽑아줘", capture a journal's writing conventions, or build a style
-  reference for later rewriting with meta-styling.
+  reference for later rewriting with meta-styling. Also the home of word, phrase and
+  term extraction: "단어 추출", "어휘 추출", "구 추출", "표현 추출", "용어 추출",
+  "용어집", "lexical bundle", "n-gram", "vocabulary extraction", "term extraction".
   NOT for domain knowledge or claims ("지식 추출" → extraction-knowledge), NOT for an
-  exhaustive proofreading lexicon or argument map (→ extraction-vocab / extraction-logic),
-  NOT for applying a style to a draft (→ meta-styling).
+  exhaustive argument map (→ extraction-logic), NOT for applying a style to a draft
+  (→ meta-styling).
 ---
 
 # META-SCI · Style Extraction (corpus build)
@@ -23,36 +27,49 @@ names, so a downstream skill can find things by path instead of by reading.
 ```
 Stage 0  prep.py         PDF → body.txt + sections/ + manifest.json   (deterministic)
 Lens A   architecture    structure · paragraph logic · frame catalog  → logic.md, anchors.txt
-Lens W   vocabulary      style-bearing lexicon, measured by section   → style-vocab.md, wordlist.tsv
+Lens W   vocabulary      every word + every recurrent phrase, counted;
+                         style-bearing lexicon + bundle functions      → wordlist.tsv, phrases.tsv,
+                                                                         style-vocab.md
+Lens T   terminology     technical-term glossary (optional)           → glossary.md
 Lens C   card            V/L/P selection + red flags                  → card.md
 Stage 4  manifest        fill the null fields                         → manifest.json
 ```
 
-A and W are independent and may run in parallel. **C runs last** and cites A and W rather
+A and W are independent and may run in parallel. T needs only W's two scripts. **C runs last** and cites A and W rather
 than re-deriving them — this ordering is not cosmetic, see *Why C is last* below.
 
-## What this skill does NOT collect
+## Count everything, classify selectively
 
-**Domain terminology and knowledge claims.** Not the technical glossary, not the topic
-nouns, not what the paper argues or cites. Those belong to `extraction-knowledge`
-(5 epistemological categories, APA references) and `extraction-vocab` (exhaustive lexicon).
+**The counting is exhaustive.** `wordlist.tsv` holds every content word of the paper,
+hapaxes included, with section counts, range, inflection family and POS. `phrases.tsv`
+holds every 2–4-word sequence that occurs twice or more, with the lexical-bundle,
+topic and nesting flags. Both are written by scripts over the NFKC-normalized section
+files, so they are complete, reproducible and immune to ligatures. They replace the
+retired `extraction-vocab` skill (now in `legacy-skills/`), whose LLM-written word lists
+duplicated these counts and broke on ligatures.
 
-This boundary is measured, not a matter of taste. On a representative paper, of the 535
-content types occurring twice or more, **474 (89%) are topic-bound** — *nitrate*(158),
-*groundwater*(92), *manure*(53) — and travel to no other manuscript. Only 61 (11%) are
-general academic words a reviser can actually reuse. Carrying the other 89% into a style
-corpus adds bulk, duplicates `extraction-knowledge`, and buries the usable part.
+**What the paper argues or cites** is not collected here; that is `extraction-knowledge`.
 
-**Lean on the topic axis, complete on the style axis.** Function words, connectives,
-reporting verbs, hedges, stance markers, sentence frames and section architecture go in
-*in full*. Domain nouns stay out.
+**The style layers are selective.** `style-vocab.md` and `card.md` carry what travels to
+another manuscript. Domain terms are counted, and Lens T can turn them into a glossary, but
+they never enter the style layers. This boundary is measured, not a matter of taste. On a
+representative paper, of the 535 content types occurring twice or more (wordlist v1),
+**474 (89%) are topic-bound** — *nitrate*(158), *groundwater*(92), *manure*(53) — and
+travel to no other manuscript. Only 61 (11%) are general academic words a reviser can
+actually reuse. Carrying the other 89% into a style layer adds bulk and buries the usable
+part.
+
+**Complete in the count layers, lean in the style layers.** Function words, connectives,
+reporting verbs, hedges, stance markers, bundles, sentence frames and section architecture
+go into the style layers *in full*. Domain nouns stay in `wordlist.tsv`, `phrases.tsv` and
+`glossary.md`.
 
 | Job | Skill |
 |-----|-------|
 | Knowledge claims, citations, research questions | `extraction-knowledge` |
-| Exhaustive lexicon incl. technical glossary | `extraction-vocab` |
 | Exhaustive argument map for proofreading | `extraction-logic` |
 | **Style corpus for reuse** | **this skill** |
+| **Every word, every recurrent phrase, technical glossary** | **this skill** — Lens W scripts + Lens T |
 | Apply a corpus to a draft | `meta-styling` |
 
 `extraction-knowledge` may reuse this skill's `body.txt` — it faces the same ligature
@@ -89,6 +106,9 @@ Every paper folder looks exactly like this. Downstream code path-constructs agai
     ├── anchors.txt              Lens A — frame anchors, one per line
     ├── style-vocab.md           Lens W
     ├── wordlist.tsv             Lens W — every content type × section, the audit layer
+    ├── phrases.tsv              Lens W — every 2–4-gram at Freq ≥ 2, bundle/topic flags
+    ├── phrase-functions.tsv     Lens W — the LLM's bundle labels, merged into phrases.tsv
+    ├── glossary.md              Lens T — technical terms (only when Lens T ran)
     ├── card.md                  Lens C
     └── manifest.json            the entry point
 ```
@@ -122,20 +142,39 @@ sentence-frame catalog with `[P#-S#]` addresses, then validates recurrence by me
 frame anchors. The anchor gate is not optional: on a test run it caught **five verbatim
 errors in 219 sentences** that reading alone had produced.
 
-### Lens W — style vocabulary → `style-vocab.md`, `wordlist.tsv`
+### Lens W — words, phrases, style vocabulary → `wordlist.tsv`, `phrases.tsv`, `style-vocab.md`
 
 ```bash
-py -3.10 scripts/wordlist.py <corpus-root>/papers/<slug>     # the count layer, first
+py -3.10 scripts/wordlist.py <corpus-root>/papers/<slug>     # every word, first
+py -3.10 scripts/phrases.py  <corpus-root>/papers/<slug>     # every recurrent 2–4-gram
 ```
 
-Read `references/lens-vocabulary.md`. `wordlist.py` builds the complete count layer with a
+Read `references/lens-vocabulary.md`. `wordlist.py` builds the complete word layer with a
 frozen stop list and a frozen general-academic list, so type counts and the
-academic/topic split are reproducible between runs rather than re-decided each time. It
-also writes `wordlist.stats.json` — quote those numbers, do not recount them.
+academic/topic split are reproducible between runs rather than re-decided each time.
+`phrases.py` builds the phrase layer and flags lexical bundles by the frequency and
+dispersion criteria of Biber et al. (1999) and Hyland (2008), adapted to one paper
+(Freq ≥ 2, range ≥ 2 sections, n = 3–4), and flags topic-bound sequences. Both write a
+`*.stats.json` — quote those numbers, do not recount them.
+
+The only judgment in the phrase layer is the bundle function: label each non-topic bundle
+research-, text- or participant-oriented in `phrase-functions.tsv` and merge it with
+`phrases.py --functions`. The merge validates every label.
 
 Then measure the style-bearing lexicon per section: reporting verbs, hedges, boosters,
 stance, connectives, general academic nouns. Domain nouns stay in `wordlist.tsv` and are
 **not** classified or contextualized in `style-vocab.md`.
+
+### Lens T — technical-term glossary → `glossary.md` (optional)
+
+Read `references/lens-terminology.md`. Run it when the user asks for terms ("용어 추출",
+"용어집", "전문용어") or for words "as fully as possible", or when a downstream review will
+check term accuracy. Candidates come only from the scripts: every `class = other` row of
+`wordlist.tsv` at any frequency, and every `topic = yes` row of `phrases.tsv`. The lens
+screens them, types them (Domain, Methodological, Statistical, Chemical, Instrument,
+Taxonomic, Coined), and defines each from the paper's own use with a `[P#-S#]` source.
+Counts come from the TSVs, never from reading. Skipped, it leaves
+`manifest.glossary = {"run": false}`.
 
 ### Lens C — Style Card → `card.md`
 
@@ -204,7 +243,8 @@ lays out candidates. For a deliberate corpus consensus — and only then — rea
 | Lens | Owns | Must NOT re-emit |
 |------|------|------------------|
 | **A** | structure, paragraph logic, sentence frames, anchors | word frequencies, aggregate rates |
-| **W** | measured lexicon by section, POS, collocates | frames, structure |
+| **W** | word and phrase layers, measured lexicon by section, bundle functions | frames, structure |
+| **T** | technical terms: type, POS, definition, counts from the TSVs | style lexicon, frames |
 | **C** | selection + P indicators + red flags | the full catalogs it draws from |
 
 ## Two rules to carry into every card
@@ -227,7 +267,9 @@ lays out candidates. For a deliberate corpus consensus — and only then — rea
   images, word content from the text layer, and never anchor a frame on a symbol.
 
 ---
-**Version**: 3.0.0 (corpus build: Stage 0 prep, fixed folder contract, manifest;
-absorbs measured frame-recurrence and section-scoped vocabulary; domain terminology
-delegated to extraction-knowledge)
+**Version**: 3.1.0 (exhaustive word layer v2 and phrase layer — n-grams, lexical bundles,
+Hyland functions; Lens T glossary absorbed from the retired extraction-vocab;
+manifest schema 1.1.0)
+Earlier: 3.0.0 (corpus build: Stage 0 prep, fixed folder contract, manifest; measured
+frame-recurrence and section-scoped vocabulary)
 **Skill**: Meta_researcher / extraction-style

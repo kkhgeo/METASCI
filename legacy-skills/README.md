@@ -21,6 +21,20 @@ skills route to them by name (`meta-rewriting` sends multi-reference work to
 optimisation to `meta-rewriting-loop`), so leaving them here made those routes
 dead on any machine that installed from this repo.
 
+From `metasci_extraction/` (retired 2026-11-21):
+
+| skill | status |
+|---|---|
+| `extraction-vocab` | superseded by `skills/metasci_extraction/extraction-style` |
+
+Its LLM-written inventory of every content word duplicated `extraction-style`'s
+`wordlist.tsv`, and its counts ran against the raw PDF, where words with printer's
+ligatures (ﬁ ﬂ) count as zero. The word layer is now `wordlist.py` (v2: short words,
+range, inflection family, optional POS), the phrase layer `phrases.py` (2–4-word n-grams,
+lexical bundles), and its one unique function, the technical-term glossary, is Lens T
+(`extraction-style/references/lens-terminology.md`). `meta-review` and `meta-proofreading`
+still read old `_vocab.md` files.
+
 From `research/`:
 
 | skill | status |

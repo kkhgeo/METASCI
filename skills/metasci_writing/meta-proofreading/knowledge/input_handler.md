@@ -89,14 +89,23 @@ Keywords ← extract from title
 
 ---
 
-### Type 3: Extraction-Vocab
+### Type 3: Extraction-Vocab (vocabulary set)
+
+The type id `extraction_vocab` is kept for schema stability. Since the `extraction-vocab`
+skill was retired, its outputs come from `extraction-style`: `style-vocab.md` (register,
+hedges, reporting verbs, bundles) and `glossary.md` (technical terms, Lens T). A legacy
+`_vocab.md` from the retired skill is still accepted.
 
 **Detection:**
-- Filename ends with `_vocab.md`
+- Filename is `style-vocab.md` or `glossary.md` inside an extraction-style `papers/<slug>/`
+  folder (paper metadata then comes from that folder's `manifest.json` → `paper`)
+- OR filename ends with `_vocab.md` (legacy)
 - OR header contains ANY of:
-  - `Content Words by Section`
-  - `Technical Term Glossary`
-  - `Cross-Section Analysis`
+  - `Technical-term glossary`
+  - `Style lexicon by section`
+  - `Content Words by Section` (legacy)
+  - `Technical Term Glossary` (legacy)
+  - `Cross-Section Analysis` (legacy)
 
 **Header metadata extraction:**
 ```
@@ -108,9 +117,11 @@ Keywords ← extract from Technical Term Glossary section headers
 ```
 
 **Full parse (Phase 2):**
-- Content Words (Verbs) → scan for hedge/booster verbs → `writing_patterns.hedging`
-- Technical Term Glossary → `writing_patterns.terminology`
-- Section-specific vocabulary → `writing_patterns.terminology` (with section tags)
+- `style-vocab.md` hedges, boosters, reporting verbs → `writing_patterns.hedging`
+- `style-vocab.md` lexical bundles and connectives → `writing_patterns.expressions`, `.transitions`
+- `glossary.md` term table → `writing_patterns.terminology` (with its Sections column)
+- legacy `_vocab.md`: Content Words (Verbs) → hedging; Technical Term Glossary and
+  section-specific vocabulary → terminology
 
 ---
 

@@ -2,8 +2,14 @@
 """wordlist.py — Lens W step 1: the complete, deterministic count layer.
 
 Writes <paper>/wordlist.tsv: every content type in the paper with its frequency
-in each section, plus a class column marking whether the type is transferable
-style vocabulary or topic-bound.
+in each section, its range across sections, an inflection family, a part-of-speech
+column when a tagger is installed, and a class column marking whether the type is
+transferable style vocabulary or topic-bound.
+
+Since v2.0.0 this file is the corpus's complete single-word inventory. It replaced
+the retired extraction-vocab skill, whose LLM-written word lists duplicated these
+counts and broke on ligatures. Nothing is curated here: every type that survives
+the frozen stop list is written, Freq 1 included.
 
     py -3.10 wordlist.py <corpus>/papers/<slug>
 
@@ -25,7 +31,24 @@ counted here and left alone. On the reference paper the split was 61 / 474
 (11% / 89%), which is the measured argument for that boundary. Because the two
 lists are frozen, that ratio is reproducible rather than an impression.
 
-Domain terminology belongs to extraction-knowledge, not to a style corpus.
+The `other` slice is not discarded: Lens T (glossary.md) reads it, together with
+the topic-flagged rows of phrases.tsv, to build the technical-term glossary.
+
+COLUMNS (v2.0.0)
+----------------
+type     lowercased surface form, as quant_check.tokenize produces it
+A..C     frequency per section present in the paper
+total    sum over sections
+range    number of sections the type occurs in
+family   the inflection family head: the shortest attested form that this type
+         reduces to by a regular English suffix (-s, -es, -ies, -ed, -ing). A
+         reduction is accepted only when the base form itself occurs in the
+         paper, so `samples` -> `sample` but `basis` is left alone. With spaCy
+         installed, spaCy's lemma is used instead.
+pos      dominant Universal POS tag (NOUN, VERB, ADJ, ADV, PROPN ...), with a
+         second tag after "/" when it covers >= 25% of the occurrences. Empty when
+         no tagger is installed; stats record which tagger ran.
+class    academic | other
 """
 
 from __future__ import annotations
@@ -36,7 +59,7 @@ import json
 import sys
 from pathlib import Path
 
-__version__ = "1.0.0"
+__version__ = "2.0.0"
 STOPLIST_VERSION = "1.0.0"
 ACADEMIC_VERSION = "1.0.0"
 
@@ -111,11 +134,83 @@ def classify(word: str) -> str:
     return "academic" if word in GENERAL_ACADEMIC else "other"
 
 
+def inflection_family(types: set[str]) -> dict[str, str]:
+    """Map each type to the shortest attested base reachable by a regular English
+    inflection. Conservative by construction: the base must itself be a type."""
+    def candidates(w: str) -> list[str]:
+        out = []
+        if w.endswith("ies") and len(w) > 4:
+            out.append(w[:-3] + "y")
+        if w.endswith("es") and len(w) > 3:
+            out.append(w[:-2])
+        if w.endswith("s") and not w.endswith("ss") and len(w) > 3:
+            out.append(w[:-1])
+        if w.endswith("ied") and len(w) > 4:
+            out.append(w[:-3] + "y")
+        if w.endswith("ed") and len(w) > 4:
+            out += [w[:-2], w[:-1]]
+            if len(w) > 5 and w[-3] == w[-4]:
+                out.append(w[:-3])          # controlled -> control
+        if w.endswith("ing") and len(w) > 5:
+            out += [w[:-3], w[:-3] + "e"]
+            if w[-4] == w[-5]:
+                out.append(w[:-4])          # mapping -> map
+        return out
+
+    fam: dict[str, str] = {}
+    for w in types:
+        base = next((c for c in candidates(w) if c in types and c != w), w)
+        fam[w] = base
+    # one more hop, so `studies` and `studied` both land on `study`
+    return {w: fam.get(b, b) for w, b in fam.items()}
+
+
+def spacy_tags(texts: list[str]):
+    """Return ({lower_token: Counter(pos)}, {lower_token: lemma}, tagger_name) or
+    None when spaCy or an English model is not installed."""
+    try:
+        import spacy  # type: ignore
+    except Exception:
+        return None
+    nlp = None
+    for name in ("en_core_web_sm", "en_core_web_md", "en_core_web_lg"):
+        try:
+            nlp = spacy.load(name, disable=["ner", "parser"])
+            break
+        except Exception:
+            continue
+    if nlp is None:
+        return None
+    nlp.max_length = max(nlp.max_length, max((len(t) for t in texts), default=0) + 1)
+    pos: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
+    lemma_votes: dict[str, collections.Counter] = collections.defaultdict(collections.Counter)
+    for doc in nlp.pipe(texts):
+        for tok in doc:
+            key = tok.text.lower()
+            pos[key][tok.pos_] += 1
+            lemma_votes[key][tok.lemma_.lower()] += 1
+    lemmas = {k: c.most_common(1)[0][0] for k, c in lemma_votes.items()}
+    return pos, lemmas, f"spacy {spacy.__version__} / {nlp.meta.get('name', '?')}"
+
+
+def pos_label(c: collections.Counter | None) -> str:
+    if not c:
+        return ""
+    (top, n1), *rest = c.most_common(2)
+    total = sum(c.values())
+    if rest and rest[0][1] / total >= 0.25:
+        return f"{top}/{rest[0][0]}"
+    return top
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description="Build wordlist.tsv for one paper folder.")
     ap.add_argument("paper", help="<corpus>/papers/<slug>")
-    ap.add_argument("--min-len", type=int, default=3,
-                    help="drop tokens of this length or shorter (default 3)")
+    ap.add_argument("--min-len", type=int, default=1,
+                    help="drop tokens of this length or shorter (default 1: only "
+                         "single letters go; v1 used 3 and lost pH, ion, age, map)")
+    ap.add_argument("--pos", choices=["auto", "off"], default="auto",
+                    help="auto: tag with spaCy when installed (default); off: skip")
     ap.add_argument("--out", default=None, help="override output path")
     args = ap.parse_args()
 
@@ -132,8 +227,10 @@ def main() -> None:
 
     counts: dict[str, collections.Counter] = {}
     raw_tokens: dict[str, int] = {}
+    texts: dict[str, str] = {}
     for sid in present:
         text = (sections_dir / f"{sid}.txt").read_text(encoding="utf-8", errors="replace")
+        texts[sid] = text
         toks = tokenize(text)
         raw_tokens[sid] = len(toks)
         counts[sid] = collections.Counter(
@@ -143,14 +240,25 @@ def main() -> None:
 
     all_types = sorted(set().union(*[set(c) for c in counts.values()]))
     total_of = {w: sum(counts[s][w] for s in present) for w in all_types}
+    range_of = {w: sum(1 for s in present if counts[s][w]) for w in all_types}
     ordered = sorted(all_types, key=lambda w: (-total_of[w], w))
+
+    tagged = spacy_tags([texts[s] for s in present]) if args.pos == "auto" else None
+    if tagged:
+        pos_of, lemma_of, tagger = tagged
+        family = {w: lemma_of.get(w, w) for w in all_types}
+    else:
+        pos_of, tagger = {}, "none"
+        family = inflection_family(set(all_types))
 
     out = Path(args.out) if args.out else paper / "wordlist.tsv"
     with out.open("w", encoding="utf-8", newline="\n") as fh:
-        fh.write("type\t" + "\t".join(present) + "\ttotal\tclass\n")
+        fh.write("type\t" + "\t".join(present)
+                 + "\ttotal\trange\tfamily\tpos\tclass\n")
         for w in ordered:
             row = [w] + [str(counts[s][w]) for s in present]
-            row += [str(total_of[w]), classify(w)]
+            row += [str(total_of[w]), str(range_of[w]), family[w],
+                    pos_label(pos_of.get(w)), classify(w)]
             fh.write("\t".join(row) + "\n")
 
     # summary — the numbers Lens W quotes
@@ -162,6 +270,10 @@ def main() -> None:
           f"  stoplist v{STOPLIST_VERSION}  academic-list v{ACADEMIC_VERSION}")
     print(f"wrote {out}")
     print(f"  sections            {' '.join(present)}")
+    print(f"  pos tagger          {tagger}"
+          + ("" if tagged else "  (pip install spacy && python -m spacy download "
+                               "en_core_web_sm to fill the pos column)"))
+    print(f"  families            {len(set(family.values())):,}")
     print(f"  content types       {len(all_types):,}")
     print(f"  hapax (Freq 1)      {len(hapax):,}  ({100*len(hapax)/len(all_types):.0f}%)")
     print(f"  types at Freq >= 2  {len(ge2):,}")
@@ -178,8 +290,11 @@ def main() -> None:
         "stoplist_version": STOPLIST_VERSION,
         "academic_list_version": ACADEMIC_VERSION,
         "min_len": args.min_len,
+        "pos_tagger": tagger,
+        "family_method": "spacy-lemma" if tagged else "suffix-attested",
         "sections": present,
         "content_types": len(all_types),
+        "families": len(set(family.values())),
         "hapax": len(hapax),
         "types_freq_ge2": len(ge2),
         "academic_freq_ge2": len(acad),
@@ -190,7 +305,7 @@ def main() -> None:
     }
     (paper / "wordlist.stats.json").write_text(
         json.dumps(stats, indent=2), encoding="utf-8")
-    print(f"\n  wordlist.stats.json written (quote these numbers in style-vocab.md)")
+    print(f"\n  wordlist.stats.json written (quote these numbers in style-vocab.md and glossary.md)")
 
 
 if __name__ == "__main__":

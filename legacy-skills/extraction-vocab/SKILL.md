@@ -9,6 +9,9 @@ description: |
 allowed-tools: [Read, Write, Edit, Bash, Agent, Glob, Grep]
 ---
 
+> **RETIRED (2026-11-21)** — superseded by `skills/metasci_extraction/extraction-style`
+> (`wordlist.tsv`, `phrases.tsv`, Lens T `glossary.md`). Kept for reference; not loaded.
+
 > **REQUIRED**: Before executing this skill, ALWAYS read `references/extraction_template.md` first and follow it precisely.
 
 # Vocab Extraction Skill

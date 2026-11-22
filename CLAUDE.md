@@ -34,7 +34,6 @@ skills/
 ├── metasci_extraction/  # PDF → structured analysis layers, style transfer
 │   ├── extraction-knowledge/
 │   ├── extraction-logic/
-│   ├── extraction-vocab/
 │   ├── extraction-style/
 │   └── meta-styling/
 └── metasci_slide/       # talk narrative → house-style deck
@@ -43,7 +42,7 @@ skills/
 
 codex-skills/            # GENERATED Codex build — do not hand-edit
 agent-overrides/         # the few places a build must differ beyond vocabulary
-legacy-skills/           # superseded, including the retired Hermes build; NOT in the manifest, never loaded
+legacy-skills/           # superseded, including extraction-vocab and the retired Hermes build; NOT in the manifest, never loaded
 ```
 
 The plugin manifest registers the four `skills/` packs in its `skills` array, so each skill loads as `skills/<pack>/<name>/SKILL.md`. `legacy-skills/` and the generated builds are deliberately outside that array.
@@ -90,8 +89,8 @@ Anything the vocabulary table cannot express belongs in `agent-overrides/<profil
 ## Analysis Layer Separation (extraction skills)
 
 ```
-extraction-vocab      → WHAT words are used        (lexical inventory)
-extraction-style      → HOW the writing is built     (frames, style lexicon)
+extraction-style      → WHAT words and phrases are used (wordlist.tsv, phrases.tsv, glossary.md)
+                        + HOW the writing is built      (frames, style lexicon, Style Card)
 extraction-logic      → HOW arguments are structured (rhetorical flow)
 extraction-knowledge  → WHAT knowledge is cited      (epistemic content)
 ```
@@ -100,9 +99,8 @@ extraction-knowledge  → WHAT knowledge is cited      (epistemic content)
 
 ### Full paper analysis
 1. `extraction-knowledge` → extract cited knowledge
-2. `extraction-vocab` → build word inventory + technical glossary
-3. `extraction-logic` → map argument structure + sentence frames
-4. `extraction-style` → build the style corpus (frames, style lexicon, Style Card)
+2. `extraction-logic` → map argument structure + sentence frames
+3. `extraction-style` → build the style corpus (every word and phrase counted, lexical bundles, frames, style lexicon, Style Card; Lens T glossary on request)
 
 ### Academic writing
 1. `meta-writing` → draft sections using Knowledge + PDF + Web

@@ -15,7 +15,7 @@ extraction** — that is the completeness check, and it is deliberately cheap to
 ```jsonc
 {
   "schema": "metasci-corpus/manifest",
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",       // 1.1.0 adds files.phrases, vocabulary.bundles, glossary
   "slug": "kim-2015-nitrate-iso",
 
   "paper": {                       // ← fill from sections/A.txt
@@ -59,7 +59,18 @@ extraction** — that is the completeness check, and it is deliberately cheap to
     },
     "modality_workhorse": "can be (21) — not may (9)",
     "connectives": { "therefore": 10, "thus": 10, "however": 11,
-                     "note": "however = 0 in M" }
+                     "note": "however = 0 in M" },
+    "bundles": {                   // ← from phrases.stats.json after the merge
+      "total": 41, "non_topic": 27,
+      "functions": { "research": 12, "text": 11, "participant": 4 },
+      "stance": ["it is likely that", "it should be noted that"]
+    }
+  },
+
+  "glossary": {                    // ← Lens T; {"run": false} when the lens was skipped
+    "terms": 86,
+    "by_type": { "Domain": 31, "Chemical": 22, "Methodological": 14,
+                 "Instrument": 6, "Statistical": 8, "Coined": 2, "Taxonomic": 3 }
   },
 
   "red_flags": [                   // ← fill from card.md
@@ -118,7 +129,8 @@ file:
 |-------|------|
 | Stage 0 | (nothing — prep did it) |
 | Lens A | `frames`, `paper` |
-| Lens W | `vocabulary` |
+| Lens W | `vocabulary` (incl. `bundles`) |
+| Lens T | `glossary` — or `{"run": false}` if the lens was not run |
 | Lens C | `red_flags`, `distinctive_moves` |
 | Stage 4 | `provenance`, then `<corpus>/index.md` |
 

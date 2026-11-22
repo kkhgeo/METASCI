@@ -1,7 +1,7 @@
 # Lens C — Style Card
 
 **Output**: `card.md`
-**Reads**: `logic.md`, `style-vocab.md`, `manifest.json`, and the section files for the
+**Reads**: `logic.md`, `style-vocab.md`, `phrases.tsv` (bundle rows), `manifest.json`, and the section files for the
 indicators only this lens can judge.
 
 The card is the **selected** layer — one or two pages a reviser actually opens. Everything
@@ -31,7 +31,8 @@ card broke the skill's own rule — *preserve example sentences verbatim* — be
 no space left.
 
 **Test before adding anything to the card**: does this have a home in `logic.md`,
-`style-vocab.md`, `wordlist.tsv` or `manifest.json`? If yes, cite it; do not copy it.
+`style-vocab.md`, `wordlist.tsv`, `phrases.tsv`, `glossary.md` or `manifest.json`? If yes,
+cite it; do not copy it.
 
 Target: **under 200 lines.** If you are past that, you are transcribing, not selecting.
 
@@ -45,6 +46,11 @@ Not a re-listing. Select the items whose *distribution* is instructive:
   (test paper: `can be` 21 vs `may` 9 — substituting *may* throughout would sound wrong)
 - **connectives with their zeros** (test paper: `however` = 0 in Methods)
 - **register habits** — the non-technical set phrases
+- **key lexical bundles** — 5–8 rows from `phrases.tsv`, chosen for function coverage
+  (at least one each of research-, text- and participant-oriented where the paper has
+  them), each with its frequency, section skew and one verbatim context `[P#-S#]`. Prefer
+  bundles that concentrate in one section: *as shown in Fig* 9× all in R tells a reviser
+  where it belongs. Cite `phrases.tsv` for the rest; never paste the table.
 - a short **do-not-import** note for items that clear the frequency gate but are topic
   terms (test paper: `uncertain*` 29 and `potential*` 21 are "sample uncertainty" and
   "potential sources", not hedging)
@@ -141,6 +147,7 @@ Then fill `manifest.red_flags` and `manifest.distinctive_moves`.
 - [ ] every frame has a verbatim source with `[P#-S#]`
 - [ ] the recurrence warning appears above the frame list
 - [ ] the per-section table is present and the whole-paper warning is under it
-- [ ] no technical glossary, no domain noun list
+- [ ] no technical glossary, no domain noun list, no topic-flagged bundle
+- [ ] at most 8 bundles, each with function, frequency and a verbatim context
 - [ ] every number on the card traces to `manifest.json` or a named file
 - [ ] red flags are phrased as removals, not descriptions

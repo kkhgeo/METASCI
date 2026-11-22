@@ -53,7 +53,7 @@ import sys
 import unicodedata
 from pathlib import Path
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
 
 # Windows consoles default to a legacy codepage (cp949/cp1252) that cannot encode
 # the punctuation used below. Reconfigure rather than restrict the vocabulary.
@@ -423,7 +423,7 @@ def main() -> None:
 
     manifest = {
         "schema": "metasci-corpus/manifest",
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "slug": args.slug,
 
         "paper": {                      # filled by the lenses from the front matter
@@ -450,6 +450,9 @@ def main() -> None:
             "logic": "logic.md",
             "style_vocab": "style-vocab.md",
             "wordlist": "wordlist.tsv",
+            "phrases": "phrases.tsv",
+            "phrase_functions": "phrase-functions.tsv",
+            "glossary": "glossary.md",
             "card": "card.md",
             "anchors": "anchors.txt",
         },
@@ -474,7 +477,9 @@ def main() -> None:
             "reporting_verbs": None,     # {lemma: {total, by_section, reserved_for}}
             "modality_workhorse": None,  # e.g. "can be (21), not may (9)"
             "connectives": None,
+            "bundles": None,             # {total, non_topic, functions: {research, text, participant}, stance: [...]}
         },
+        "glossary": None,                # Lens T: {terms, by_type} — or {"run": false} when skipped
         "red_flags": None,               # list of absent patterns to strip from a draft
         "distinctive_moves": None,       # 1-3 notable moves
         "provenance": {
@@ -493,7 +498,7 @@ def main() -> None:
     for sid in SECTION_ORDER:
         if sid in chunks:
             print(f"  sections/{sid}.txt        {len(chunks[sid]):,} chars")
-    pending = [k for k in ("paper", "frames", "vocabulary", "red_flags",
+    pending = [k for k in ("paper", "frames", "vocabulary", "glossary", "red_flags",
                            "distinctive_moves", "provenance")
                if manifest[k] is None
                or (isinstance(manifest[k], dict)

@@ -7,13 +7,13 @@ A personal Claude Code skill collection in two domains: **academic research** (p
 Skills in use are organized into five packs under `skills/`:
 
 ```
-skills/                                                              34 skills
+skills/                                                              33 skills
 ├── persona/             virgil · beatrice · socrates · picasso · feynman-digest
 ├── metasci_writing/     meta-writing · meta-writing-insight · meta-writing-mapping · meta-writing-blog ·
 │                        Meta_Introduction · meta-writing-korean · meta-rewriting-korean · meta-proofreading-korean ·
 │                        meta-rewriting · meta-rewriting-antiai · meta-rewriting-loop · meta-review · meta-review-council ·
 │                        meta-proofreading · meta-proofreading-evidence · meta-proofreading-phrasebank
-├── metasci_extraction/  extraction-knowledge · extraction-logic · extraction-vocab ·
+├── metasci_extraction/  extraction-knowledge · extraction-logic ·
 │                        extraction-style · meta-styling
 ├── metasci_slide/       meta-slide-content · meta-slide-design
 └── metasci_workspace/   init-research-principles · init-writing-workspace · init-communication-rules ·
@@ -71,11 +71,9 @@ The detailed sections below document the academic-research skills; the persona s
 │       ├──→ extraction-logic → Logic_{topic}/                             │
 │       │         (structure, argument flow, sentence frames)              │
 │       │                                                                  │
-│       ├──→ extraction-vocab → Vocab_{topic}/                             │
-│       │         (POS word inventory, technical glossary)                  │
-│       │                                                                  │
 │       ├──→ extraction-style → <corpus>/papers/<slug>/                    │
-│       │         (frames, style vocabulary, Style Card)                   │
+│       │         (every word + phrase, bundles, frames, style vocabulary, │
+│       │          glossary, Style Card)                                   │
 │       │                                                                  │
 │       └──→ meta-writing                                                  │
 │                 (academic section writing)                                │
@@ -90,13 +88,13 @@ The detailed sections below document the academic-research skills; the persona s
 │                 (autonomous data-driven scientific discovery)             │
 │                                                                          │
 │  Naming Convention:                                                      │
-│    extraction-{target} → PDF에서 추출 (knowledge, vocab, logic)          │
+│    extraction-{target} → PDF에서 추출 (knowledge, logic, style)          │
 │    meta-{action}       → 글쓰기/스타일 (writing, rewriting, styling,     │
 │                          review)                                         │
 │                                                                          │
 │  Analysis Layer Separation:                                              │
-│    extraction-vocab     → WHAT words are used                            │
-│    extraction-style     → HOW the writing is built                       │
+│    extraction-style     → WHAT words and phrases are used (counted),     │
+│                           HOW the writing is built                       │
 │    extraction-logic     → HOW arguments are structured                   │
 │    extraction-knowledge → WHAT knowledge is cited                        │
 │                                                                          │
@@ -116,9 +114,6 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 ```
 ~/.claude/skills/                    # Global (available in all projects)
 ├── extraction-knowledge/
-│   ├── SKILL.md
-│   └── references/extraction_template.md
-├── extraction-vocab/
 │   ├── SKILL.md
 │   └── references/extraction_template.md
 ├── extraction-logic/
@@ -158,9 +153,8 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 | Skill | Description | Output |
 |-------|-------------|--------|
 | extraction-knowledge | Cited knowledge into 5 epistemological categories | `Knowledge_{topic}/` |
-| extraction-vocab | Exhaustive POS word extraction + technical term glossary | `Vocab_{topic}/` |
 | extraction-logic | Structure, argument logic, sentence frames | `Logic_{topic}/` |
-| extraction-style | Reference papers → style corpus: sentence frames, measured vocabulary, Style Card | `<corpus>/papers/<slug>/` |
+| extraction-style | Reference papers → style corpus: every word (`wordlist.tsv`) and recurrent 2–4-word phrase (`phrases.tsv`, lexical bundles) counted by script, sentence frames, measured style vocabulary, optional technical glossary, Style Card | `<corpus>/papers/<slug>/` |
 
 ### Writing — produce prose that does not exist yet
 
@@ -179,7 +173,7 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 | Skill | Description | Needs |
 |-------|-------------|-------|
 | meta-rewriting | One paragraph: diagnose + 3 complete alternatives | nothing |
-| meta-review | Draft vs reference extractions, per-paper reviewer agents | `_logic.md` / `_vocab.md` |
+| meta-review | Draft vs reference extractions, per-paper reviewer agents | a style corpus, or `_logic.md` |
 | meta-review-council | Claude, Codex, and Gemini review the reasoning independently and rank each other anonymously; the session chairs | logged-in `claude`, `codex`, `agy` CLIs |
 | meta-rewriting-loop | Monte Carlo optimisation over N references | N references |
 | meta-proofreading | Reviewer panel + judge; whole draft, section, or paragraph | invoked by name |
@@ -248,18 +242,24 @@ Extract core knowledge claims from research paper PDFs, classified into 5 episte
 
 ---
 
-## 2. extraction-vocab
+## 2. extraction-vocab (retired)
 
-Exhaustively extract every content word from a paper, organized by section and POS.
+Moved to `legacy-skills/extraction-vocab/`. Its LLM-written list of every content word
+duplicated `extraction-style`'s `wordlist.tsv`, and its counts ran against the raw PDF,
+where words containing printer's ligatures (ﬁ ﬂ) count as zero. Word, phrase and term
+extraction now live in `extraction-style`:
 
-- **POS Tables**: Verb, Noun, Adjective, Adverb — per section with frequency and context
-- **Technical Glossary**: Domain, Methodological, Statistical, Chemical, Instrument, Taxonomic terms
-- **Multi-word terms**: Kept as units (not split into individual words)
-- **Cross-section analysis**: Frequency matrix, section-exclusive words, technical term density
+- **Every word**: `wordlist.tsv` — each content type × section, range, inflection family,
+  POS (spaCy, when installed), academic/topic class
+- **Every recurrent phrase**: `phrases.tsv` — 2–4-word n-grams at Freq ≥ 2; lexical
+  bundles flagged by frequency and dispersion (Biber et al. 1999; Hyland 2008), topic-bound
+  sequences flagged, bundle function (research / text / participant) classified
+- **Technical glossary**: `glossary.md` (Lens T) — typed, defined from context, counted
+  from the TSVs
 
 ```
-> "Extract vocabulary from Weber2021.pdf to Vocab_geochemistry"
-> "Extract technical terms from this paper"
+> "이 논문 단어·구 최대한 추출해줘"
+> "이 논문 전문용어 용어집 만들어줘"
 ```
 
 ---
@@ -339,8 +339,9 @@ the corpus; `meta-styling` applies it. They were split so that the rule
 *"numbers diagnose, they do not set targets"* holds on both sides.
 
 - **`extraction-style`**: reference paper → one folder per paper holding normalized
-  text, per-section splits, an exhaustive sentence-frame catalog, a measured style
-  vocabulary, a lean Style Card, and a manifest.
+  text, per-section splits, an exhaustive sentence-frame catalog, exhaustive word and
+  phrase layers counted by script, a measured style vocabulary, an optional technical
+  glossary, a lean Style Card, and a manifest.
 - **`meta-styling`**: tags the draft's own structure *blind*, diffs it against the
   reference's paragraph and sentence-role map across eight dimensions, then offers
   2–3 candidate revisions with a recommendation. Measured rates are a closing
@@ -358,7 +359,9 @@ Confidence scales with how many papers the corpus holds: `single-source` (N=1),
 
 ## 7. meta-review
 
-Multi-reviewer draft improvement using pre-extracted logic and vocabulary analysis files.
+Multi-reviewer draft improvement using pre-extracted logic and vocabulary analysis files
+(an `extraction-style` corpus, or `extraction-logic` output; legacy `_vocab.md` files are
+still read).
 
 - **Per-paper Reviewers**: One subagent per reference paper, running in parallel
 - **Four Academic Principles**: Argument Architecture, Prose Rhythm, Cohesion & Coherence, Academic Register
@@ -399,15 +402,15 @@ Output: `Research_{topic}/` folder with world model, analysis notebooks, and str
 ### Full paper analysis
 ```
 1. extraction-knowledge  → extract cited knowledge
-2. extraction-vocab      → build word inventory + technical glossary
-3. extraction-logic      → map argument structure + sentence frames
-4. extraction-style      → build the style corpus
+2. extraction-logic      → map argument structure + sentence frames
+3. extraction-style      → build the style corpus: every word and phrase, bundles,
+                           frames, style vocabulary, Style Card (+ Lens T glossary)
 ```
 
 ### Academic writing
 ```
 1. meta-writing          → draft sections using My Data + Knowledge + PDF + Web
-2. meta-review           → multi-reviewer improvement using logic+vocab extractions
+2. meta-review           → multi-reviewer improvement using logic + style-corpus extractions
 3. meta-styling          → revise draft against the style corpus
 4. meta-rewriting        → one-shot style transfer from reference paper
 ```
@@ -433,9 +436,8 @@ Logic_{topic}/              # Structure + logic + frames
 ├── index.md
 └── Weber2021_logic.md
 
-Vocab_{topic}/              # Word inventory + glossary
-├── index.md
-└── Weber2021_vocab.md
+<corpus>/papers/<slug>/     # extraction-style: wordlist.tsv, phrases.tsv,
+                            # style-vocab.md, glossary.md, logic.md, card.md, manifest.json
 
 Style_{topic}/              # Style data banks
 ├── index.md
@@ -465,7 +467,15 @@ Research_{topic}/           # Agentic research output
 
 ## Version History
 
-### v1.0.0 (Current)
+### Unreleased
+- extraction-style 3.1.0: exhaustive phrase layer (`phrases.py` → `phrases.tsv`, 2–4-word
+  n-grams, lexical bundles after Biber et al. 1999 / Hyland 2008, topic flag, Hyland
+  function classification); word layer v2 (`wordlist.py`: short words kept, range,
+  inflection family, optional spaCy POS); Lens T technical glossary
+- Retired extraction-vocab to `legacy-skills/`; meta-review and meta-proofreading read the
+  style corpus instead, legacy `_vocab.md` still accepted
+
+### v1.0.0
 - Renamed `Meta_researcher` → `METASCI`; plugin name `meta-researcher` → `metasci`
 - Reorganized skills into four categories: persona, writing (incl. review/proofreading), extraction, research
 - Documented persona skills (virgil, beatrice, socrates, picasso, feynman-digest)

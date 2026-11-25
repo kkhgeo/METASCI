@@ -180,7 +180,7 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 | meta-proofreading-evidence | Are these phrases actually used in published papers? | nothing |
 | meta-proofreading-phrasebank | One English paragraph vs the built-in Academic Phrasebank, by rhetorical function | nothing |
 | meta-proofreading-korean | Korean academic/policy draft → rubric-tiered panel proofreading | Korean draft |
-| meta-styling | Apply a style corpus to a draft: structural diff, then candidate revisions | a style corpus (N≥1) |
+| meta-styling | Apply a style corpus to a draft, style only: blind draft map, comparison incl. lexical bundles, one revision behind two preservation gates | a style corpus (N≥1) |
 | meta-rewriting-antiai | Strip AI writing tells across 4 layers | nothing |
 | meta-mywriting-korean | Korean draft → the author's own style Blueprint | Blueprint |
 
@@ -342,13 +342,17 @@ the corpus; `meta-styling` applies it. They were split so that the rule
   text, per-section splits, an exhaustive sentence-frame catalog, exhaustive word and
   phrase layers counted by script, a measured style vocabulary, an optional technical
   glossary, a lean Style Card, and a manifest.
-- **`meta-styling`**: tags the draft's own structure *blind*, diffs it against the
-  reference's paragraph and sentence-role map across eight dimensions, then offers
-  2–3 candidate revisions with a recommendation. Measured rates are a closing
-  sanity check, never an edit target.
+- **`meta-styling`**: tags the draft's own structure *blind*, compares it with the
+  selected papers' paragraph functions, sentence roles, frames, reporting verbs,
+  hedges and lexical bundles (`phrases.tsv`), applies only what fits the draft's
+  function and content, and returns one recommended revision. Two gates lock the
+  content: a script compares references, citations, numbers, identifiers and
+  technical terms (`glossary.md` + the draft's own list) before and after, then a
+  sentence-by-sentence meaning check. Measured rates describe; they are never targets.
 
-Confidence scales with how many papers the corpus holds: `single-source` (N=1),
-`provisional` (N=2), `corpus` (N≥3). At N=1 only absences are enforced.
+Every report states N and the papers used; with N≤2 an applied structural habit is
+labelled a choice observed in those papers, not a norm. meta-review reads the same
+corpus but judges and may change substance; meta-styling changes style only.
 
 ```
 > "kkh_nitrate_iso.pdf 스타일 추출해줘"
@@ -474,6 +478,10 @@ Research_{topic}/           # Agentic research output
   inflection family, optional spaCy POS); Lens T technical glossary
 - Retired extraction-vocab to `legacy-skills/`; meta-review and meta-proofreading read the
   style corpus instead, legacy `_vocab.md` still accepted
+- meta-styling 5.1.0: reads the 3.1 count layers (lexical bundles as a comparison
+  dimension, wordlist counts and topic boundary, glossary terms); Gate 1 gains a technical-term
+  inventory (`preservation_inventory.py` 1.1.0); meta-review/meta-styling boundary stated on
+  both sides; v4 leftovers (databank, Mode A/B, candidates, tiers) removed from sibling skills
 
 ### v1.0.0
 - Renamed `Meta_researcher` → `METASCI`; plugin name `meta-researcher` → `metasci`

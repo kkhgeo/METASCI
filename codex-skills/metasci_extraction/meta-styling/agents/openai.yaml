@@ -1,4 +1,4 @@
 interface:
   display_name: "Meta Styling"
-  short_description: "Match an English draft to an extracted style corpus (extraction-style output): compare structure and wording with the reference papers, apply what fits, keep ev"
+  short_description: "Match an English draft to an extracted style corpus (extraction-style output): compare structure, frames, lexical bundles and wording with the reference papers,"
   default_prompt: "Use $meta-styling for this task."

@@ -20,7 +20,7 @@ Extracts three layers of analysis from academic papers:
 - **Logic Extraction**: Map argument flow between paragraphs (inter-paragraph) and between sentences within paragraphs (intra-paragraph)
 - **Sentence Frame Extraction**: Abstract reusable rhetorical templates from every sentence — capturing the **form/shape** of sentences, not specific words
 
-**Difference from meta-styling**: meta-styling extracts *"which words and expressions are used"* (surface). extraction-logic extracts *"how the argument is structured and flows"* (deep).
+**Difference from extraction-style**: extraction-style builds a reusable style corpus — *"which words, phrases and frame types are used"* — for `meta-styling` to apply to a draft. extraction-logic extracts *"how the argument is structured and flows"* in full, for proofreading and review.
 
 ---
 
@@ -209,16 +209,17 @@ distinctive moves.
 
 ---
 
-## Integration with meta-styling
+## Integration with extraction-style and meta-styling
 
 ```
 extraction-logic → Argument structure + sentence frames (HOW the argument flows)
-meta-styling      → Vocabulary + expressions + tense/voice (HOW the words sound)
+extraction-style → Style corpus: frames, words, phrases, style lexicon (HOW the words sound)
+meta-styling     → Applies an extraction-style corpus to an English draft (style only)
 
 Combined workflow:
 1. extraction-logic: understand argument structure and sentence templates
-2. meta-styling: understand lexical and stylistic patterns
-3. When writing: reference logic structure (logic) + expression style (style) together
+2. extraction-style: build the style corpus of the same papers
+3. meta-review (argument + style evidence) or meta-styling (style only) on the draft
 ```
 
 ---

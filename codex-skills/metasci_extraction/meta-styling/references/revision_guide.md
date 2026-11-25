@@ -1,8 +1,8 @@
 # Style Revision Guide
 
-Guide version: 5.0.0 (2026-09-14).
+Guide version: 5.1.0 (2026-11-25).
 
-Paired entrypoint: `meta-styling` SKILL.md 5.0.0. Do not use this guide with the 4.1.1 entrypoint: its candidate, tier, band, and stage-file rules no longer apply.
+Paired entrypoint: `meta-styling` SKILL.md 5.1.0. Do not use this guide with the 4.1.1 entrypoint: its candidate, tier, band, and stage-file rules no longer apply.
 
 Apply useful features of the selected style corpus to an English draft while preserving its substance. Compare both wording and structure. A difference from a reference is an observation; decide whether it is relevant before turning it into an edit.
 
@@ -48,6 +48,8 @@ excluded: <material and source locations, or none>
 author rules: <applicable rules, or none>
 analysis: <independent context / isolation by ordering / informed follow-up>
 section mapping: <exact / explicit fusion evidence / unresolved>
+count layers: <phrases / wordlist / glossary present per paper, or older corpus>
+draft terms: <terms.txt, n terms>
 
 ## Draft map
 P1: <function>; next: <relation>
@@ -91,6 +93,8 @@ These function and role labels are open-ended. Extend them when a sentence or pa
 
 For sentence **frame codes**, use [frame-codes.md](frame-codes.md). Assign one primary frame code per tagged sentence using its family descriptions and tie-breaking rules. Keep the established codes. For an uncovered shape, record `Z`, a `Capitalized-Hyphenated` provisional name, and one `[SLOT]` template; reconcile names with the corpus during §3, after independent tagging. Extensible function labels and the fixed frame-code namespace serve different purposes. Do not force a high or low `Z` rate.
 
+While reading the draft, list its technical terms — the domain nouns, compounds, methods, and named entities that carry its subject — in `terms.txt` (one per line). Letter–digit identifiers such as `δ15N` are already covered by Gate 1 and need not be listed. This list protects the draft's vocabulary in §6 and is written before the references are opened, so it reflects the draft rather than a reference glossary.
+
 Record only the structural detail needed to support the comparison. A short draft can still have a meaningful purpose, closer, or reporting-verb use; do not skip qualitative review because it falls below a token threshold.
 
 ### Keep the independence claim accurate
@@ -104,6 +108,20 @@ The default is to tag the draft first. Record whether separation was by independ
 For each selected paper, consult `manifest.json` (`prep.section_scheme`, `prep.detection_notes`, and extraction metadata) and `card.md` for an overview. Follow the section pointers below into `logic.md` and `style-vocab.md`. Inspect headings first if the extraction uses different numbering, then record the corresponding section; do not silently assume a missing heading means a missing feature.
 
 Use the corresponding `sections/*.txt` for lexical counts and their denominators. Use `body.txt` only to verify a quotation or recover its context: it includes abstract/front matter and is not a substitute for the section counting basis.
+
+### Use the count layers before recounting
+
+An extraction-style 3.1 corpus (manifest `schema_version` 1.1.0) also carries three files written by script over the same section files. Query them with grep or a filter; never load them whole.
+
+| File | Holds | Use it for | Do not use it for |
+|---|---|---|---|
+| `phrases.tsv` | every 2–4-word sequence at Freq ≥ 2, with per-section counts, `range`, `bundle`, `topic`, `nested_in`, and Hyland `function`/`subfunction` labels | lexical bundles a comparable draft passage could use; the section skew of a bundle; whether a candidate wording recurs in the reference | a zero: a sequence absent from the file may still occur once |
+| `wordlist.tsv` | every content word with per-section counts, `range`, `family`, `class` (`academic` / `other`) | a measured per-section count or zero of a content word, without rerunning `quant_check.py`; whether a word is topic-bound (`class = other`) | function words, connectives and modals (`however`, `thus`, `therefore`, `may` …): they are on the frozen stop list and never written, so their absence here is not a zero — count them with `quant_check.py` on `sections/*.txt` |
+| `glossary.md` (only when Lens T ran; `manifest.glossary.run`) | technical terms with type and `[P#-S#]` source | marking domain vocabulary that must not be transplanted from the reference or altered in the draft; seeding the term inventory of Gate 1 (§6) | style evidence: no glossary term is a style feature |
+
+Quote `phrases.stats.json` / `wordlist.stats.json` rather than recounting. An older corpus (manifest 1.0.0) lacks these files; mark the affected observations unassessed and fall back on `style-vocab.md` and `quant_check.py`. A missing file never blocks the run.
+
+**Domain words never travel.** A reference's topic-bound vocabulary — `class = other` rows, `topic = yes` phrases, glossary terms — describes its subject, not its style. Do not import it into the draft, and do not replace the draft's own technical terms with the reference's near-synonyms.
 
 When authorized isolated workers are used, give each reference-comparison worker the draft map, draft prose, author rules, and draft vocabulary/absence observations from `review-notes.md`, plus its paper's corpus files. It reads the indicated sections and returns compact observations and source evidence, not adoption decisions or whole files. Each observation identifies its paper, section/address, measured scope, and any missing evidence. Decide whether to apply a change only in §4, after combining the selected papers; a zero count in one paper cannot overrule occurrences in another. Without workers, read those same sections sequentially; avoid loading a large `logic.md` or `body.txt` in full. Record the execution method. Worker use is a context-management choice, not a condition for completing the task.
 
@@ -130,8 +148,10 @@ Use these dimensions when relevant; there is no requirement to fill an eight-row
 | Sentence-role chains | Draft roles; `logic.md` §D, intra-paragraph logic | Can existing material be connected or ordered more effectively? |
 | Sentence frames | `logic.md` §E, catalog and source examples; §F, distributions and named `Z` shapes | Is a useful frame available for content already present in the draft? |
 | Gap presentation | `logic.md` §§E–F, C-family frames in Introduction/Discussion | Can the same actual gap be expressed in the reference's manner? |
-| Reporting verbs | Draft uses; `style-vocab.md` §C.1, reporting verbs and their reserved-for table | Are prior findings, current observations, interpretations, and display references expressed appropriately? |
-| Other style vocabulary | `style-vocab.md` §C.2 for hedges and the named §C subsections for adverbs, connectives, self-mention, and set phrases; §D for cross-section observations | Does an alternative express the same relationship or stance in the selected style? |
+| Reporting verbs | Draft uses; the *Reporting verbs* subsection of `style-vocab.md` §C with its reserved-for table | Are prior findings, current observations, interpretations, and display references expressed appropriately? |
+| Lexical bundles | Draft multi-word sequences; the *Lexical bundles* subsection of `style-vocab.md` §C; `phrases.tsv` rows with `bundle = yes`, `topic = no`, by `function` | Does the reference use a recurrent bundle for a job the draft does with a different or ad-hoc wording (a transition, a framing, a resultative, a display reference)? |
+| Other style vocabulary | The named subsections of `style-vocab.md` §C (hedges, boosters/stance, attitude markers, connectives, self-mention, general academic nouns, register habits, caption verbs); §D for cross-section observations | Does an alternative express the same relationship or stance in the selected style? |
+| Domain-term boundary | `glossary.md`; `wordlist.tsv` `class`; `phrases.tsv` `topic` | Is a proposed change touching subject vocabulary rather than style? If so, it is out of scope. |
 | Presence and absence | `card.md` Red Flags; `logic.md` §§C, F for structure; `style-vocab.md` §§C–D for lexical evidence; scoped draft observations in the notes | Is the difference relevant, and would changing it preserve the paragraph's function? |
 
 For an actionable finding, retain the draft location, reference source and example, the observed difference, and why it matters here. This working evidence is the input to revision; do not leave useful vocabulary findings outside the prescription process.
@@ -149,6 +169,8 @@ Record the function of important occurrences, not just totals. For example, dete
 Sentence length and word frequencies are descriptive evidence, not quotas. Do not derive mandatory bands, prescribe a hedge count, or edit solely to move a metric toward the corpus. Count or normalize across texts only when the comparison has a compatible basis and is useful at the draft's length.
 
 ### Assess structural absences by reading
+
+Section headings inside `style-vocab.md` §C vary between extractions (by section, or by feature). Locate a subsection by its name, not by a sub-number, and record the heading actually read.
 
 Separate searchable terms from structural patterns. Lists, a standalone Limitations section, a future-work ending, and citation placement require inspection at the relevant scope. Section-conditioned observations, such as `however` in Methods, require the correct section boundary.
 
@@ -227,6 +249,14 @@ Imitate useful frame shapes without mechanically reproducing a source sentence. 
 
 Before making a recurrence-based recommendation, read the relevant frame's Singleton/Recurrent status in `logic.md` §E.5. `anchors.txt` contains one anchor phrase per line for counting; it does not store these status labels. During §3, bring the frame identifier, status, source address, and anchor wording into the compact evidence notes so §5 can use them without reopening the full corpus. Reuse a Singleton's structural pattern rather than its distinctive anchor wording. A Recurrent label permits considering the wording in context; it is not an instruction to insert it. Do not use aggregate `manifest.frames.singleton_rate` to infer an individual expression's status. If §E.5 is missing or unreadable, record the individual status as unassessed and make no recurrence claim.
 
+A lexical bundle is recurrent by construction (Freq ≥ 2 across ≥ 2 sections), so its wording — not only its shape — may be considered where the draft does the same job. Weigh it by function:
+
+- **Text-oriented** (`transition`, `resultative`, `structuring`, `framing`) bundles organise the prose and are the most transferable, provided the logical relation they signal is the one already present. `as a result of` asserts a cause; do not use it where the draft states a sequence.
+- **Research-oriented** bundles (`procedure`, `quantification`, `location`, `description`) fit only where the draft reports the same kind of content.
+- **Participant-oriented** bundles carry stance. Inserting or removing `it is likely that` or `it should be noted that` changes certainty or emphasis, which is substance (§5 above): never add one to a sentence that lacked that stance, and never strip one that carried it.
+
+Record the bundle, its `function`, Freq and per-section split, and one reference address in the edit record.
+
 Save the manuscript text alone in `revision.txt`. Keep edit identifiers, explanations, and measurement results in `review-notes.md`, not in that text file. Additional candidates, when needed, use separate prose-only files such as `revision-option-2.txt`.
 
 For a legacy candidate file containing a metadata header, extract only the manuscript body after its documented header delimiter into a prose-only file before comparing it. Exclude placeholders such as “unchanged from the draft”; use the actual original prose in that case.
@@ -242,8 +272,10 @@ Run a machine count and item-by-item comparison on the prose-only files. Never c
 Run the bundled standalone script from the run folder (replace `<skill-dir>` with the actual path; use `python`, `python3`, or `py -3` as available):
 
 ```text
-python "<skill-dir>/scripts/preservation_inventory.py" --before "0-draft.prose.txt" --after "revision.txt" --citation-style author-year --output "inventory.tsv"
+python "<skill-dir>/scripts/preservation_inventory.py" --before "0-draft.prose.txt" --after "revision.txt" --citation-style author-year --output "inventory.tsv" --terms "terms.txt" --glossary "<corpus>/papers/<slug>/glossary.md"
 ```
+
+Add the term inventory whenever terms are available: `--glossary` with the `glossary.md` of each selected paper that has one, and `--terms terms.txt` for the draft's own technical terms that no glossary lists (one term per line; multi-word terms allowed). Identify those draft terms during §2 and keep `terms.txt` in the run folder. Glossary terms that appear in neither text are ignored, so passing every selected glossary is safe; a reference glossary only covers vocabulary the draft happens to share, which is why the draft list matters.
 
 Choose `author-year`, `numeric` (square-bracket citation numbers), or `none` from the manuscript's notation. The script writes the before/after table and an overall result to `inventory.tsv` and stdout; exit codes are 0 = PASS, 1 = FAIL, 2 = BLOCKED. Keep the actual output and reference it in `review-notes.md`. The script has no dependencies and does not involve `quant_check.py`.
 
@@ -259,10 +291,11 @@ Build inventories for both texts and record the results in `review-notes.md`:
 | Citations | Source identity or citation key; expand grouped citations into individual cited sources | Every cited source's occurrence count is unchanged |
 | Numeric expressions | Complete expression, retaining sign, decimals, exponent, range, and percent marker | Every expression's occurrence count is unchanged |
 | Identifiers | Letter–digit tokens (isotopes, ions, components, ordinals, sample IDs) with dashes unified | Every token's occurrence count is unchanged |
+| Technical terms (when supplied) | Term from `terms.txt` / `glossary.md`, case-insensitive, whole words, optional plural `-s`/`-es` | Every term's occurrence count is unchanged; a term swapped for a near-synonym fails |
 
 Normalize only identity-preserving formatting: `Figure 2` and `Fig. 2` map to the same figure identifier. Do not collapse different panel labels or normalize away a minus sign. For citation or reference ranges, account for every identified item. Inspect the source text to ensure the extractor covers the manuscript's actual notation, including Unicode signs and superscripts; a parser returning no matches is not proof that there are no items.
 
-**PASS:** all three inventories match. The script never grants authorization exceptions. If the user already authorized a specific change, preserve its raw FAIL result and record a separate `PASS WITH USER-AUTHORIZED EXCEPTION` adjudication only when every differing row exactly matches the recorded authorization and no BLOCKED issue remains; never relabel the script output as PASS. If a category is genuinely absent, record “none present” after checking the prose.
+**PASS:** every inventory matches. The script never grants authorization exceptions. If the user already authorized a specific change, preserve its raw FAIL result and record a separate `PASS WITH USER-AUTHORIZED EXCEPTION` adjudication only when every differing row exactly matches the recorded authorization and no BLOCKED issue remains; never relabel the script output as PASS. If a category is genuinely absent, record “none present” after checking the prose.
 
 **FAIL:** an item's count falls, an identifier or numeric expression changes, or an unapproved item is added. Restore the original item and rerun the affected comparison. Do not satisfy the gate by inserting an unrelated duplicate elsewhere.
 
@@ -279,6 +312,7 @@ Minimum verification record:
 | citation | <source key> | 2 | 2 | none | PASS |
 | number | -0.25 | 1 | 1 | none | PASS |
 | identifier | δ15N | 40 | 40 | none | PASS |
+| term | dissolved organic carbon | 3 | 3 | none | PASS |
 Mechanical gate: PASS; extractor coverage checked against the prose.
 ```
 
@@ -343,6 +377,7 @@ File existence alone does not establish freshness. Before reusing a run, check t
 
 ---
 
-**Guide version:** 5.0.0 (2026-09-14).  
-**Paired SKILL.md:** meta-styling 5.0.0.  
-**Corpus contract:** extraction-style v3.x; verify actual headings and anchor format when reading older extractions.
+**Guide version:** 5.1.0 (2026-11-25) — count layers (`phrases.tsv`, `wordlist.tsv`, `glossary.md`) enter the comparison; lexical bundles become a comparison dimension; the term inventory joins Gate 1; `style-vocab.md` subsections are addressed by name.  
+**Previous:** 5.0.0 (2026-09-14).  
+**Paired SKILL.md:** meta-styling 5.1.0.  
+**Corpus contract:** extraction-style v3.x; the count layers need 3.1 (manifest schema 1.1.0). Verify actual headings and anchor format when reading older extractions.

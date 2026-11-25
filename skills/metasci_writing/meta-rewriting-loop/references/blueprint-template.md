@@ -193,17 +193,17 @@ Low/Medium confidence시 사용자에게 실제 논문 텍스트 제공을 권�
 
 ---
 
-## Style Databank Mapping
+## Style Corpus Mapping
 
-기존 `meta-styling Mode A` 데이터뱅크(`Style_{topic}/`)를 Blueprint으로 변환할 때:
+`extraction-style` 코퍼스의 논문 폴더(`papers/<slug>/`) 하나를 Blueprint 하나로 변환할 때.
+(구 `meta-styling Mode A` 데이터뱅크 `Style_{topic}/`는 폐지되었다. 남아 있는 옛 폴더는 같은 범주를 아래 파일 위치에 대응시켜 읽는다.)
 
-| Style Databank Category | Blueprint Dimension | Stage |
-|-------------------------|---------------------|-------|
-| Sentence Patterns | Dim 2: Sentence Architecture | Stage 2 |
-| Vocabulary | Dim 5: Vocabulary & Terminology | Stage 2 |
-| Transitions & Connectors | Dim 4: Transition Expressions | Stage 2 |
-| Hedging & Stance Markers | Dim 1: Tone & Stance | Stage 2 |
-| Quantitative Expressions | Dim 6: Citation & Evidence Style | Stage 2 |
-| Citation Integration Patterns | Dim 6: Citation & Evidence Style | Stage 2 |
-| Section Overview (tense/voice) | Dim 1: Tone & Stance | Stage 2 |
-| Style Rules (Do/Don't) | Dim 3: Logical Flow | Stage 1-B |
+| Corpus source | Blueprint Dimension | Stage |
+|---------------|---------------------|-------|
+| `logic.md` §E 문장 프레임 카탈로그, §F Z 형태 | Dim 2: Sentence Architecture | Stage 2 |
+| `logic.md` §C–§D 문단 기능·문장 역할 연쇄 | Dim 3: Logical Flow | Stage 1-B |
+| `style-vocab.md` §C 일반 학술 명사, `glossary.md` (전문용어, 이식 금지 대상 식별용) | Dim 5: Vocabulary & Terminology | Stage 2 |
+| `style-vocab.md` §C 연결어, `phrases.tsv` text-oriented 번들 | Dim 4: Transition Expressions | Stage 2 |
+| `style-vocab.md` §C 헤지·부스터·태도, `phrases.tsv` participant 번들 | Dim 1: Tone & Stance | Stage 2 |
+| `card.md` P (시제·인칭·인용 통합·그림 참조 형식) | Dim 1 / Dim 6 | Stage 2 |
+| `card.md` Red flags | Dim 3: Logical Flow (금지 목록) | Stage 1-B |

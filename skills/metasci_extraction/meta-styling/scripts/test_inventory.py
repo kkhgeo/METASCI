@@ -14,15 +14,22 @@ STATUS = {0: "PASS", 1: "FAIL", 2: "BLOCKED"}
 
 
 class InventoryTests(unittest.TestCase):
-    def compare(self, before, after, style="none", expected=0):
+    def compare(self, before, after, style="none", expected=0, terms=None, glossary=None):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             (root / "before.txt").write_text(before, encoding="utf-8")
             (root / "after.txt").write_text(after, encoding="utf-8")
+            extra = []
+            if terms is not None:
+                (root / "terms.txt").write_text(terms, encoding="utf-8")
+                extra += ["--terms", str(root / "terms.txt")]
+            if glossary is not None:
+                (root / "glossary.md").write_text(glossary, encoding="utf-8")
+                extra += ["--glossary", str(root / "glossary.md")]
             result = subprocess.run(
                 [sys.executable, str(CLI), "--before", str(root / "before.txt"),
                  "--after", str(root / "after.txt"), "--citation-style", style,
-                 "--output", str(root / "audit.tsv")],
+                 "--output", str(root / "audit.tsv")] + extra,
                 capture_output=True, text=True, encoding="utf-8")
             self.assertEqual(result.returncode, expected, result.stdout + result.stderr)
             rows = list(csv.DictReader((root / "audit.tsv").read_text(encoding="utf-8").splitlines(),
@@ -142,6 +149,31 @@ class InventoryTests(unittest.TestCase):
                                      "--citation-style", "none", "--output", str(prose)], capture_output=True)
             self.assertEqual(result.returncode, 2)
             self.assertEqual(prose.read_text(encoding="utf-8"), "Original prose.")
+
+    # --- technical terms (optional, 1.1.0) ---------------------------------------
+    GLOSSARY = ("| # | Term | Type | POS | Definition | Sections | Freq | Top collocates | Source |\n"
+                "|---|------|------|-----|------------|----------|------|----------------|--------|\n"
+                "| 1 | aquifer | Domain | N | water-bearing unit | I,M | 18 | shallow | [P1-S2] |\n"
+                "| 2 | dissolved organic carbon | Chemical | NP | DOC | M,R | 8 | — | [P9-S3] |\n"
+                "| 3 | ICP-MS | Instrument | N(abbr) | mass spectrometry | M | 1 | — | [P11-S2] |\n")
+
+    def test_glossary_terms_preserved_pass(self):
+        rows = self.compare("Dissolved organic carbon in the aquifer was measured by ICP-MS.",
+                            "In the aquifers, dissolved\norganic carbon was measured by ICP-MS.",
+                            glossary=self.GLOSSARY)
+        self.assertEqual(self.items(rows, "term"), {"aquifer", "dissolved organic carbon", "icp-ms"})
+
+    def test_term_substitution_fails(self):
+        self.compare("Dissolved organic carbon rose in the aquifer.",
+                     "Organic matter rose in the aquifer.", glossary=self.GLOSSARY, expected=1)
+
+    def test_term_file_and_absent_terms(self):
+        rows = self.compare("Baseflow dominated.", "Baseflow dominated.",
+                            terms="baseflow\n# comment\nrecharge zone\n")
+        self.assertEqual(self.items(rows, "term"), {"baseflow"})
+
+    def test_empty_term_list_blocks(self):
+        self.compare("Baseflow dominated.", "Baseflow dominated.", terms="# nothing\n", expected=2)
 
 
 if __name__ == "__main__":

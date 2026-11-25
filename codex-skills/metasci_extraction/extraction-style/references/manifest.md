@@ -3,7 +3,7 @@
 One small JSON per paper. Downstream reads **this**, not the 100 KB markdown files, to
 answer two questions:
 
-> Which band applies to a Methods paragraph?
+> Which section row describes a Methods paragraph? (a description, never a target)
 > What must this draft never do?
 
 `prep.py` writes it with every deterministic field filled and every judgment field `null`.

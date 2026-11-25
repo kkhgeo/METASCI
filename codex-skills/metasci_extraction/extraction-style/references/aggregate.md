@@ -92,44 +92,42 @@ without ever flattening 3-4 distinct voices into a bland average.
 
 ## Contract with meta-styling: this file is a CACHE, not a requirement
 
-`meta-styling` v3.x reads `papers/<slug>/card.md` + `manifest.json` directly and counts N
-itself. It never requires `style_profile.md`. When the file **is** present it is used only
-as a cache of a previously computed convergence/divergence judgment — that judgment is an
-LLM reading call, so reusing it keeps successive revision passes consistent instead of
-re-deciding each time.
+`meta-styling` (5.x) reads `papers/<slug>/` directly — `manifest.json`, `card.md`, the
+pointed sections of `logic.md` and `style-vocab.md`, and the count layers — and reports N
+itself. It never requires `style_profile.md`. When the file **is** present it may help
+locate relevant papers or reuse a previously recorded convergence/divergence reading.
 
 Two consequences for whoever writes this file:
 
-1. **Staleness invalidates it.** `meta-styling` ignores a `style_profile.md` whose mtime is
-   older than any `papers/*/card.md` in scope, and derives from the cards instead. If you
-   re-extract or edit a card, either rebuild this file or delete it. A stale profile is
-   worse than no profile.
+1. **Provenance decides reuse, not dates.** `meta-styling` reuses this file only when its
+   recorded paper selection, section, counting basis and source versions match the current
+   run; a recent modification date alone does not establish that. If you re-extract or
+   edit a card, rebuild this file or delete it. A stale profile is worse than no profile.
 2. **Record the slugs and N it was built from**, in the header line
    (`# Style Profile: <destination>  (N papers)` — already in the template above, and the
    slug list belongs in the Pick-list). A consumer applying a subset of the corpus must be
    able to tell that this cache does not cover its subset.
 
-Numeric rows do NOT need to be cached here: `meta-styling` recomputes bands from
-`manifest.measured.sections` with its own spread rule, which is cheap and deterministic.
-Cache the *qualitative* judgments — Convergence, Divergence, Pick-list, Red Flags.
+Numeric rows are descriptive. `meta-styling` sets no metric bands and never edits a draft
+toward a rate; it reads `manifest.measured.sections` only to describe a section. Cache the
+*qualitative* judgments here — Convergence, Divergence, Pick-list, Red Flags.
 
 ## When NOT to build this
 
 Synthesis is optional and usually skipped. Merging 3-4 admired papers averages away the
-individuality that made them worth imitating, and downstream `meta-styling` applies cards
-in parallel — **laying out candidate revisions and recommending one** — rather than
-reading a merged profile. It reads the cards directly and gates prescriptions on N, so it
-runs fine without this file. Build `style_profile.md` only when the user explicitly asks
-for the corpus *consensus*, or when the same corpus will be applied to many drafts and you
-want the convergence call frozen.
+individuality that made them worth imitating, and downstream `meta-styling` compares the
+selected papers side by side and decides edit by edit rather than reading a merged
+profile. It runs fine without this file. Build `style_profile.md` only when the user
+explicitly asks for the corpus *consensus*, or when the same corpus will be applied to many
+drafts and you want the convergence call frozen.
 
-Where a Divergence lands, it becomes a **candidate axis** downstream, not a tie to break
-here. Record both sides and which paper holds each; `meta-styling` turns that into two
-revisions the author chooses between.
+Where a Divergence lands, it is a **choice** downstream, not a tie to break here. Record
+both sides and which paper holds each; `meta-styling` reports it as an unapplied choice or,
+when both sides are supported and genuinely differ, offers an alternative revision.
 
 **Never build it for N=1.** With one paper every item is trivially `1/1`, which reads as
-consensus and is not. `meta-styling`'s `single-source` tier exists precisely to keep a
-lone card from hardening into a rule set.
+consensus and is not. `meta-styling` labels every structural habit from N≤2 papers as a
+choice observed in those papers, precisely to keep a lone card from hardening into a rule set.
 
 One measured example of why: across three papers by the same author, Methods hedging ran
 2.6, 8.0 and 17.0 per 1k — a factor of six. The average (about 9) describes none of them.

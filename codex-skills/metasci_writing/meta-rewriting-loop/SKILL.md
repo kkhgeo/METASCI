@@ -32,12 +32,12 @@ N개의 레퍼런스 논문에서 Style Blueprint를 추출하고, 3단계 최�
 | Skill | Role | Difference |
 |-------|------|------------|
 | `meta-rewriting` | 1 Reference → 1 Blueprint → 1 Rewrite (one-shot) | meta-rewriting-loop는 N References → Monte Carlo → 최적 Fusion |
-| `meta-styling` | Deep extraction → permanent databank (2-step) | meta-rewriting-loop는 한 세션에서 완결 |
+| `meta-styling` | extraction-style 코퍼스(영구 보관) 기반 문체 전용 교정, 내용은 보존 게이트로 고정 | meta-rewriting-loop는 코퍼스 없이 한 세션에서 완결, 논증 교정 포함 |
 | `meta-review` | 4-principle evaluation based on extraction files | meta-rewriting-loop는 자체 진단 + 레퍼런스 기반 논증 교정 포함 |
 | `meta-writing` | Knowledge sources → writing from scratch | meta-rewriting-loop는 기존 초고의 교정/최적화 |
 
 **Combined usage:**
-- `meta-styling Mode A` 데이터뱅크가 있으면 Blueprint 대신 사용 가능
+- `extraction-style` 코퍼스(`papers/<slug>/`)가 있으면 논문별 Blueprint 대신 사용 가능 (매핑은 `references/blueprint-template.md` §Style Corpus Mapping)
 - `meta-review` 결과를 Stage 1-A 진단에 통합 가능
 
 ---
@@ -104,7 +104,7 @@ N개 레퍼런스에서 Blueprint를 추출한다. 모든 Stage에서 공유하�
 | Text pasted directly (multiple) | 각각 Blueprint 생성 |
 | Journal names (multiple) | Web search로 스타일 정보 수집 |
 | Mixed (PDF + journal name + text) | 각 유형별 처리 후 통합 |
-| Existing Style databank path | `Style_{topic}/` → Blueprint 변환 |
+| Existing style corpus path | `extraction-style` 코퍼스 `papers/<slug>/` → Blueprint 변환 |
 
 ### Extraction
 
@@ -433,10 +433,10 @@ meta-rewriting-loop를 시작합니다.
 → Stage 1 건너뛰기 → Stage 2만 실행
 ```
 
-### Example 4: 기존 데이터뱅크 활용
+### Example 4: 기존 스타일 코퍼스 활용
 ```
-> "Style_지화학/ 데이터뱅크 + 추가 논문 2편으로 리라이팅"
-→ 데이터뱅크 → Blueprint 변환 + 2편 추출 → 3개 Blueprint로 Monte Carlo
+> "SCI_kkh 코퍼스 + 추가 논문 2편으로 리라이팅"
+→ 코퍼스 논문별 Blueprint 변환 + 2편 추출 → Blueprint 여러 개로 Monte Carlo
 ```
 
 ---

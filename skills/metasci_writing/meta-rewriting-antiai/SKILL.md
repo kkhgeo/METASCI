@@ -35,7 +35,7 @@ AI 탐지 회피가 아니라 **학술 글쓰기 품질 향상**이 목적이다
 |-------|------|------------|
 | `meta-rewriting` | 1 Reference → Style transfer | meta-rewriting-antiai는 레퍼런스 불필요, AI 흔적 제거 특화 |
 | `meta-rewriting-loop` | N References → Monte Carlo optimization | meta-rewriting-antiai는 그 출력의 후처리로 사용 가능 |
-| `meta-styling` | Databank 기반 스타일 교정 | meta-rewriting-antiai는 스타일이 아닌 AI 패턴 제거 |
+| `meta-styling` | extraction-style 코퍼스 기반 문체 교정 | meta-rewriting-antiai는 스타일이 아닌 AI 패턴 제거 |
 | `meta-review` | 4-principle evaluation | meta-rewriting-antiai는 평가가 아닌 교정 실행 |
 | `paper-proofreader` | 문장/단락 수준 교정 | meta-rewriting-antiai는 AI 특유 패턴만 타겟 |
 
@@ -45,7 +45,7 @@ AI 탐지 회피가 아니라 **학술 글쓰기 품질 향상**이 목적이다
 meta-writing ──────────────┐
 meta-rewriting ────────────┤
 meta-rewriting-loop ───────┼──→ meta-rewriting-antiai → Final Output
-meta-styling Mode B ───────┤
+meta-styling ──────────────┤
 paper-proofreader ─────────┤
 직접 작성한 초고 ──────────┘
 ```

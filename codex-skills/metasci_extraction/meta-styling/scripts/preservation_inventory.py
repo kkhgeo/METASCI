@@ -11,6 +11,10 @@ Compares two prose-only files, the original and a revision, on four inventories:
                               uncertainty and percent kept intact
   identifier                  letter-digit tokens that are neither of the above:
                               δ15N, NO3-N, Ca2+, PC1, 10th, A-02, 10⁻³, km2
+  term                        optional: technical terms from --terms and/or --glossary
+                              (extraction-style glossary.md), counted case-insensitively
+                              as whole words with an optional plural -s/-es; only terms
+                              that occur in either text are reported
 
 Every item's occurrence count must be equal on both sides.
 
@@ -24,10 +28,12 @@ not prove parser coverage: inspect the extracted keys in the TSV against the pro
 
 Usage:
   python preservation_inventory.py --before 0-draft.prose.txt --after revision.txt \
-      --citation-style author-year|numeric|none --output inventory.tsv
+      --citation-style author-year|numeric|none --output inventory.tsv \
+      [--terms terms.txt] [--glossary <corpus>/papers/<slug>/glossary.md ...]
 
 No dependencies beyond the standard library. Standalone: quant_check.py is not touched.
-Version: 1.0.0 (2026-09-14)
+Version: 1.1.0 (2026-11-25) — adds the optional term inventory.
+Previous: 1.0.0 (2026-09-14).
 """
 import argparse
 import csv
@@ -215,6 +221,36 @@ def extract(text, style):
     return counts, notes, issues
 
 
+def load_terms(terms_file, glossaries):
+    """Collect technical terms from a one-per-line file and from glossary.md tables."""
+    terms = set()
+    if terms_file:
+        for line in Path(terms_file).read_text(encoding="utf-8-sig").splitlines():
+            line = line.split("#", 1)[0].strip()
+            if line:
+                terms.add(line)
+    for path in glossaries or []:
+        for line in Path(path).read_text(encoding="utf-8-sig").splitlines():
+            cells = [c.strip() for c in line.strip().strip("|").split("|")]
+            # glossary rows: | # | Term | Type | POS | ... ; the first cell is a row number
+            if len(cells) >= 3 and cells[0].isdigit():
+                term = cells[1].strip("`*\"“” ")
+                if term:
+                    terms.add(term)
+    return {re.sub(r"\s+", " ", t) for t in terms if t.strip()}
+
+
+def count_terms(text, terms):
+    counts = Counter()
+    for term in terms:
+        body = r"\s+".join(re.escape(w) for w in term.split(" "))
+        pattern = r"(?<![\w])" + body + r"(?:e?s)?(?![\w])"
+        n = len(re.findall(pattern, text, flags=re.I))
+        if n:
+            counts[("term", term.lower())] = n
+    return counts
+
+
 def run(args):
     out = Path(args.output).resolve()
     if out in {Path(args.before).resolve(), Path(args.after).resolve()}:
@@ -224,6 +260,14 @@ def run(args):
     try:
         before, n1, i1 = extract(Path(args.before).read_text(encoding="utf-8-sig"), args.citation_style)
         after, n2, i2 = extract(Path(args.after).read_text(encoding="utf-8-sig"), args.citation_style)
+        terms = load_terms(args.terms, args.glossary)
+        if args.terms or args.glossary:
+            before_text = Path(args.before).read_text(encoding="utf-8-sig")
+            after_text = Path(args.after).read_text(encoding="utf-8-sig")
+            before.update(count_terms(before_text, terms))
+            after.update(count_terms(after_text, terms))
+            if not terms:
+                i1.append("term list given but empty: no terms could be read")
         notes = ["before: " + x for x in n1] + ["after: " + x for x in n2]
         issues = ["before: " + x for x in i1] + ["after: " + x for x in i2]
         for kind, key in sorted(before.keys() | after.keys()):
@@ -257,6 +301,8 @@ def main(argv=None):
     p.add_argument("--after", required=True, help="revised prose-only file")
     p.add_argument("--citation-style", required=True, choices=["author-year", "numeric", "none"])
     p.add_argument("--output", required=True, help="TSV audit path (also printed)")
+    p.add_argument("--terms", help="optional file of technical terms, one per line (# comments)")
+    p.add_argument("--glossary", nargs="+", help="optional extraction-style glossary.md file(s)")
     args = p.parse_args(argv)
     sys.stdout.reconfigure(encoding="utf-8")
     raise SystemExit(run(args))

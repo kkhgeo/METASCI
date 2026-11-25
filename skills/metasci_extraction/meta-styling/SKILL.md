@@ -2,14 +2,16 @@
 name: meta-styling
 description: >-
   Match an English draft to an extracted style corpus (extraction-style output): compare
-  structure and wording with the reference papers, apply what fits, keep every value and
-  citation. Triggers: "문체 교정", "스타일 맞춰줘", "이 코퍼스로 고쳐줘", "style revision",
-  "apply style corpus". Not for building a corpus (extraction-style), argument soundness
-  (meta-review), rewriting without a corpus (meta-rewriting), AI-trace removal
+  structure, frames, lexical bundles and wording with the reference papers, apply what
+  fits, keep every value, citation and technical term. Triggers: "문체 교정", "스타일
+  맞춰줘", "톤 맞춰줘", "이 코퍼스로 고쳐줘", "이 카드로 고쳐줘", "style revision",
+  "apply style corpus", "apply style card". Not for building a corpus (extraction-style),
+  principle-based review and rewrite against the same corpus ("리뷰", "점검", "개선" →
+  meta-review), rewriting without a corpus (meta-rewriting), AI-trace removal
   (meta-rewriting-antiai), or Korean prose (meta-rewriting-korean).
 allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, Agent]
 metadata:
-  version: "5.0.0"
+  version: "5.1.0"
 ---
 
 # Meta-Styling
@@ -30,7 +32,7 @@ offered when the user asks for a comparison or when two supported choices genuin
 | `references/revision_guide.md` | Before every run. It is the workflow (§1 input → §6 report). |
 | `references/frame-codes.md` | Only while tagging sentence frames (guide §2) or matching a `Z` shape (guide §3). |
 | `scripts/quant_check.py` | Execute for selective measurements (`count --items`, `profile`); the shared 1.2.0 helper, unchanged. Read only when debugging. |
-| `scripts/preservation_inventory.py` | Execute for Gate 1 (guide §6). Standalone, no dependencies. Read only when extending the extractor; add a case to `scripts/test_inventory.py` when you do. |
+| `scripts/preservation_inventory.py` | Execute for Gate 1 (guide §6), with `--glossary`/`--terms` when terms are available. Standalone, no dependencies. Read only when extending the extractor; add a case to `scripts/test_inventory.py` when you do. |
 
 ## Division of labor
 
@@ -39,13 +41,16 @@ offered when the user asks for a comparison or when two supported choices genuin
 | Build a style corpus from reference papers | `extraction-style` |
 | **Match a draft to an existing corpus** | **meta-styling (this skill)** |
 | Rewrite a paragraph on academic judgment alone, no corpus | `meta-rewriting` |
-| Judge whether the argument is sound | `meta-review` |
+| Review a draft on four writing principles with the same corpus as evidence, and rewrite it, substance included | `meta-review` |
 | Section order and outline | `meta-writing-mapping` |
 | Remove AI-writing traces | `meta-rewriting-antiai` (never auto-chained) |
 | Korean manuscript prose | `meta-rewriting-korean` |
 
 This skill asks whether the draft's structure and wording match the selected references.
-It does not judge whether the argument is good.
+It does not judge whether the argument is good, and it never changes substance. meta-review
+reads the same corpus but asks whether the draft is good, and may change substance to fix
+it. Route by the user's verb: 문체·스타일·톤 → here; 리뷰·점검·개선·논리 → meta-review. When
+both are wanted, run meta-review first and style the accepted text here.
 
 ## Inputs
 
@@ -64,9 +69,16 @@ It does not judge whether the argument is good.
     ├── logic.md                paragraph functions, sentence roles, frames (§C–§F)
     ├── style-vocab.md          reporting verbs, hedges, connectives by section (§C–§D)
     ├── anchors.txt             one anchor phrase per line, for counting only
+    ├── phrases.tsv             every 2–4-gram at Freq ≥ 2; bundle, topic, function (3.1)
+    ├── wordlist.tsv            every content word × section; academic/other class (3.1)
+    ├── glossary.md             technical terms (3.1, only when Lens T ran)
     ├── manifest.json           section scheme, measured rows, provenance
     └── sections/*.txt          counting basis (never body.txt)
 ```
+
+   The three count layers come from extraction-style 3.1 (manifest schema 1.1.0). An
+   older corpus without them still works; the observations that need them are marked
+   unassessed.
 
    Resolve in this order: the path the user gave → a folder matching `*style*corpus*` or
    `Style_*` at or under the working directory → ask. If more than one corpus is found,
@@ -88,13 +100,15 @@ notes is in scope. Prose meant to stay Korean goes to `meta-rewriting-korean`.
 Each run lives in `<draft-dir>/run/<draft-stem>/<run-id>/` and leaves
 `0-draft.prose.txt` (the prose in scope), `review-notes.md` (scope, draft map, evidence,
 decisions, gate results), `revision.txt` (manuscript prose only), and `inventory.tsv`
-(Gate 1 output). The guide has the details; the sequence is:
+(Gate 1 output), plus `terms.txt` when the draft has technical terms. The guide has the
+details; the sequence is:
 
 1. Establish scope, corpus, N, and the user's rules; announce them (guide §1).
-2. Tag the draft — paragraph functions, sentence roles, frame codes — **before** opening
-   reference findings (§2).
-3. Read the pointed sections of each paper's `logic.md` and `style-vocab.md`; record
-   observations with addresses (§3).
+2. Tag the draft — paragraph functions, sentence roles, frame codes — and list its
+   technical terms in `terms.txt`, **before** opening reference findings (§2).
+3. Read the pointed sections of each paper's `logic.md` and `style-vocab.md`, and query
+   `phrases.tsv` / `wordlist.tsv` / `glossary.md` for bundles, counts and the domain-term
+   boundary; record observations with addresses (§3).
 4. Decide edit by edit: comparable function, applicable with existing content, within the
    user's rules (§4).
 5. Write the revision (§5).
@@ -108,7 +122,8 @@ decisions, gate results), `revision.txt` (manuscript prose only), and `inventory
 - **Content is preserved, and two gates check it.** Gate 1 is mechanical: from the run
   folder, `python "<skill-dir>/scripts/preservation_inventory.py" --before
   0-draft.prose.txt --after revision.txt --citation-style <author-year|numeric|none>
-  --output inventory.tsv` (exit 0 PASS, 1 FAIL, 2 BLOCKED; details in guide §6). Gate 2
+  --output inventory.tsv [--terms terms.txt] [--glossary <paper>/glossary.md ...]` (exit 0
+  PASS, 1 FAIL, 2 BLOCKED; details in guide §6). Gate 2
   is a sentence-by-sentence meaning check. Both must PASS before a revision is
   recommended. A FAIL row may stand only as a `PASS WITH USER-AUTHORIZED EXCEPTION`
   recorded in the notes: the user authorized that exact change before grading, and no
@@ -116,7 +131,11 @@ decisions, gate results), `revision.txt` (manuscript prose only), and `inventory
   references needs that authorization. Why: a measured run satisfied "Figure 2 → Fig. 2"
   by deleting the figure reference, and the wording check read clean.
 - **Claim strength is substance.** Changing `proves` to `suggests`, or the reverse,
-  changes the claim; it is not a style edit.
+  changes the claim; it is not a style edit. The same holds for stance bundles: adding or
+  removing `it is likely that` changes certainty.
+- **Domain words never travel.** A reference's topic-bound words, topic phrases and
+  glossary terms describe its subject, not its style. Never import them, and never swap
+  the draft's own terms for near-synonyms.
 - **Nothing is invented.** Do not add a condition, mechanism, limitation, or decision to
   complete a reference's sentence chain. If it is needed and missing, say so outside the
   manuscript text.
@@ -146,7 +165,14 @@ are not thereby verified against their sources.
 - `find*` does not match `found`. Inspect wildcard hits; a count does not tell a reporting
   verb from another use of the word.
 - `body.txt` includes the abstract; counts use `sections/*.txt`.
-- `anchors.txt` stores no Singleton/Recurrent status; `logic.md` §E.5 does.
+- `anchors.txt` stores no Singleton/Recurrent status; `logic.md` §E.5 does. A
+  `phrases.tsv` bundle is recurrent by construction (Freq ≥ 2, range ≥ 2).
+- `wordlist.tsv` omits the frozen stop list — `however`, `thus`, `therefore`, `may` and
+  other function words. Their absence there is not a zero; count them with
+  `quant_check.py` on `sections/*.txt`. Likewise a phrase missing from `phrases.tsv` may
+  still occur once.
+- `style-vocab.md` §C subsections are organised differently between extractions; find
+  them by name (*Reporting verbs*, *Hedges*, *Lexical bundles*), not by sub-number.
 - `logic.md` can be large. Read the sections the guide's table points to. Its exhaustive
   frame catalog does not imply exhaustive sentence-role analysis; role chains may cover
   only representative paragraphs. Treat unrecorded roles as unassessed.
@@ -181,14 +207,19 @@ are not thereby verified against their sources.
 
 ---
 
-**Version**: 5.0.0 (2026-09-14) — one diagnosis-led revision replaces the A/B/C
-candidates; confidence tiers, metric bands, and the stage-file contract are retired; two
-preservation gates and evidence-scope reporting are mandatory; claim strength is content.
-**Previous**: 4.1.1 (representation matching with A/B/C candidates and N-tier gating).
-**Companions**: `references/revision_guide.md` 5.0.0, `references/frame-codes.md` 5.0.0,
-`scripts/preservation_inventory.py` 1.0.0, `scripts/quant_check.py` 1.2.0 (shared, unchanged).
-**Consumes**: `extraction-style` v3.x corpus.
+**Version**: 5.1.0 (2026-11-25) — reads the extraction-style 3.1 count layers: lexical
+bundles from `phrases.tsv` become a comparison dimension weighed by Hyland function,
+`wordlist.tsv` supplies measured counts and the topic boundary, `glossary.md` and the
+draft's `terms.txt` feed a new term inventory in Gate 1; the boundary with meta-review is
+stated on both sides; dropped triggers restored.
+**Previous**: 5.0.0 (2026-09-14) — one diagnosis-led revision replaced the A/B/C
+candidates; confidence tiers, metric bands, and the stage-file contract retired; two
+preservation gates and evidence-scope reporting made mandatory.
+**Companions**: `references/revision_guide.md` 5.1.0, `references/frame-codes.md` 5.0.0,
+`scripts/preservation_inventory.py` 1.1.0, `scripts/quant_check.py` 1.2.0 (shared, unchanged).
+**Consumes**: `extraction-style` v3.x corpus; the count layers need 3.1.
 **Status**: not yet evaluated on a real user draft. The Gate 1 extractor was validated on
 the SCI_kkh corpus (both papers, nine section files: identical texts pass; a deleted panel
-range, citation, isotope identifier, and a changed value each fail). Inspect its keys for
-notation it has not seen; a PASS is mechanical, not semantic.
+range, citation, isotope identifier, and a changed value each fail); the 1.1.0 term
+inventory is covered by regression tests only. Inspect its keys for notation it has not
+seen; a PASS is mechanical, not semantic.

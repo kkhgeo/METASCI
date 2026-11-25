@@ -10,6 +10,8 @@ description: |
   (papers/<slug>/logic.md + style-vocab.md + glossary.md) or extraction-logic _logic.md.
   Without them use meta-rewriting; for Monte Carlo optimization over many
   references meta-rewriting-loop; for a multi-reviewer panel meta-proofreading.
+  For a style-only revision against the same corpus with content locked ("문체 교정",
+  "스타일 맞춰줘", "톤 맞춰줘") use meta-styling.
 allowed-tools: [Read, Write, Edit, Bash, Agent, Glob, Grep]
 ---
 
@@ -43,7 +45,17 @@ Output: Review_{timestamp}/ folder with all reports + improved draft
 
 **Relationship to Other Skills:**
 - **Downstream consumer** of `extraction-style` and `extraction-logic` outputs
-- **Complementary** to `meta-styling`: meta-styling revises toward a style corpus with candidates; meta-review evaluates four principles with the same files as evidence
+- **Complementary** to `meta-styling`, which reads the same corpus for a different job:
+
+| | meta-review (this skill) | meta-styling |
+|---|---|---|
+| Question asked | Is the draft good? — four academic-writing principles (argument architecture, prose rhythm, cohesion, academic register) | Does the draft sound like the selected references? |
+| Corpus role | Evidence for principle-based judgments | The target style itself |
+| May change substance | Yes, when a principle requires it (an overclaim, a missing link, a wrong term) — flagged as such | Never; claim strength, values, citations and terms are locked by two preservation gates |
+| Output | Per-reviewer reports + holistic rewrite | One style revision + evidence notes + gate results |
+
+  Route by the user's verb: 리뷰·점검·개선·논리 → this skill; 문체·스타일·톤 → meta-styling.
+  Running both on one draft: meta-review first, then meta-styling on the accepted text.
 
 ### Extraction files
 

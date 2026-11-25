@@ -103,17 +103,55 @@ Lower-cases a capitalised function word that opens a content brick placed mid-se
 slot; chooses `a`/`an` by the next letter; capitalises the first letter; adds a terminal
 period when the template has none. Nothing else.
 
+## swaps.json — the word layer
+
+Written by the word mason into the pile folder (`pile/swaps.json`; any
+`pile/swaps*.json` is read, or pass `--swaps`). Keys are content bricks `C#` or kept
+draft sentences `D#`; values map a word *as it appears in that brick* to a word brick:
+
+```json
+{
+  "C8": {"controls": "W002"},
+  "D4": {"had": "W017", "shows#2": "W009"}
+}
+```
+
+- `word#2` targets the second occurrence inside the brick. A multi-word target
+  (`in addition`) is allowed when the W### item is multi-word too.
+- The swap is applied wherever the brick is used.
+- The script refuses a swap when: the target overlaps a protected term (`pile/terms.txt` =
+  the cutter's `terms.txt` + every paper's `glossary.md`); the target has a digit; the
+  claim-strength class differs (`-`, `hedge`, `booster`, `report:strong`,
+  `report:moderate`, `report:tentative`, `report:attribution`); either side is negation;
+  both parts of speech are known and differ; the replacement equals the original; two
+  swap files give the same word different bricks.
+- A swap whose part of speech could not be checked (no tagger data) is listed as
+  `unverified` for Gate 2.
+
+`word.tsv` columns: `id form category strength pos papers count source`. `category` is
+the style-vocab heading (`reporting`, `hedge`, `booster`, `connective`, `self-mention`,
+`academic-noun`, `register`, `caption`, `attitude`) or `pos:VERB|ADV|ADJ` for wordlist
+rows. Only forms attested in the target section are listed; `count` is that section's
+frequency summed over papers.
+
 ## Files the run leaves
 
 ```text
 pile/form.tsv        form bricks: id kind paper section code name pos status source slots text
 pile/draft.tsv       D# sentences of the draft
 pile/pile.json       scope, source hashes, counts
-pile/content.tsv     the model's content bricks
-plan.json            the model's brick plan
+pile/word.tsv        word bricks (W###)
+pile/terms.txt       protected terms (cutter's terms.txt + glossaries)
+pile/lexicon.tsv     every attested corpus form, with POS when tagged
+pile/content.tsv     the cutter's content bricks
+draft-map.md         the cutter's blind draft map and strength ledger
+plan.json            the frame mason's brick plan
+pile/swaps.json      the word mason's swaps
 revision.txt         assembled text — never edited by hand
 trace.tsv            where every piece of revision.txt came from
 verify.md            brickyard verify report
+word-swaps.tsv       every applied swap, for the gate reader
+gate.md              the gate reader's verdicts
 inventory.tsv        Gate 1 (meta-styling's preservation_inventory.py)
 ```
 

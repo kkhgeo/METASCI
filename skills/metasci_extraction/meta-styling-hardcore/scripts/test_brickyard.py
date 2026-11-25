@@ -45,13 +45,48 @@ LOGIC_2 = """# Logic — beta-2021
 
 SECTIONS_1 = ("Nitrate ranged from 2 to 9 mg/L, with a mean of 5 mg/L. Wells exhibited high "
               "values, whereas springs showed low values. These patterns suggest that manure "
-              "is the source of the nitrate in the shallow aquifer of the basin.\n")
+              "is the source of the nitrate in the shallow aquifer of the basin. Recharge governs "
+              "the flux, and evaporation governs the salinity, which likely indicates mixing.\n")
 SECTIONS_2 = ("As shown in Fig. 2, chloride increased downstream. The flux was constant, "
               "assuming that recharge was uniform.\n")
 
 PHRASES = ("phrase\tn\tI\tR\ttotal\tper_million\trange\tbundle\ttopic\tnested_in\tfunction\tsubfunction\n"
            "as a result of\t4\t1\t2\t3\t300\t2\tyes\tno\t\ttext\tresultative\n"
            "the nitrate concentrations\t3\t1\t3\t4\t400\t2\tyes\tyes\t\t\t\n")
+
+WORDLIST = ("type\tR\ttotal\trange\tfamily\tpos\tclass\n"
+            "governs\t2\t2\t1\tgovern\tVERB\tother\n"
+            "higher\t1\t1\t1\thigh\tADJ\tother\n"
+            "nitrate\t2\t2\t1\tnitrate\tNOUN\tother\n")
+
+STYLE_VOCAB = """# Style vocabulary — alpha-2020
+
+## C. Style lexicon
+
+### Reporting verbs
+
+| verb | total | R |
+|---|---|---|
+| indicat* | 1 | 1 |
+| show* | 1 | 1 |
+
+### Hedges
+
+| item | total |
+|---|---|
+| *likely* | 1 |
+
+### Lexical bundles
+
+| bundle | total |
+|---|---|
+| as a result of | 3 |
+"""
+
+GLOSSARY = """| # | Term | Type | POS |
+|---|---|---|---|
+| 1 | pyrite oxidation | Domain | NOUN |
+"""
 
 DRAFT = ("Sulfate values ranged between 12 and 40 mg/L and the average was 22 mg/L (Fig. 3). "
          "Deep wells had higher sulfate than shallow wells. This means pyrite oxidation "
@@ -90,6 +125,9 @@ def setup(tmp: Path):
         (p / "logic.md").write_text(logic, encoding="utf-8")
         (p / "sections" / f"{sec_id}.txt").write_text(sec, encoding="utf-8")
     (tmp / "corpus/papers/alpha-2020/phrases.tsv").write_text(PHRASES, encoding="utf-8")
+    (tmp / "corpus/papers/alpha-2020/wordlist.tsv").write_text(WORDLIST, encoding="utf-8")
+    (tmp / "corpus/papers/alpha-2020/style-vocab.md").write_text(STYLE_VOCAB, encoding="utf-8")
+    (tmp / "corpus/papers/alpha-2020/glossary.md").write_text(GLOSSARY, encoding="utf-8")
     (tmp / "draft.txt").write_text(DRAFT, encoding="utf-8")
 
 
@@ -194,6 +232,84 @@ def whole_sentences_need_own_corpus(t):
     code, out = run("verify", "--pile", t / "spile", "--plan", t / "p4.json", "--revision", t / "r4.txt",
                     "--own-corpus")
     assert code == 0, out
+
+
+@case
+def word_pile_reads_corpus_layers(t):
+    words = (t / "pile/word.tsv").read_text(encoding="utf-8")
+    assert "\tgoverns\tpos:VERB\t-\tVERB" in words, words
+    assert "\tindicates\treporting\treport:tentative" in words, words
+    assert "\tlikely\thedge\thedge" in words, words
+    assert "nitrate" not in words, "nouns are not word bricks"
+    assert "as a result of" not in words, "bundle tables are not word bricks"
+    assert "pyrite oxidation" in (t / "pile/terms.txt").read_text(encoding="utf-8")
+
+
+def wid(t, form):
+    for ln in (t / "pile/word.tsv").read_text(encoding="utf-8").splitlines()[1:]:
+        c = ln.split("\t")
+        if c[1] == form:
+            return c[0]
+    raise AssertionError(f"{form} not in word.tsv")
+
+
+def assemble_with(t, swaps, plan=None):
+    (t / "pile/swaps-test.json").write_text(json.dumps(swaps), encoding="utf-8")
+    try:
+        return run("assemble", "--pile", t / "pile", "--plan", plan or (t / "plan.json"),
+                   "--out", t / "rw.txt", "--trace", t / "tw.tsv")
+    finally:
+        (t / "pile/swaps-test.json").unlink()
+
+
+@case
+def word_swap_applies_and_traces(t):
+    g = wid(t, "governs")
+    code, out = assemble_with(t, {"C8": {"controls": g}})
+    assert code == 0, out
+    text = (t / "rw.txt").read_text(encoding="utf-8")
+    assert "pyrite oxidation governs sulfate (Kim et al., 2015)" in text, text
+    assert f"word\t{g}\tgoverns" in (t / "tw.tsv").read_text(encoding="utf-8")
+
+
+@case
+def word_swap_keeps_claim_strength(t):
+    code, out = assemble_with(t, {"C8": {"controls": wid(t, "indicates")}})
+    assert code == 1 and "claim strength - -> report:tentative" in out, out
+
+
+@case
+def word_swap_never_touches_terms(t):
+    code, out = assemble_with(t, {"C8": {"oxidation": wid(t, "governs")}})
+    assert code == 1 and "protected technical term" in out, out
+
+
+@case
+def word_swap_keeps_part_of_speech(t):
+    code, out = assemble_with(t, {"C6": {"higher": wid(t, "governs")}})
+    assert code == 1 and "part of speech ADJ -> VERB" in out, out
+
+
+@case
+def conflicting_swap_files_fail(t):
+    (t / "pile/swaps-a.json").write_text(json.dumps({"C8": {"controls": wid(t, "governs")}}), encoding="utf-8")
+    code, out = assemble_with(t, {"C8": {"controls": wid(t, "indicates")}})
+    (t / "pile/swaps-a.json").unlink()
+    assert code == 1 and "swapped to both" in out, out
+
+
+@case
+def verify_reports_word_layer(t):
+    (t / "pile/swaps.json").write_text(json.dumps({"C8": {"controls": wid(t, "governs")}}), encoding="utf-8")
+    code, out = run("assemble", "--pile", t / "pile", "--plan", t / "plan.json", "--out", t / "rv.txt")
+    assert code == 0, out
+    code, out = run("verify", "--pile", t / "pile", "--plan", t / "plan.json",
+                    "--revision", t / "rv.txt", "--report", t / "vv.md")
+    (t / "pile/swaps.json").unlink()
+    assert code == 0, out
+    assert "- swaps: 1 (pos:VERB 1)" in out, out
+    assert "draft words the corpus never uses" in out and "sulfate" in out, out
+    assert (t / "word-swaps.tsv").exists()
 
 
 @case

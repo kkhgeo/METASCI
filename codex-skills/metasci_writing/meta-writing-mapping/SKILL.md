@@ -3,10 +3,12 @@ name: meta-writing-mapping
 description: >
   Design or diagnose manuscript structure: section, paragraph, and sentence roles, order,
   evidence, and connections. Use for "구성 잡아줘", "단락 배치", "구성 매핑",
-  "초고 구조 검토", or outlines at any scope. For prose drafting, rewriting,
-  or sentence correction, use the corresponding writing skill.
+  "초고 구조 검토", or outlines at any scope. On request it also draws an
+  interactive map of paragraph dependencies ("구조 지도", "구조 시각화").
+  For prose drafting, rewriting, or sentence correction, use the corresponding
+  writing skill.
 metadata:
-  version: "2.4.0"
+  version: "2.5.0"
 ---
 
 # 글의 지도 그리기
@@ -35,6 +37,10 @@ metadata:
 - 전체 구성이나 여러 섹션에 걸친 주장·배치 변경을 다룰 때:
   [정합성 기준](references/structural-integrity.md)을 읽는다.
   한 섹션 내부의 구성만 요청하면 기본적으로 읽지 않는다.
+- 사용자가 구조를 지도로 보여 달라고 요청할 때만: [구조 지도](references/structure-map.md)를
+  읽는다. 단락 사이의 원거리 의존을 근거 문장 주소와 함께 추출하고
+  `scripts/structure_map.py`로 검증·점검한 HTML 지도를 만든다. 요청이 없으면 만들지 않으며,
+  지도의 점검 결과는 판정이 아닌 후보로서 아래 진행의 보충 설명에 통합한다.
 
 ## 진행
 

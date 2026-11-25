@@ -2,6 +2,7 @@
 
 지도 작성·수정·저장 시 읽는다. 판단 기준은 section-checklists.md와
 structural-integrity.md에 있다. 기본 출력은 Markdown 도식과 표이며 HTML은 만들지 않는다.
+사용자가 구조 지도를 요청한 경우에만 structure-map.md를 따라 HTML 지도를 함께 만든다.
 
 ## 출력 순서
 

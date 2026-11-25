@@ -1,0 +1,291 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>원고 구조 지도</title>
+<!-- Template for scripts/structure_map.py build. The script replaces the data slot below
+     with the validated map and its checks. No external requests: system fonts only. -->
+<style>
+/* Layout: reading order fixes the vertical axis; dependency arcs in the left gutter; citations right; detail and checks in a side column. */
+:root {
+  --bg: #f3f5f8; --surface: #ffffff; --raise: #e9edf2; --line: #d7dde5;
+  --ink: #16202c; --ink-2: #455263; --ink-3: #66717f; --ink-4: #98a2b0;
+  --accent: #2950b8;
+  --k-evidence: #13806a; --k-method: #94680c; --k-premise: #6b4cc4; --k-contrast: #c0482a;
+  --k-answers: #2950b8; --k-motivates: #a0477f; --k-continues: #8a96a6;
+  --warn: #b3261e; --warn-bg: #fbeceb; --mid: #8a5a00; --mid-bg: #fbf2df; --info: #455263; --info-bg: #e9edf2;
+  --s-introduction: #2950b8; --s-methods: #94680c; --s-results: #13806a; --s-discussion: #6b4cc4; --s-conclusion: #16202c; --s-abstract: #66717f; --s-other: #66717f;
+  --sans: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Code", Consolas, monospace;
+  --shadow: 0 1px 2px rgba(22, 32, 44, .06), 0 6px 18px -12px rgba(22, 32, 44, .35);
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) { :root {
+  --bg: #11151b; --surface: #1a2029; --raise: #232b36; --line: #2e3845;
+  --ink: #e8edf3; --ink-2: #b7c1cd; --ink-3: #8f9aa8; --ink-4: #5f6a79;
+  --accent: #8aa8ff;
+  --k-evidence: #4fd1ae; --k-method: #e2b04a; --k-premise: #b39cff; --k-contrast: #ff8f6e;
+  --k-answers: #8aa8ff; --k-motivates: #f08fc8; --k-continues: #7d8898;
+  --warn: #ff8a80; --warn-bg: #3a1f1f; --mid: #f0c060; --mid-bg: #352a14; --info: #b7c1cd; --info-bg: #232b36;
+  --s-introduction: #8aa8ff; --s-methods: #e2b04a; --s-results: #4fd1ae; --s-discussion: #b39cff; --s-conclusion: #e8edf3; --s-abstract: #8f9aa8; --s-other: #8f9aa8;
+  --shadow: 0 1px 0 rgba(255,255,255,.03) inset, 0 8px 22px -14px rgba(0,0,0,.9);
+  color-scheme: dark; } }
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-size: 14px; line-height: 1.55; margin: 0; padding: 20px max(16px, env(safe-area-inset-right, 0px)) 40px max(16px, env(safe-area-inset-left, 0px)); }
+.wrap { max-width: 1280px; margin: 0 auto; display: grid; gap: 16px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font-family: var(--mono); font-size: 11.5px; letter-spacing: .05em; color: var(--ink-3); }
+h1 { margin: 0; font-size: 21px; font-weight: 700; letter-spacing: -.01em; text-wrap: balance; }
+.sub { margin: 0; color: var(--ink-2); max-width: 78ch; }
+.tag { display: inline-block; font-size: 12px; border-radius: 6px; padding: 1px 8px; margin-left: 6px; vertical-align: 2px; font-weight: 500; color: var(--mid); background: var(--mid-bg); }
+.board { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 10px; }
+.sec { background: var(--surface); border-radius: 14px; padding: 12px 14px; box-shadow: var(--shadow); border: 0; text-align: left; cursor: pointer; display: grid; gap: 3px; color: inherit; font: inherit; min-width: 0; }
+.sec:hover { outline: 1.5px solid var(--line); }
+.nm { display: flex; align-items: center; gap: 8px; font-weight: 600; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: var(--c); flex: none; display: inline-block; }
+.ct, .io { font-size: 12px; color: var(--ink-3); }
+.ct { font-family: var(--mono); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.btn { height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); font: inherit; font-size: 13px; cursor: pointer; }
+.btn:hover { background: var(--raise); }
+.btn.on { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.legend { display: flex; flex-wrap: wrap; gap: 2px; margin-left: auto; align-items: center; }
+.lg { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; color: var(--ink-2); background: none; border: 0; padding: 4px 8px; border-radius: 8px; cursor: pointer; font-family: inherit; }
+.lg:hover { background: var(--raise); }
+.lg.off { color: var(--ink-4); }
+.lg.off .sw { opacity: .25; }
+.lg.static { cursor: default; }
+.lg.static:hover { background: none; }
+.sw { width: 18px; height: 0; border-top: 3px solid var(--c); }
+.sw.dot2 { border-top-style: dotted; }
+.main { display: grid; grid-template-columns: minmax(0, 1fr) 370px; gap: 16px; align-items: start; }
+.canvas { overflow-x: auto; background: var(--surface); border-radius: 18px; box-shadow: var(--shadow); }
+.stage { position: relative; width: 860px; margin: 0 auto; }
+svg.arcs { position: absolute; inset: 0; overflow: visible; pointer-events: none; }
+.arc { fill: none; stroke-width: 1.6; stroke-opacity: .6; }
+.arc.inf { stroke-dasharray: 2 4; stroke-width: 1.4; }
+.arc.fwd { stroke-opacity: .95; }
+.cite-ln { fill: none; stroke: var(--ink-4); stroke-width: 1; stroke-opacity: .5; }
+.dim .arc:not(.hl), .dim .cite-ln:not(.hl) { stroke-opacity: .07; }
+.arc.hl { stroke-opacity: 1; stroke-width: 2.4; }
+.cite-ln.hl { stroke-opacity: 1; stroke: var(--ink-2); }
+.colhead { position: absolute; top: 10px; font-size: 11.5px; color: var(--ink-3); }
+.band { position: absolute; left: 236px; font-size: 11.5px; font-family: var(--mono); color: var(--ink-3); display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.band b { font-family: var(--sans); color: var(--ink); font-size: 13px; }
+.card { position: absolute; left: 236px; width: 420px; height: 76px; overflow: hidden; border-radius: 12px; background: var(--surface); border: 1px solid var(--line); padding: 8px 12px; cursor: pointer; display: grid; grid-template-rows: auto 1fr; gap: 2px; text-align: left; font: inherit; color: inherit; transition: opacity .2s, border-color .2s; }
+.card:hover { border-color: var(--ink-4); }
+.plan .card { border-style: dashed; }
+.top { display: flex; align-items: center; gap: 8px; font-size: 11.5px; color: var(--ink-3); min-width: 0; white-space: nowrap; }
+.pid { font-family: var(--mono); font-weight: 500; color: var(--ink-2); }
+.role { color: var(--c); font-weight: 600; overflow: hidden; text-overflow: ellipsis; }
+.flag { margin-left: auto; font-size: 11px; font-weight: 600; border-radius: 999px; padding: 0 7px; flex: none; }
+.sev-high { color: var(--warn); background: var(--warn-bg); }
+.sev-mid { color: var(--mid); background: var(--mid-bg); }
+.sev-info { color: var(--info); background: var(--info-bg); }
+.cl { font-size: 13px; line-height: 1.42; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+.card.sel { border-color: var(--ink); box-shadow: 0 0 0 3px color-mix(in srgb, var(--ink) 10%, transparent); }
+.card.main-claim { border-width: 1.5px; border-color: var(--ink-2); }
+.dim .card:not(.hl):not(.sel) { opacity: .3; }
+.cite { position: absolute; left: 700px; width: 150px; font-size: 11.5px; font-family: var(--mono); color: var(--ink-2); background: var(--raise); border-radius: 8px; padding: 4px 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: opacity .2s; }
+.dim .cite:not(.hl) { opacity: .3; }
+aside { display: grid; gap: 12px; position: sticky; top: 12px; max-height: calc(100vh - 24px); overflow: auto; }
+.panel { background: var(--surface); border-radius: 18px; box-shadow: var(--shadow); padding: 16px 18px; display: grid; gap: 10px; min-width: 0; }
+.panel h2 { margin: 0; font-size: 15.5px; font-weight: 600; line-height: 1.45; }
+.panel h3 { margin: 4px 0 0; font-size: 12px; font-weight: 600; color: var(--ink-3); display: flex; align-items: center; gap: 6px; }
+.panel p { margin: 0; color: var(--ink-2); font-size: 13.5px; }
+.addr { font-family: var(--mono); font-size: 12px; color: var(--ink-3); }
+.rows { display: grid; gap: 4px; }
+.row { display: grid; grid-template-columns: 46px minmax(0, 1fr); gap: 8px; align-items: baseline; font-size: 13px; padding: 5px 8px; border-radius: 8px; cursor: pointer; background: none; border: 0; text-align: left; font-family: inherit; color: inherit; }
+.row:hover { background: var(--raise); }
+.row .k { font-size: 11.5px; font-weight: 600; color: var(--c); margin-right: 4px; }
+.row .sg { color: var(--ink-3); font-size: 12px; display: block; }
+.empty { font-size: 13px; color: var(--ink-4); }
+.chk { display: grid; gap: 4px; text-align: left; border: 0; border-radius: 12px; padding: 10px 12px; background: var(--raise); cursor: pointer; font: inherit; color: inherit; }
+.chk .t { font-weight: 600; font-size: 13.5px; display: flex; gap: 8px; align-items: baseline; }
+.chk .d { font-size: 12.5px; color: var(--ink-2); }
+.gate { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin-left: auto; white-space: nowrap; }
+details { font-size: 12.5px; color: var(--ink-2); }
+details li { margin: 4px 0; }
+.note { font-size: 12px; color: var(--ink-3); max-width: 96ch; }
+@media (max-width: 1000px) { .main { grid-template-columns: minmax(0, 1fr); } aside { position: static; max-height: none; } .legend { margin-left: 0; } }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const DATA = /*__MAP_DATA__*/null;
+(function () {
+  const app = document.getElementById('app');
+  if (!DATA) { app.innerHTML = '<p>이 파일은 템플릿입니다. <code>python scripts/structure_map.py build structure-map.json</code>으로 지도를 만드세요.</p>'; return; }
+  const M = DATA.map, CHECKS = DATA.checks || [], WARN = DATA.warnings || [];
+  const PLAN = (M.source || {}).kind === 'outline';
+  const KINDS = { evidence: '근거', method: '방법', premise: '전제·정의', contrast: '대조', answers: '질문에 답함', motivates: '동기', continues: '전개' };
+  const SEV = { high: '중요', mid: '확인', info: '참고' };
+  const h = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const css = (v) => `var(${v})`;
+  const num = (id) => +String(id).replace(/^P(\d+).*/, '$1');
+  const P = M.paragraphs, L = M.links || [], C = M.citations || [];
+  const byId = new Map(P.map((p) => [p.id, p]));
+  const sec = new Map(M.sections.map((s) => [s.id, s]));
+  const scol = (s) => css('--s-' + (s.type || 'other'));
+  const claims = new Set(M.main_claims || []);
+  const flagOf = new Map();
+  for (const c of CHECKS) { const id = c.ids[0]; const cur = flagOf.get(id); if (!cur || (cur.severity !== 'high' && c.severity === 'high')) flagOf.set(id, c); }
+  const kindOn = Object.fromEntries(Object.keys(KINDS).map((k) => [k, true]));
+  let selected = null, pathMode = false;
+
+  const srcKind = PLAN ? '구성 계획 (초고 이전)' : '초고';
+  app.innerHTML = `
+    <header>
+      <div class="eyebrow">meta-writing-mapping · structure map · ${h(srcKind)}${M.source?.file ? ' · ' + h(M.source.file) : ''}</div>
+      <h1>${h(M.title || '원고 구조 지도')}${PLAN ? '<span class="tag">계획</span>' : ''}</h1>
+      <p class="sub">카드 하나가 단락 하나이며 위에서 아래로 읽는 순서입니다. 카드의 문장은 저자의 주제문을 그대로 옮긴 것입니다. 왼쪽 호는 한 단락이 다른 단락에 기대는 관계로, 실선은 원문에 신호가 있는 연결, 점선은 추론한 연결입니다. 위로 거슬러 오르는 빨간 호는 아직 읽지 않은 단락에 기대는 앞선 참조입니다.</p>
+    </header>
+    <div class="board" id="board"></div>
+    <div class="toolbar">
+      <button class="btn" id="btn-path" type="button"${claims.size ? '' : ' disabled'}>주 주장까지의 논증 경로</button>
+      <button class="btn" id="btn-reset" type="button">선택 해제</button>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="main">
+      <div class="canvas"><div class="stage${PLAN ? ' plan' : ''}" id="stage"></div></div>
+      <aside><div class="panel" id="detail"></div><div class="panel" id="checks"></div></aside>
+    </div>
+    <p class="note">연결과 점검은 판정이 아니라 검토할 후보입니다. 원고의 정본은 outline.md와 원고 자체이며, 이 지도는 structure_map.py ${h(DATA.version)}이 structure-map.json에서 만들었습니다.</p>`;
+  const $ = (s) => document.querySelector(s);
+
+  // ---------- layout ----------
+  const CARD_H = 76, GAP = 10, BAND_H = 34, TOP = 40, X0 = 236, CW = 420;
+  const Y = new Map(); let y = TOP, last = null; const bands = [];
+  for (const p of P) { if (p.section !== last) { bands.push({ s: p.section, y }); y += BAND_H; last = p.section; } Y.set(p.id, y); y += CARD_H + GAP; }
+  const H = y + 16, stage = $('#stage'); stage.style.height = H + 'px';
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (t, a, parent) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); parent.appendChild(e); return e; };
+  const svg = mk('svg', { class: 'arcs', width: 860, height: H }, stage);
+  const div = (cls, style, html) => { const d = document.createElement('div'); d.className = cls; Object.assign(d.style, style); d.innerHTML = html; stage.appendChild(d); return d; };
+  div('colhead', { left: '24px' }, '기대는 관계 (호가 길수록 먼 단락)');
+  div('colhead', { left: X0 + 'px' }, PLAN ? '단락 · 역할 · 계획한 핵심 내용' : '단락 · 기능 태그 · 주제문');
+  if (C.length) div('colhead', { left: '700px' }, '인용 문헌');
+  for (const b of bands) {
+    const s = sec.get(b.s), ps = P.filter((p) => p.section === b.s);
+    div('band', { top: (b.y + 8) + 'px' }, `<span class="dot" style="--c:${scol(s)}"></span><b>${h(s.label || s.id)}</b> ${h(ps[0].id)}–${h(ps[ps.length - 1].id)}`);
+  }
+  const defs = mk('defs', {}, svg);
+  for (const k of Object.keys(KINDS).concat(['warn'])) {
+    const m = mk('marker', { id: 'ah-' + k, viewBox: '0 0 8 8', refX: 7, refY: 4, markerWidth: 7, markerHeight: 7, orient: 'auto' }, defs);
+    mk('path', { d: 'M0,0 L8,4 L0,8 z', fill: css(k === 'warn' ? '--warn' : '--k-' + k) }, m);
+  }
+  const fwd = (l) => num(l.from) > num(l.to) && !l.forward_ok;
+  const arcEls = L.map((l) => {
+    const f = fwd(l), ys = Y.get(l.from) + CARD_H / 2 + (f ? -6 : 6), yd = Y.get(l.to) + CARD_H / 2 + (f ? 6 : -6);
+    const reach = Math.min(214, 22 + Math.abs(yd - ys) * 0.2);
+    const el = mk('path', { d: `M${X0},${ys} C${X0 - reach},${ys} ${X0 - reach},${yd} ${X0 - 2},${yd}`,
+      class: 'arc' + (l.basis === 'explicit' ? '' : ' inf') + (f ? ' fwd' : ''),
+      stroke: css(f ? '--warn' : '--k-' + l.kind), 'marker-end': `url(#ah-${f ? 'warn' : l.kind})` }, svg);
+    return { l, el };
+  });
+  const citeEls = []; let lastCy = -1e9;
+  C.map((c) => { const ps = [...new Set((c.at || []).map((a) => 'P' + num(a)))].filter((id) => Y.has(id)); return { c, ps }; })
+    .filter((x) => x.ps.length)
+    .map((x) => ({ ...x, cy: Math.round(x.ps.reduce((a, id) => a + Y.get(id), 0) / x.ps.length) + 18 }))
+    .sort((a, b) => a.cy - b.cy)
+    .forEach(({ c, ps, cy: cy0 }) => {
+      const cy = Math.max(cy0, lastCy + 32); lastCy = cy;
+      const el = div('cite', { top: cy + 'px' }, h(c.key)); el.title = `${c.key}${c.role ? ' · ' + c.role : ''} · ${(c.at || []).join(', ')}`;
+      const lines = ps.map((id) => mk('path', { class: 'cite-ln', d: `M${X0 + CW},${Y.get(id) + CARD_H / 2} C${X0 + CW + 20},${Y.get(id) + CARD_H / 2} 680,${cy + 12} 700,${cy + 12}` }, svg));
+      citeEls.push({ ps, el, lines });
+    });
+  const cardEls = new Map();
+  for (const p of P) {
+    const s = sec.get(p.section), f = flagOf.get(p.id);
+    const b = document.createElement('button'); b.type = 'button';
+    b.className = 'card' + (claims.has(p.id) ? ' main-claim' : '');
+    b.style.top = Y.get(p.id) + 'px'; b.style.setProperty('--c', scol(s));
+    b.innerHTML = `<div class="top"><span class="pid">${h(p.id)}</span><span class="role">${h(p.role || '')}</span>${claims.has(p.id) ? '<span>· 주 주장</span>' : ''}${f ? `<span class="flag sev-${f.severity}">${h(SEV[f.severity])}</span>` : ''}</div><div class="cl">${h(p.topic)}</div>`;
+    b.title = p.topic;
+    b.addEventListener('click', () => { pathMode = false; select(p.id); });
+    stage.appendChild(b); cardEls.set(p.id, b);
+  }
+
+  // ---------- section board: paragraph links lifted to sections ----------
+  for (const s of M.sections) {
+    const ps = P.filter((p) => p.section === s.id).map((p) => p.id); if (!ps.length) continue;
+    const ins = new Set(L.filter((l) => ps.includes(l.to) && !ps.includes(l.from)).map((l) => sec.get(byId.get(l.from).section).label || l.from));
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'sec';
+    b.innerHTML = `<span class="nm"><span class="dot" style="--c:${scol(s)}"></span>${h(s.label || s.id)}</span><span class="ct">${ps.length}단락 · ${h(ps[0])}–${h(ps[ps.length - 1])}</span><span class="io">${ins.size ? '기대는 섹션: ' + h([...ins].join(', ')) : '다른 섹션에 기대지 않음'}</span>`;
+    b.addEventListener('click', () => { pathMode = false; cardEls.get(ps[0]).scrollIntoView({ block: 'center', behavior: 'smooth' }); select(ps[0]); });
+    $('#board').appendChild(b);
+  }
+  const legend = $('#legend');
+  for (const [k, name] of Object.entries(KINDS)) {
+    if (!L.some((l) => l.kind === k)) continue;
+    const b = document.createElement('button'); b.type = 'button'; b.className = 'lg'; b.style.setProperty('--c', css('--k-' + k));
+    b.innerHTML = `<span class="sw"></span>${name}`;
+    b.addEventListener('click', () => { kindOn[k] = !kindOn[k]; b.classList.toggle('off', !kindOn[k]); paint(); });
+    legend.appendChild(b);
+  }
+  legend.insertAdjacentHTML('beforeend', `<span class="lg static" style="--c:${css('--ink-3')}"><span class="sw dot2"></span>추론한 연결</span>`);
+  if (L.some(fwd)) legend.insertAdjacentHTML('beforeend', `<span class="lg static" style="--c:${css('--warn')}"><span class="sw"></span>앞선 참조</span>`);
+
+  // ---------- queries ----------
+  const into = (id) => L.filter((l) => l.to === id), outOf = (id) => L.filter((l) => l.from === id);
+  const reach = new Set(claims); { const q = [...claims]; while (q.length) { const x = q.pop(); for (const l of into(x)) if (!reach.has(l.from)) { reach.add(l.from); q.push(l.from); } } }
+
+  function paint() {
+    let hc = new Set(), he = new Set();
+    if (pathMode) { hc = reach; L.forEach((l, i) => { if (reach.has(l.from) && reach.has(l.to)) he.add(i); }); }
+    else if (selected) { hc.add(selected); L.forEach((l, i) => { if (l.from === selected || l.to === selected) { he.add(i); hc.add(l.from); hc.add(l.to); } }); }
+    stage.classList.toggle('dim', pathMode || !!selected);
+    arcEls.forEach(({ l, el }, i) => { el.style.display = kindOn[l.kind] ? '' : 'none'; el.classList.toggle('hl', he.has(i)); });
+    for (const [id, el] of cardEls) { el.classList.toggle('hl', hc.has(id)); el.classList.toggle('sel', id === selected && !pathMode); }
+    for (const c of citeEls) { c.el.classList.toggle('hl', c.ps.some((id) => hc.has(id))); c.lines.forEach((ln, j) => ln.classList.toggle('hl', hc.has(c.ps[j]))); }
+    $('#btn-path').classList.toggle('on', pathMode);
+    detail();
+  }
+  function select(id) { selected = id; paint(); }
+  const rowHTML = (l, other) => {
+    const f = fwd(l), basis = l.basis === 'explicit' ? '원문 신호' : l.basis === 'planned' ? '계획' : '추론';
+    const why = l.signal ? `"${h(l.signal)}"` : h(l.note || '');
+    return `<button class="row" type="button" data-go="${h(other)}" style="--c:${css(f ? '--warn' : '--k-' + l.kind)}"><span class="addr">${h(other)}</span><span><span class="k">${f ? '앞선 참조 · ' : ''}${KINDS[l.kind]} · ${basis}</span>${h(byId.get(other).topic)}<span class="sg">${l.at ? '[' + h(l.at) + '] ' : ''}${why}</span></span></button>`;
+  };
+  function detail() {
+    const box = $('#detail');
+    if (pathMode) {
+      const off = P.filter((p) => !reach.has(p.id)).map((p) => p.id);
+      box.innerHTML = `<h3>논증 경로</h3><h2>주 주장 ${h([...claims].join(', '))}에 닿는 단락 ${reach.size}개</h2><p>주 주장에서 연결을 거꾸로 따라가 닿는 단락을 모두 밝혔습니다.</p><p class="addr">경로 밖: ${off.length ? h(off.join(', ')) : '없음'}</p>`;
+      return;
+    }
+    if (!selected) {
+      box.innerHTML = `<h3>원고 개요</h3><h2>${P.length}단락 · 연결 ${L.length}개 (원문 신호 ${L.filter((l) => l.basis === 'explicit').length}) · 인용 ${C.length}건</h2><p>단락을 누르면 그 단락이 기대는 곳과 그 단락에 기대는 곳이 근거 주소와 함께 여기 나타납니다.</p>`;
+      return;
+    }
+    const p = byId.get(selected), s = sec.get(p.section), sup = into(selected), dep = outOf(selected);
+    const cites = C.filter((c) => (c.at || []).some((a) => 'P' + num(a) === selected)).map((c) => c.key);
+    box.innerHTML = `<h3><span class="dot" style="--c:${scol(s)}"></span>${h(s.label || s.id)} · ${h(p.role || '')}</h3><h2>${h(p.topic)}</h2>
+      <div class="addr">${p.topic_at ? '[' + h(p.topic_at) + '] 주제문' : '계획한 핵심 내용'}${p.sentences ? ' · ' + p.sentences + '문장' : ''} · ${claims.size ? (reach.has(selected) ? '주 주장까지 경로 있음' : '주 주장까지 경로 없음') : ''}</div>
+      <h3>이 단락이 기대는 곳 (${sup.length})</h3><div class="rows">${sup.length ? sup.map((l) => rowHTML(l, l.from)).join('') : '<span class="empty">다른 단락에 기대지 않음</span>'}</div>
+      <h3>이 단락에 기대는 곳 (${dep.length})</h3><div class="rows">${dep.length ? dep.map((l) => rowHTML(l, l.to)).join('') : '<span class="empty">이 단락을 사용하는 단락 없음</span>'}</div>
+      ${cites.length ? `<h3>인용</h3><p class="addr">${h(cites.join(' · '))}</p>` : ''}
+      ${CHECKS.filter((c) => c.ids.includes(selected)).map((c) => `<h3>점검</h3><p><span class="flag sev-${c.severity}">${SEV[c.severity]}</span> ${h(c.detail)}</p>`).join('')}`;
+    box.querySelectorAll('[data-go]').forEach((b) => b.addEventListener('click', () => { const id = b.dataset.go; cardEls.get(id).scrollIntoView({ block: 'center', behavior: 'smooth' }); select(id); }));
+  }
+  const cb = $('#checks');
+  const n = (k) => CHECKS.filter((c) => c.severity === k).length;
+  cb.innerHTML = `<h3>구조 점검 · 중요 ${n('high')} · 확인 ${n('mid')} · 참고 ${n('info')}</h3>` +
+    (CHECKS.length ? CHECKS.map((c, i) => `<button class="chk" type="button" data-i="${i}"><span class="t"><span class="flag sev-${c.severity}">${SEV[c.severity]}</span>${h(c.title)}<span class="gate">${h(c.gate)}</span></span><span class="d">${h(c.detail)}</span></button>`).join('') : '<p>점검에서 찾은 후보가 없습니다.</p>') +
+    (WARN.length ? `<details><summary>지도 작성 경고 ${WARN.length}건</summary><ul>${WARN.map((w) => `<li>${h(w)}</li>`).join('')}</ul></details>` : '');
+  cb.querySelectorAll('.chk').forEach((b) => b.addEventListener('click', () => {
+    const c = CHECKS[+b.dataset.i]; pathMode = false; select(c.ids[0]);
+    c.ids.forEach((id) => cardEls.get(id)?.classList.add('hl'));
+    cardEls.get(c.ids[0])?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+  }));
+  $('#btn-path').addEventListener('click', () => { pathMode = !pathMode; if (pathMode) selected = null; paint(); });
+  $('#btn-reset').addEventListener('click', () => { pathMode = false; selected = null; paint(); });
+  paint();
+})();
+</script>
+</body>
+</html>

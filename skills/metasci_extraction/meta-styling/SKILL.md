@@ -40,6 +40,7 @@ offered when the user asks for a comparison or when two supported choices genuin
 |---|---|
 | Build a style corpus from reference papers | `extraction-style` |
 | **Match a draft to an existing corpus** | **meta-styling (this skill)** |
+| Force a corpus onto a draft by brick assembly, without fit judgment (experimental, on request only) | `meta-styling-hardcore` |
 | Rewrite a paragraph on academic judgment alone, no corpus | `meta-rewriting` |
 | Review a draft on four writing principles with the same corpus as evidence, and rewrite it, substance included | `meta-review` |
 | Section order and outline | `meta-writing-mapping` |

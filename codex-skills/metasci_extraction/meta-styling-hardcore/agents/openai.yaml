@@ -1,0 +1,4 @@
+interface:
+  display_name: "Meta Styling Hardcore"
+  short_description: "Experimental forced style transfer by brick assembly"
+  default_prompt: "Use $meta-styling-hardcore for this task."

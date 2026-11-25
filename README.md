@@ -135,6 +135,10 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 │   ├── SKILL.md
 │   ├── references/revision_guide.md
 │   └── scripts/quant_check.py
+├── meta-styling-hardcore/       # EXPERIMENTAL
+│   ├── SKILL.md
+│   ├── references/{plan-format,agents}.md
+│   └── scripts/{brickyard,test_brickyard}.py
 ├── meta-review/
 │   ├── SKILL.md
 │   └── references/review_template.md
@@ -181,6 +185,7 @@ Or copy individual skill folders (e.g. `skills/persona/virgil/`) into `~/.claude
 | meta-proofreading-phrasebank | One English paragraph vs the built-in Academic Phrasebank, by rhetorical function | nothing |
 | meta-proofreading-korean | Korean academic/policy draft → rubric-tiered panel proofreading | Korean draft |
 | meta-styling | Apply a style corpus to a draft, style only: blind draft map, comparison incl. lexical bundles, one revision behind two preservation gates | a style corpus (N≥1) |
+| meta-styling-hardcore | EXPERIMENTAL — force the corpus onto a draft: isolated workers pick frame, bundle, word and draft-span bricks by ID; a script assembles and traces every word; terms protected, claim strength kept in class | a style corpus (N≥1) |
 | meta-rewriting-antiai | Strip AI writing tells across 4 layers | nothing |
 | meta-mywriting-korean | Korean draft → the author's own style Blueprint | Blueprint |
 
@@ -359,6 +364,16 @@ corpus but judges and may change substance; meta-styling changes style only.
 > "이 Discussion 초고를 스타일 코퍼스에 맞춰줘"
 ```
 
+**`meta-styling-hardcore`** (experimental) removes the judgment: every draft sentence
+that a corpus frame can host is rebuilt on one, and every general word that a corpus
+word of the same kind can replace is replaced. Workers write only brick IDs:
+`F###` frames from `logic.md`, `B###` bundles from `phrases.tsv`, `W###` words from
+`style-vocab.md`/`wordlist.tsv`, and `C#` verbatim spans of the draft. `brickyard.py`
+assembles the text, refuses hand edits, and reports where every word came from. A blind
+cutter, a frame mason, a word mason and an unanchored gate reader split the work.
+Technical terms are protected; word swaps keep their claim-strength class. Frames are the default unit; whole corpus sentences
+need `--own-corpus`. meta-styling's two gates are reused unchanged.
+
 ---
 
 ## 7. meta-review
@@ -472,6 +487,9 @@ Research_{topic}/           # Agentic research output
 ## Version History
 
 ### Unreleased
+- meta-styling-hardcore 0.2.0 (experimental): brick assembly — ID-only plan, script-built
+  text (`brickyard.py` 1.1.0), word layer with claim-strength classes and term protection,
+  four isolated workers, word-level trace, copy-run check, meta-styling gates reused
 - extraction-style 3.1.0: exhaustive phrase layer (`phrases.py` → `phrases.tsv`, 2–4-word
   n-grams, lexical bundles after Biber et al. 1999 / Hyland 2008, topic flag, Hyland
   function classification); word layer v2 (`wordlist.py`: short words kept, range,

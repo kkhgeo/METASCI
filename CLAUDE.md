@@ -35,7 +35,8 @@ skills/
 │   ├── extraction-knowledge/
 │   ├── extraction-logic/
 │   ├── extraction-style/
-│   └── meta-styling/
+│   ├── meta-styling/
+│   └── meta-styling-hardcore/   # EXPERIMENTAL brick assembly: IDs in, script builds the text
 └── metasci_slide/       # talk narrative → house-style deck
     ├── meta-slide-content/
     └── meta-slide-design/
@@ -106,6 +107,7 @@ extraction-knowledge  → WHAT knowledge is cited      (epistemic content)
 1. `meta-writing` → draft sections using Knowledge + PDF + Web
 2. `meta-review` / `paper-proofreader*` → multi-reviewer improvement and proofreading
 3. `meta-styling` → style-only revision against the style corpus (one recommended revision, two preservation gates)
+   (`meta-styling-hardcore` is the experimental forced variant: brick IDs in, script-assembled text out)
 4. `meta-rewriting` → one-shot style transfer from reference paper
 
 ### Data-driven discovery

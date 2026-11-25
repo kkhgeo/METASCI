@@ -1,0 +1,270 @@
+---
+name: meta-styling-hardcore
+description: >-
+  Experimental forced style transfer by brick assembly. Imposes an extracted style corpus
+  on an English draft: workers pick bricks by ID only (corpus sentence frames, lexical
+  bundles, general words such as verbs, adverbs and connectives, plus verbatim spans cut
+  from the draft), a script assembles the text, and a script proves every word traces to
+  a brick. Technical terms are protected. Nothing is retyped. Use only when the user asks
+  for the hardcore, forced or brick version: "하드코어 스타일링", "하드코어로 입혀줘",
+  "코퍼스 강제 적용", "벽돌 조립", "brick styling", "meta-styling-hardcore". Ordinary
+  style revision goes to meta-styling; corpus building to extraction-style; Korean prose
+  to meta-rewriting-korean.
+allowed-tools: [Read, Write, Edit, Bash, Glob, Grep, AskUserQuestion, Agent]
+metadata:
+  version: "0.2.0"
+---
+
+# Meta-Styling · Hardcore (brick assembly)
+
+An experiment, and labelled as one in every report. `meta-styling` asks, edit by edit,
+whether a corpus habit fits the draft. This skill does not ask. Every draft sentence that
+*can* be rebuilt on a corpus frame *is* rebuilt on one, and every general word that *can*
+be replaced by a corpus word of the same kind *is* replaced. The result shows what the
+corpus does to the draft when it is applied without judgment.
+
+The mechanism is taken from a "brick" composition method: **pick bricks by their number,
+let code put the text together from those numbers, never retype a sentence.** Because the
+workers write IDs instead of prose, they cannot paraphrase, smooth, or slip in their own
+phrasing. Every word of the output is a corpus word, a draft word, or a counted piece of
+mortar.
+
+## Bricks
+
+| Brick | ID | Comes from | Carries |
+|---|---|---|---|
+| Frame | `F###` | `logic.md` §E catalog, *Abstracted Template*, target section only | the corpus's sentence skeleton |
+| Bundle | `B###` | `phrases.tsv`, `bundle = yes`, `topic = no`, in the target section | recurrent multi-word glue |
+| Word | `W###` | `style-vocab.md` tables (reporting verbs, hedges, boosters, connectives, self-mention, academic nouns, register, caption) and `wordlist.tsv` VERB/ADV/ADJ rows at Freq ≥ 2; attested in the target section; terms excluded | the corpus's general vocabulary |
+| Content | `C#` | the draft, cut into verbatim spans | the draft's substance: values, entities, propositions, citations |
+| Draft sentence | `D#` | the draft, numbered by the script | used through `keep`, counted as not imposed |
+| Corpus sentence | `S###` | `logic.md` §E *Original Sentence* | only with `--unit sentence`; see below |
+
+Two layers are imposed, and recorded separately:
+
+- **Frame layer** (`plan.json`): the sentence is rebuilt on a frame; content bricks fill
+  its slots.
+- **Word layer** (`swaps.json`): inside a content brick or a kept sentence, a general word
+  is replaced by a `W###` corpus word.
+
+Mortar is everything else, and all of it is counted: glue words from a frozen list, at
+most three `[YOU WRITE: …]` gaps, `pick` among a template's own alternatives
+(`was/were`), `inflect` for number agreement only, and automatic spacing, `a`/`an`,
+capitalisation and terminal periods.
+
+### The word layer and claim strength
+
+Reporting verbs, hedges and boosters are style *and* substance: `shows` → `suggests`
+weakens a claim, and `may` → `clearly` strengthens it. So the word layer runs under a
+frozen strength classification (`brickyard.py` `STRENGTH`, after Hyland's metadiscourse
+categories): `hedge`, `booster`, `report:strong` (*demonstrate, prove, confirm*),
+`report:moderate` (*show, reveal, find, observe*), `report:tentative` (*suggest, indicate,
+imply*), `report:attribution` (*report, note, describe*), `negation`, and `-` for
+everything else.
+
+- **Mechanically:** a swap must keep the class (`indicates` → `suggests` passes;
+  `controls` → `indicates` and `may` → `clearly` fail). Negation never moves. Parts of
+  speech must match when both are known. A word inside a protected term never moves.
+- **Gate 2 still reads every swap.** The class keeps certainty; it does not prove that
+  `controls` → `governs` keeps the proposition true. `verify` lists every strength-class
+  swap and every swap whose part of speech could not be checked.
+- **Frames bring their own stance words** (`suggest(s)`, `likely`). `verify` compares the
+  strength profile of the whole draft and revision, class by class, and warns on any
+  change. The frame mason is told to check the strength ledger. Gate 2 decides.
+
+Protected terms = the cutter's `terms.txt` + every selected paper's `glossary.md`. They
+are excluded from the word pile and refused as swap targets. Gate 1 counts them again.
+
+### The brick unit: frame by default
+
+The default unit is the **frame**. Lifting whole sentences from reference papers would
+copy another author's wording (plagiarism, and text recycling even for one's own
+papers), and each lifted sentence carries that paper's values and claims into the draft.
+`--unit sentence` with `verify --own-corpus` switches to whole sentences: the original
+brick method of recomposing one's own published text. Use it only when the user states
+the corpus is their own papers. Content drift is then expected, and Gate 1 reports it.
+
+## Workers
+
+Four workers, each a fresh context (one Agent tool call each). The orchestrator (this
+conversation) never picks a brick: it runs the scripts, hands files over, routes failures
+and writes the report. **Each worker sees only what its decision needs.**
+
+| Worker | Sees | Never sees | Writes |
+|---|---|---|---|
+| ① Cutter | the draft | the corpus | `content.tsv`, `terms.txt`, `draft-map.md` (with a strength ledger) |
+| ② Frame mason | content bricks, draft map, `form.tsv` | `word.tsv` | `plan.json` |
+| ③ Word mason | content bricks, draft map, terms, `word.tsv` | `form.tsv` | `swaps.json` |
+| ④ Gate reader | draft, revision, trace, swap list, strength profile | piles, plans, reasons | `gate.md` |
+
+② and ③ run in parallel. The reasons, and the full briefs, are in
+`references/agents.md`. In short: the cutter is blind so that the corpus cannot shape
+what counts as substance or as a term. The masons are separate so that neither bends
+one layer to make the other fit, and so `trace.tsv` can blame each. The word mason is one
+worker, because a verb and an adverb in one clause jointly set its certainty. The reader
+is unanchored by the masons' reasons and is fresh every round.
+
+Without workers, run the four roles in the same order in this conversation and record
+"isolation by ordering".
+
+## The rules, translated
+
+The brick method was written for short popular prose. Each rule has an academic
+counterpart.
+
+| Brick rule | Here | Enforced by |
+|---|---|---|
+| Pick bricks by number; code assembles; never retype | `plan.json` + `swaps.json` name IDs; `assemble` builds `revision.txt` | script (verify fails on any hand edit) |
+| Open on the most surprising brick | Open each paragraph on a frame that opened a paragraph in its source (`pos = initial`) | ②; verify reports |
+| Keep one idea, skip drifting bricks | Substance only from verbatim draft spans; words swap only within class | script + Gates 1–2 |
+| Bricks from ≥ 4 articles | Frames from at least min(N, 3) papers | ②; verify reports |
+| 2–4 bricks in a row from one article, in order | 2–4 consecutive frames from one paper in source order | ②; verify counts runs |
+| End on a closing brick or a gap | End on a frame with `pos = final`, or a gap | ②; verify reports |
+| Match the reader | Frames, bundles and words from the draft's own section | script (`--cross-section` to lift) |
+| Length within 10 % | Within ±15 % of the draft | verify warns |
+| Nothing between bricks | Only bricks, frozen glue, ≤ 3 one-line gaps; glue ≤ 15 % | script |
+| Check with code; swap a brick that stops the reader | `verify`, Gate 1, ④ Gate 2 + reader pass, routed back as brick swaps | script + ④ |
+
+## What to read
+
+| File | Who, when |
+|---|---|
+| `references/agents.md` | Orchestrator, before launching workers: who sees what, the briefs, failure routing. |
+| `references/plan-format.md` | Every worker that writes a file: `content.tsv`, `plan.json`, `swaps.json`. |
+| `scripts/brickyard.py` | Execute (`pile`, `content`, `assemble`, `verify`). Read only to debug or extend; add a case to `scripts/test_brickyard.py` when you change it. |
+| `../meta-styling/scripts/preservation_inventory.py` | Orchestrator, for Gate 1, exactly as `meta-styling` runs it. |
+| `../meta-styling/references/revision_guide.md` §6 | ④, for the Gate 2 definition. |
+
+## Inputs
+
+1. **Draft and its section.** English manuscript prose. Prepare `0-draft.prose.txt` as
+   `meta-styling` guide §1 does: prose only, paragraphs separated by blank lines.
+2. **Corpus root.** An `extraction-style` v3.x corpus. Frames need `logic.md`; bundles
+   need the 3.1 `phrases.tsv`; words need `style-vocab.md` and/or `wordlist.tsv` (POS
+   only when a tagger ran at extraction). Resolve as `meta-styling` does; never build one.
+3. **Optional**: a subset of papers; `--unit sentence` with the user's statement that
+   the corpus is their own work.
+
+## How a run works
+
+Run folder `<draft-dir>/run/<draft-stem>/<run-id>-hardcore/`; `<skill>` is this folder.
+
+1. **Scope.** Announce draft, section, corpus, papers, brick unit, worker isolation, and
+   that the run is experimental.
+2. **Number the draft.**
+   `python "<skill>/scripts/brickyard.py" pile --corpus <corpus> --section R --draft 0-draft.prose.txt --out pile [--papers a,b] [--unit sentence]`.
+   Exit 2: no frames for that section; check the letter, or ask before `--cross-section`.
+3. **① Cutter** → `pile/content.tsv`, `terms.txt`, `draft-map.md`.
+4. **Rebuild the pile with the terms**: the same `pile` command plus `--terms terms.txt`.
+   `content.tsv` is kept; `word.tsv` and `terms.txt` now exclude the draft's terms.
+5. **② Frame mason and ③ Word mason, in parallel** → `plan.json`, `pile/swaps.json`.
+6. **Assemble and verify.**
+
+   ```text
+   python "<skill>/scripts/brickyard.py" assemble --pile pile --plan plan.json --out revision.txt --trace trace.tsv
+   python "<skill>/scripts/brickyard.py" verify --pile pile --plan plan.json --revision revision.txt --report verify.md [--own-corpus] [--strict]
+   python "<meta-styling>/scripts/preservation_inventory.py" --before 0-draft.prose.txt --after revision.txt --citation-style <author-year|numeric|none> --output inventory.tsv --terms pile/terms.txt
+   ```
+
+   `verify` also writes `word-swaps.tsv`. A FAIL from either script goes back to the
+   mason that owns the brick (routing table in `references/agents.md`).
+7. **④ Gate reader** → `gate.md`. Route each FAIL or STOP to its mason, re-assemble,
+   re-verify, and run a fresh reader. Three rounds at most.
+8. **Report.**
+
+## Rules that do not bend
+
+- **Never retype.** `revision.txt` is only ever written by `assemble`. `verify`
+  re-assembles plan and swaps and fails on any difference, and rebuilds `form.tsv` and
+  `word.tsv` from the corpus and fails if either was altered.
+- **Substance comes only from the draft.** Content bricks are verbatim draft spans. Frame
+  words and word swaps may change framing; if they change a claim's certainty, polarity,
+  causality or scope, Gate 2 fails and the brick is swapped.
+- **Claim strength stays in class.** Enforced on every swap by the script; frame-borne
+  stance changes are warned by `verify` and decided by Gate 2.
+- **Terms and domain words never travel.** Topic-bound bundles and glossary terms never
+  enter the piles; protected terms are never swap targets. A frame whose fixed words name
+  the reference paper's subject is not usable.
+- **No long corpus runs.** `verify` fails a sentence repeating 8 or more consecutive
+  corpus words the draft did not have (`--copy-limit`), unless `--own-corpus`.
+- **Gates are not relabelled.** A Gate 1 FAIL stays FAIL; the revision is then reported
+  as an experimental result, not recommended for the manuscript.
+- **The user's rules beat the corpus**, as in `meta-styling`.
+
+## Output
+
+In the user's language, in this order:
+
+1. Scope: N, papers, section, brick unit, isolation (workers or ordering), "experimental".
+2. Imposition, from `verify.md`:
+   - Frame layer: sentences built on frames, keeps, gaps, papers used, same-paper runs, opener and closer hits, singleton frames.
+   - Word layer: swaps by category, claim-strength swaps, draft words the corpus never uses that were left in place.
+   - Word sources: frame, bundle, word, content, glue.
+3. The complete revision, exactly as `revision.txt`.
+4. Findings: sentences no frame could host, and words no corpus word could replace. Also where forced bricks broke meaning or still stopped the reader after three rounds, with the bricks blamed. Also strength-profile changes, and any Gate 1 notation re-parses.
+5. Gate results: brickyard verify, Gate 1, Gate 2 (from `gate.md`), and what was
+   inspected.
+
+Offer, in one line, a normal `meta-styling` run as the follow-up when the user wants a
+manuscript-ready revision.
+
+## Gotchas
+
+- **Most frames are singletons.** extraction-style measured 190 of 193 frames occurring
+  once in their paper. The skeleton is reused, not the anchor wording, but every singleton
+  used is listed. A `status` of `unmeasured` means the catalog has no recurrence column.
+- **`wordlist.tsv` drops function words.** *however, thus, may, often* are in the frozen
+  stop list, so connectives and modals reach the word pile only through `style-vocab.md`.
+  Without a tagger, `wordlist.tsv` has no POS and contributes no words; then the word
+  pile is `style-vocab.md` alone and most swaps are `pos unverified`.
+- **Range notation re-parses in Gate 1.** `between 12 and 40 mg/L` rebuilt on
+  `ranged from [MIN] to [MAX]` becomes the range key `12to40` and Gate 1 FAILs although
+  the values are intact. Cut the range as one content brick, or report the FAIL as a
+  notation change; never relabel it.
+- **Glue share is the honesty meter.** Frames that do not fit push the plan towards glue;
+  above 15 % `verify` fails.
+- **Choice tokens** (`was/were`) default to the first alternative when not picked; pick
+  explicitly.
+- **`logic.md` and `style-vocab.md` layouts vary.** The parsers read any table with a
+  *Template* column (frames) or any table under a recognised heading (words; bundle
+  tables are skipped). Check `form.tsv` (`section`, `pos`) and `word.tsv` (`category`,
+  `strength`) before the masons start.
+- The sentence splitter protects `et al.`, `Fig.`, `e.g.`, decimals; other abbreviations
+  may split `draft.tsv` wrongly, which affects `keep` only.
+
+## Error handling
+
+| Situation | Response |
+|---|---|
+| No corpus, or several | As `meta-styling`: ask; never build one |
+| `pile` exit 2 | No frames for the section; check the letter or ask about `--cross-section` |
+| Empty word pile | Report it; run the frame layer alone |
+| A content span fails | The cutter re-cuts it verbatim; never normalise the draft |
+| `assemble` errors | The owning mason fixes plan or swaps; nothing was written |
+| `verify` FAIL on hand edit or pile tampering | Re-assemble or rebuild the pile; never patch the text |
+| `verify` FAIL on copy run | Swap that frame; only `--own-corpus` (user's statement) makes it a warning |
+| Gate 1 or Gate 2 FAIL after three rounds | Report it; do not recommend the text |
+| Agent tool unavailable | Same roles in order; "isolation by ordering" |
+| Korean draft | Stop; point to `meta-rewriting-korean` |
+
+## Usage examples
+
+```
+> "SCI_kkh 코퍼스로 이 Results 단락 하드코어 스타일링 해봐"
+> "코퍼스 강제로 입혀서 어떻게 나오는지 보자 — Discussion 2문단"
+> "내 논문들로 만든 코퍼스니까 문장 단위 벽돌로 해봐"   (→ --unit sentence, --own-corpus)
+```
+
+---
+
+**Version**: 0.2.0 (2026-11-25) — word layer (`W###`, `swaps.json`, claim-strength
+classes, protected terms, strength profile); four isolated workers (cutter, frame mason,
+word mason, gate reader) with briefs in `references/agents.md`; `brickyard.py` 1.1.0.
+**Previous**: 0.1.0 (2026-11-25) — frame and bundle bricks, script assembly and verify.
+**Consumes**: `extraction-style` v3.x corpus (`logic.md` §E; `phrases.tsv`,
+`wordlist.tsv`, `glossary.md` from 3.1; `style-vocab.md`).
+**Depends on**: `meta-styling/scripts/preservation_inventory.py` 1.1.0.
+**Status**: experimental. `brickyard.py` is covered by `scripts/test_brickyard.py` on a
+two-paper toy corpus (16 cases). The worker design has not yet been run end to end. It
+has not been run on a real corpus or user draft either. Expect the parsers to meet table
+layouts they have not seen.

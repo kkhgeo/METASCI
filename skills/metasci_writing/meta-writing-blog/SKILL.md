@@ -1,6 +1,6 @@
 ---
 name: meta-writing-blog
-description: Turn a paper, a manuscript, or a topic into a KEI AI 융합연구단 "브리프" — a self-contained Korean HTML explainer in the KEI house style, output as a portable folder. Triggers: "브리프 작성", "KEI 브리프로 만들어줘", "이 논문 브리프로 써줘", "논문 소개 글 만들어줘", "write a paper explainer".
+description: 'Turn a paper, a manuscript, or a topic into a KEI AI 융합연구단 "브리프" — a self-contained Korean HTML explainer in the KEI house style, output as a portable folder. Triggers: "브리프 작성", "KEI 브리프로 만들어줘", "이 논문 브리프로 써줘", "논문 소개 글 만들어줘", "write a paper explainer".'
 ---
 
 # meta-writing-blog

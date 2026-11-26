@@ -83,7 +83,11 @@ STYLE_VOCAB = """# Style vocabulary — alpha-2020
 | as a result of | 3 |
 """
 
-GLOSSARY = """| # | Term | Type | POS |
+GLOSSARY = """# Technical-term glossary: Alpha 2020
+
+**Counting source**: sections governs likely values
+
+| # | Term | Type | POS |
 |---|---|---|---|
 | 1 | pyrite oxidation | Domain | NOUN |
 """
@@ -243,6 +247,8 @@ def word_pile_reads_corpus_layers(t):
     assert "nitrate" not in words, "nouns are not word bricks"
     assert "as a result of" not in words, "bundle tables are not word bricks"
     assert "pyrite oxidation" in (t / "pile/terms.txt").read_text(encoding="utf-8")
+    assert "Counting source" not in (t / "pile/terms.txt").read_text(encoding="utf-8"), \
+        "glossary prose lines are not terms"
 
 
 def wid(t, form):
@@ -321,6 +327,216 @@ def tampered_pile_fails(t):
                     "--revision", t / "revision.txt")
     assert code == 1 and "differs from the corpus" in out, out
     form.write_text(good, encoding="utf-8")
+
+
+@case
+def splitter_keeps_page_references(t):
+    import brickyard
+    par = ("EIA has attracted criticism (Smith et al., 2018, p. 509, Table 2). Critiques "
+           "trace this to procedure (Cashmore, 2004, pp. 403, 421–422) and to assumptions. "
+           "The group. Next sentence.")
+    got = brickyard.split_sentences(par)
+    assert len(got) == 4, got
+    assert got[0].endswith("p. 509, Table 2)."), got
+    assert got[2] == "The group.", got
+
+
+@case
+def parser_reads_other_catalog_layouts(t):
+    import brickyard
+    p = t / "layout-logic.md"
+    p.write_text(
+        "## C. Inter-paragraph logic\n\n### C — Conclusions\n\ntext\n\n"
+        "## E. Verified sentence frames\n\n### I\n\n"
+        "| # | Frame | Template | Original | Address |\n|---|---|---|---|---|\n"
+        "| 1 | A3 Trend | [X] have long been [Y]. | Scientists have long been keen. | P1-S1 |\n\n"
+        "## Exhaustive frame catalogue\n\n### I\n\n"
+        "| Source | Section | Frame type | Frame with slots | Verbatim text | Class |\n"
+        "| --- | --- | --- | --- | --- | --- |\n"
+        "| [P2-S1] | M | A1 | `Central to [X] is [Y].` | Central to this is that. | Singleton |\n",
+        encoding="utf-8")
+    rows = brickyard.parse_logic(p)
+    assert len(rows) == 2, rows
+    assert rows[0]["section"] == "I" and rows[0]["template"] == "[X] have long been [Y].", rows[0]
+    assert rows[1]["section"] == "M", rows[1]            # the Section cell beats the heading
+    assert rows[1]["status"] == "Singleton" and rows[1]["source"] == "[P2-S1]", rows[1]
+
+
+@case
+def penn_tags_feed_the_word_pile(t):
+    import brickyard
+    assert brickyard.upos("VBZ") == "VERB" and brickyard.upos("JJ") == "ADJ" and brickyard.upos("RB") == "ADV"
+    assert brickyard.upos("VB/VBP") == "VERB" and brickyard.upos("ADJ") == "ADJ"
+    assert brickyard.pos_compatible("VBZ", "VBZ") and brickyard.pos_compatible("VBD", "VBN")
+    assert not brickyard.pos_compatible("VBZ", "VBG") and not brickyard.pos_compatible("JJ", "RB")
+    assert brickyard.pos_compatible("VERB", "VBZ")          # universal vs Penn: class only
+    c = t / "penn"
+    p = c / "papers" / "gamma-2022"
+    (p / "sections").mkdir(parents=True)
+    (p / "sections" / "I.txt").write_text("Governance remains contested and contested again.", encoding="utf-8")
+    (p / "wordlist.tsv").write_text("type\tI\ttotal\tpos\ncontested\t2\t2\tVBN\nremains\t1\t1\tVBZ\n",
+                                    encoding="utf-8")
+    rows, _, _ = brickyard.build_words(c, "I", ["gamma-2022"], False, set())
+    forms = {r["form"]: r for r in rows}
+    assert "contested" in forms and forms["contested"]["category"] == "pos:VERB", rows
+    assert "remains" not in forms, "Freq < 2 rows stay out"
+
+
+@case
+def content_transforms_are_mechanical_and_attested(t):
+    import types
+    import brickyard
+    assert brickyard.verb_form("bringing", "base", {"bring", "bringing"}) == "bring"
+    assert brickyard.verb_form("using", "base", {"us", "use"}) == "use"
+    assert brickyard.verb_form("decide", "ing", {"deciding"}) == "deciding"
+    assert brickyard.verb_form("treats", "base", {"treat"}) == "treat"
+    assert brickyard.verb_form("bring", "ed", {"brought"}) == "brought"
+    assert brickyard.verb_form("bringing", "base", {"bringing"}) is None   # not attested -> refused
+    pile = types.SimpleNamespace(
+        content={"C1": "a routine part of decisions", "C2": "bringing evidence to bear"},
+        swaps={}, attested={"bring"}, draft_text="", terms=set(), words={}, pos_map={})
+    asm = brickyard.Assembly()
+    txt, kind, cid = brickyard.render_item("C1|-det", pile, "P1.S1", asm, [])
+    assert txt == "routine part of decisions" and cid == "C1", txt
+    txt, _, _ = brickyard.render_item("C2|base", pile, "P1.S1", asm, [])
+    assert txt == "bring evidence to bear", txt
+    assert not asm.errors, asm.errors
+    assert sum(1 for x in asm.trace if x["kind"] == "transform") == 2
+    brickyard.render_item("C2|-det", pile, "P1.S1", asm, [])
+    brickyard.render_item("C1|ing", pile, "P1.S1", asm, [])
+    assert len(asm.errors) == 2, asm.errors                # no determiner; 'a' has no -ing form
+
+
+STAGE1_OK = {"sentences": [
+    {"from": ["D1"], "frame": "F001",
+     "text": "Sulfate values ranged from 12 to 40 mg/L, with a mean of 22 mg/L (Fig. 3)."},
+    {"from": ["D2"], "frame": "F002",
+     "text": "Deep wells exhibited higher sulfate, whereas shallow wells showed lower sulfate."},
+    {"from": ["D3"], "frame": "F003",
+     "text": "These contrasts suggest that pyrite oxidation controls sulfate (Kim et al., 2015)."},
+]}
+
+
+@case
+def stage1_guided_rewrite_passes_and_feeds_stage2(t):
+    pile = t / "pile-s1"
+    code, out = run("pile", "--corpus", t / "corpus", "--section", "R",
+                    "--draft", t / "draft.txt", "--out", pile)
+    assert code == 0, out
+    (t / "s1.json").write_text(json.dumps(STAGE1_OK), encoding="utf-8")
+    code, out = run("stage1", "--pile", pile, "--stage1", t / "s1.json",
+                    "--plan-out", t / "s1-plan.json", "--report", t / "s1.md")
+    assert code == 0, out
+    assert "sentences on a declared frame: 3 of 3" in out, out
+    assert "contrasts" in out and "lower" in out, "new words are listed"
+    assert "between" in out and "average" in out, "lost draft words are listed"
+    plan = json.loads((t / "s1-plan.json").read_text(encoding="utf-8"))
+    assert [s["stage1"] for s in plan["paragraphs"][0]["sentences"]] == ["T1", "T2", "T3"], plan
+    words_tsv = (pile / "word.tsv").read_text(encoding="utf-8")
+    wid = next(ln.split("\t")[0] for ln in words_tsv.splitlines() if "\tgoverns\t" in ln)
+    (pile / "swaps.json").write_text(json.dumps({"T3": {"controls": wid}}), encoding="utf-8")
+    code, out = run("assemble", "--pile", pile, "--plan", t / "s1-plan.json",
+                    "--out", t / "s1-rev.txt", "--trace", t / "s1-trace.tsv")
+    assert code == 0, out
+    rev = (t / "s1-rev.txt").read_text(encoding="utf-8")
+    assert "These contrasts suggest that pyrite oxidation governs sulfate (Kim et al., 2015)." in rev, rev
+    code, out = run("verify", "--pile", pile, "--plan", t / "s1-plan.json",
+                    "--revision", t / "s1-rev.txt", "--report", t / "s1-verify.md")
+    assert code == 0, out
+    assert "## Stage 1" in out and "mean fit" in out, out
+    assert (t / "revision.gate1.txt").exists()
+
+
+@case
+def stage1_catches_low_fit_lost_citation_and_uncovered_sentence(t):
+    pile = t / "pile-s1"
+    bad = {"sentences": [
+        {"from": ["D1"], "frame": "F001",
+         "text": "Sulfate values were between 12 and 40 mg/L, averaging 22 mg/L (Fig. 3)."},
+        {"from": ["D3"], "frame": "F003",
+         "text": "These contrasts suggest that pyrite oxidation controls sulfate."},
+    ]}
+    (t / "s1-bad.json").write_text(json.dumps(bad), encoding="utf-8")
+    code, out = run("stage1", "--pile", pile, "--stage1", t / "s1-bad.json",
+                    "--plan-out", t / "s1-bad-plan.json")
+    assert code == 1, out
+    assert "F001 fit" in out, "frame not followed"
+    assert "D2 is not rewritten" in out, "uncovered draft sentence"
+    assert "'2015'" in out, "citation dropped"
+
+
+@case
+def swaps_carry_collocation_evidence(t):
+    # runs after the guided-rewrite case: its verify wrote word-swaps.tsv next to s1-verify.md
+    rows = (t / "word-swaps.tsv").read_text(encoding="utf-8").splitlines()
+    head = rows[0].split("	")
+    for col in ("left_pair", "left_n", "right_pair", "right_n", "collocation"):
+        assert col in head, head
+    row = dict(zip(head, rows[1].split("	")))
+    assert row["left_pair"] == "oxidation governs", row
+    assert row["right_pair"] == "governs sulfate", row
+    assert row["collocation"] in ("attested", "unattested"), row
+    out = (t / "s1-verify.md").read_text(encoding="utf-8")
+    assert "- collocation:" in out, out
+
+
+def msent_id(pile, prefix):
+    for ln in (pile / "msent.tsv").read_text(encoding="utf-8").splitlines()[1:]:
+        cols = ln.split("\t")
+        if cols[-1].startswith(prefix):
+            return cols[0]
+    raise AssertionError(f"no corpus sentence starting {prefix!r}")
+
+
+@case
+def corpus_sentence_base_and_verbatim_reuse(t):
+    # base: a corpus sentence becomes a frame; its own content words are its slots
+    pile = t / "pile-m"
+    code, out = run("pile", "--corpus", t / "corpus", "--section", "R",
+                    "--draft", t / "draft.txt", "--out", pile)
+    assert code == 0, out
+    code, out = run("match", "--pile", pile, "--top", "3")
+    assert code == 0 and "corpus sentences indexed" in out, out
+    assert (pile / "match.tsv").exists()
+    mid = msent_id(pile, "These patterns suggest")
+    spec = json.loads(json.dumps(STAGE1_OK))
+    spec["sentences"][2] = {"from": ["D3"], "base": mid,
+                            "text": "This means that pyrite oxidation is the control of the sulfate "
+                                    "in the wells of the area (Kim et al., 2015)."}
+    (t / "m1.json").write_text(json.dumps(spec), encoding="utf-8")
+    code, out = run("stage1", "--pile", pile, "--stage1", t / "m1.json",
+                    "--plan-out", t / "m1-plan.json", "--report", t / "m1.md")
+    assert code == 0, out
+    assert f"| T3 | D3 | {mid} | base |" in out, out
+    # a base that keeps too little of itself is refused
+    spec["sentences"][1] = {"from": ["D2"], "base": msent_id(pile, "Wells exhibited"),
+                            "text": "Deep wells had higher sulfate than shallow wells."}
+    (t / "m2.json").write_text(json.dumps(spec), encoding="utf-8")
+    code, out = run("stage1", "--pile", pile, "--stage1", t / "m2.json", "--plan-out", t / "m2-plan.json")
+    assert code == 1 and "too little of it survives" in out, out
+    # verbatim: a draft sentence whose content is a corpus sentence's
+    (t / "draft-v.txt").write_text("Recharge governs the flux and evaporation controls the salinity, "
+                                   "which likely indicates mixing.\n", encoding="utf-8")
+    pv = t / "pile-v"
+    code, out = run("pile", "--corpus", t / "corpus", "--section", "R",
+                    "--draft", t / "draft-v.txt", "--out", pv)
+    assert code == 0, out
+    code, out = run("match", "--pile", pv)
+    assert "SAME CONTENT" in out, out
+    vid = msent_id(pv, "Recharge governs")
+    text = [ln.split("\t")[-1] for ln in (pv / "msent.tsv").read_text(encoding="utf-8").splitlines()
+            if ln.startswith(vid + "\t")][0]
+    (t / "v.json").write_text(json.dumps({"sentences": [{"from": ["D1"], "base": vid, "text": text}]}),
+                              encoding="utf-8")
+    code, out = run("stage1", "--pile", pv, "--stage1", t / "v.json", "--plan-out", t / "v-plan.json")
+    assert code == 0 and "VERBATIM" in out and "verbatim corpus sentences: 1" in out, out
+    code, out = run("assemble", "--pile", pv, "--plan", t / "v-plan.json", "--out", t / "v-rev.txt")
+    assert code == 0, out
+    code, out = run("verify", "--pile", pv, "--plan", t / "v-plan.json", "--revision", t / "v-rev.txt")
+    assert code == 1 and "repeat a 8-word run" in out, "a verbatim corpus sentence fails the copy check"
+    code, out = run("verify", "--pile", pv, "--plan", t / "v-plan.json", "--revision", t / "v-rev.txt",
+                    "--allow-copy")
+    assert code == 0, out
 
 
 def main():

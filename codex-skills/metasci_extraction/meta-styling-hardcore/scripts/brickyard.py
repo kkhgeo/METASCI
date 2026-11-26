@@ -6,6 +6,8 @@ names bricks by ID; this script assembles the text from those IDs and verifies t
 every word of the result traces to a brick.
 
   pile      corpus + draft      -> pile/ (form.tsv, draft.tsv, pile.json)
+  stage1    pile + stage1.json  -> pile/stage1.*, stage-2 plan.json   (guided mode, 1.3.0)
+  match     pile                -> pile/msent.tsv, pile/match.tsv     (corpus-sentence bases, 1.5.0)
   content   pile + content.tsv  -> validates the content bricks against the draft
   assemble  pile + plan.json    -> revision.txt, trace.tsv
   verify    pile + plan.json + revision.txt -> verify.md   (exit 0 PASS, 1 FAIL, 2 BLOCKED)
@@ -34,9 +36,33 @@ Mortar (the only things that are not bricks, all counted in verify.md):
   inflect     a number-agreement change on a template word, from AGREEMENT or a
               regular -s/-es/-ies toggle
   auto        capitalisation, a/an, spacing before punctuation, terminal period
+  transform   (1.2.0) a counted, mechanical change to a content brick written as
+              C#|op[,op]: -det drops a leading determiner (a, an, the, this ...);
+              base / s / ing / ed set the verb form of the brick's first word. The new
+              form must be attested in the corpus or the draft. Nothing else changes.
 
 No dependencies beyond the standard library.
-Version: 1.1.0 (2026-11-25) — word layer: W### bricks from style-vocab.md and
+Version: 1.5.1 (2026-11-26) — glossary.md: only its numbered table rows are read as
+terms (prose lines no longer leak general words into the protected list).
+Previous: 1.5.0 (2026-11-26) — corpus-sentence bases: `match` indexes the corpus
+sentences (M###) and ranks them per draft sentence by content overlap; a stage-1 record
+may name {"base": "M###"}: the sentence becomes a frame whose slots are its own content
+words, digits and names that the draft sentence lacks; a text identical to it is a
+verbatim reuse, flagged; verify --allow-copy turns corpus-run failures into warnings.
+Previous: 1.4.0 (2026-11-26) — collocation evidence for every swap in word-swaps.tsv.
+Previous: 1.3.0 (2026-11-26) — guided mode: `stage1` checks a rewrite of each draft
+sentence on one declared frame (fixed-word fit, new-word share, lost draft words,
+digits and citations) and writes a stage-2 plan of T# sentences; swaps key on T# and
+may insert lexical bundles (B###); verify reports stage 1 and writes revision.gate1.txt
+(gaps removed) for Gate 1.
+Previous: 1.2.0 (2026-11-26) — content transforms (C#|-det, C#|base/s/ing/ed) so a
+draft span can enter a frame slot that wants another verb form or no article;
+Penn Treebank tags (JJ, VBZ, RB ...) read as well as universal tags, so a tagged
+wordlist.tsv feeds the word pile; part-of-speech check compares like with like;
+page references (p. 12, pp. 3-4) no longer split sentences; frame catalogs with a
+"Frame with slots" column, a Section column or bare "### I" headings are read;
+word-source counts no longer go negative when kept sentences carry swaps.
+Previous: 1.1.0 (2026-11-25) — word layer: W### bricks from style-vocab.md and
 wordlist.tsv, swaps.json applied to content bricks, claim-strength classes, protected
 terms, strength profile in verify.
 Previous: 1.0.0 (2026-11-25) — frames, bundles, content bricks, assembly, verify.
@@ -50,7 +76,7 @@ import re
 import sys
 from pathlib import Path
 
-__version__ = "1.1.0"
+__version__ = "1.5.1"
 
 for _s in (sys.stdout, sys.stderr):
     try:
@@ -123,6 +149,8 @@ def split_sentences(par: str) -> list[str]:
     for i, ab in enumerate(ABBREV):
         protected = protected.replace(ab, ab.replace(".", f"\x00{i}\x00"))
     protected = re.sub(r"(\d)\.(\d)", "\\1\x01\\2", protected)
+    # page references inside citations: "(Smith, 2004, p. 12)", "(pp. 403, 421)"
+    protected = re.sub(r"\b(pp?)\.(?=\s*\d)", "\\1\x01", protected)
     parts = re.split(r"(?<=[.!?])\s+(?=[\"“(\[]?[A-Z0-9δΔ])", protected)
     out = []
     for p in parts:
@@ -133,6 +161,11 @@ def split_sentences(par: str) -> list[str]:
 
 
 def section_of_heading(line: str) -> str | None:
+    # a bare section letter: "### I", "### I (P1–P10)", "### M — Methods"
+    # (not "## C. Inter-paragraph logic", the lettered parts of logic.md)
+    m = re.match(r"^\s*#+\s*([AIMRDC])(?=\s*$|\s*[—–(·:-]|\s+[—–(·:-])", line)
+    if m:
+        return m.group(1)
     h = line.lower()
     if "result" in h:
         return "R"
@@ -163,8 +196,9 @@ def parse_logic(path: Path) -> list[dict]:
             sec = section_of_heading(ln)
             if sec:
                 section = sec
-        if ln.lstrip().startswith("|") and "template" in ln.lower() and i + 1 < len(lines) \
-                and re.match(r"^\s*\|[\s:|-]+\|\s*$", lines[i + 1]):
+        low = ln.lower()
+        if ln.lstrip().startswith("|") and ("template" in low or "with slots" in low) \
+                and i + 1 < len(lines) and re.match(r"^\s*\|[\s:|-]+\|\s*$", lines[i + 1]):
             head = [c.strip().lower() for c in ln.strip().strip("|").split("|")]
 
             def col(*keys, avoid=()):
@@ -173,11 +207,13 @@ def parse_logic(path: Path) -> list[dict]:
                         return k
                 return None
 
-            c_tpl = col("template")
-            c_type = col("frame", "type", "code", avoid=("template",))
-            c_orig = col("original", "sentence", avoid=("template",))
+            # "Frame with slots" is the template column in some catalogs
+            c_tpl = col("template", "with slots")
+            c_type = col("frame", "type", "code", avoid=("template", "with slots"))
+            c_orig = col("original", "sentence", "verbatim", avoid=("template",))
             c_src = col("source", "address", "loc")
-            c_stat = col("recur", "status", "singleton")
+            c_stat = col("recur", "status", "singleton", "class")
+            c_sec = next((k for k, h in enumerate(head) if h == "section"), None)
             i += 2
             while i < len(lines) and lines[i].lstrip().startswith("|"):
                 cells = [c.strip() for c in lines[i].strip().strip("|").split("|")]
@@ -186,8 +222,9 @@ def parse_logic(path: Path) -> list[dict]:
                 if tpl:
                     typ = get(c_type)
                     m = CODE_RE.search(typ)
+                    cell_sec = get(c_sec).strip()
                     rows.append({
-                        "section": section or "",
+                        "section": cell_sec if cell_sec in SECTION_ORDER else (section or ""),
                         "code": m.group(1) if m else "",
                         "name": CODE_RE.sub("", typ).strip(" :—-*`") if typ else "",
                         "template": tpl, "original": get(c_orig),
@@ -440,6 +477,7 @@ def load_terms(paths: list[Path]) -> set[str]:
     """Technical terms: one per line, or glossary.md rows `| # | Term | ...`."""
     terms = set()
     for p in paths:
+        is_md = p.suffix.lower() == ".md"
         for ln in p.read_text(encoding="utf-8-sig").splitlines():
             if ln.strip().startswith("|"):
                 cells = [c.strip() for c in ln.strip().strip("|").split("|")]
@@ -447,6 +485,8 @@ def load_terms(paths: list[Path]) -> set[str]:
                     t = cells[1].strip("`*\"“” ")
                     if t:
                         terms.add(norm_ws(t))
+            elif is_md:
+                continue        # glossary.md: only the numbered table rows are terms
             else:
                 t = ln.split("#", 1)[0].strip()
                 if t:
@@ -461,6 +501,34 @@ def term_spans(text: str, terms: set[str]) -> list[tuple[int, int]]:
         for m in re.finditer(rf"(?<![\w-]){body}(?:e?s)?(?![\w-])", text, flags=re.I):
             spans.append(m.span())
     return spans
+
+
+_PENN = (("JJ", "ADJ"), ("VB", "VERB"), ("RB", "ADV"), ("WRB", "ADV"), ("NN", "NOUN"),
+         ("MD", "AUX"), ("IN", "ADP"), ("PRP", "PRON"), ("DT", "DET"), ("CC", "CCONJ"))
+
+
+def upos(tag: str) -> str:
+    """Universal tag for a universal or Penn Treebank tag ('VBZ' -> 'VERB')."""
+    t = (tag or "").split("/")[0].strip().upper()
+    if not t or t in ("VERB", "ADV", "ADJ", "NOUN", "AUX", "ADP", "PRON", "DET", "CCONJ", "PROPN"):
+        return t
+    for p, u in _PENN:
+        if t.startswith(p):
+            return u
+    return t
+
+
+def pos_compatible(a: str, b: str) -> bool:
+    """Same universal class; for two Penn verb tags also the same form
+    (VBP counts as VB, VBD as VBN: the forms coincide for regular verbs)."""
+    ua, ub = upos(a), upos(b)
+    if ua != ub:
+        return False
+    fa, fb = a.split("/")[0].upper(), b.split("/")[0].upper()
+    if ua == "VERB" and fa.startswith("VB") and fb.startswith("VB"):
+        n = {"VBP": "VB", "VBD": "VBN"}
+        return n.get(fa, fa) == n.get(fb, fb)
+    return True
 
 
 def build_words(corpus: Path, section: str, slugs: list[str], cross: bool,
@@ -507,8 +575,8 @@ def build_words(corpus: Path, section: str, slugs: list[str], cross: bool,
                 pos = (r.get("pos") or "").split("/")[0]
                 if pos:
                     pos_map.setdefault(form, pos)
-                if pos in ("VERB", "ADV", "ADJ") and int(r.get("total", "0") or 0) >= 2:
-                    add(form, f"pos:{pos}", pos, "wordlist.tsv")
+                if upos(pos) in ("VERB", "ADV", "ADJ") and int(r.get("total", "0") or 0) >= 2:
+                    add(form, f"pos:{upos(pos)}", pos, "wordlist.tsv")
         sv = paper / "style-vocab.md"
         if sv.exists():
             for item, cat in parse_style_vocab(sv):
@@ -530,14 +598,27 @@ def build_words(corpus: Path, section: str, slugs: list[str], cross: bool,
 WORD_HEAD = ["id", "form", "category", "strength", "pos", "papers", "count", "source"]
 
 
+def neighbours(text: str, a: int, b: int) -> tuple[str, str]:
+    """The word right before text[a:b] and right after it; '' at a punctuation or brick edge."""
+    lm = re.search(r"([A-Za-z][\w'-]*)\s+$", text[:a])
+    rm = re.match(r"\s+([A-Za-z][\w'-]*)", text[b:])
+    return (lm.group(1) if lm else ""), (rm.group(1) if rm else "")
+
+
 def apply_swaps(text: str, bid: str, pile, asm, where: str) -> str:
+    done: list[tuple[dict, list[int]]] = []     # this call's swaps with their live span
     for key, wid in (pile.swaps.get(bid) or {}).items():
         m = re.fullmatch(r"(.+?)#(\d+)", key)
         target, k = (m.group(1), int(m.group(2))) if m else (key, 1)
-        w = pile.words.get(wid)
         tag = f"{where} {bid} '{key}' -> {wid}"
+        if re.fullmatch(r"B\d{3}", wid):            # a lexical bundle as the replacement
+            b = pile.form.get(wid)
+            w = ({"form": b["text"], "category": "bundle", "strength": strength_of(b["text"]),
+                  "pos": ""} if b and b["kind"] == "bundle" else None)
+        else:
+            w = pile.words.get(wid)
         if not w:
-            asm.errors.append(f"{tag}: {wid} is not in the word pile")
+            asm.errors.append(f"{tag}: {wid} is not in the word or bundle pile")
             continue
         body = r"\s+".join(re.escape(x) for x in target.split())
         hits = list(re.finditer(rf"(?<![\w-]){body}(?![\w-])", text, flags=re.I))
@@ -563,15 +644,23 @@ def apply_swaps(text: str, bid: str, pile, asm, where: str) -> str:
             asm.errors.append(f"{tag}: claim strength {s_old} -> {s_new}; a swap must keep the class")
             continue
         p_old, p_new = pile.pos_map.get(old.lower(), ""), w["pos"]
-        if p_old and p_new and p_old != p_new:
+        if p_old and p_new and not pos_compatible(p_old, p_new):
             asm.errors.append(f"{tag}: part of speech {p_old} -> {p_new}")
             continue
         new = match_case(old, w["form"])
         text = text[:a] + new + text[b:]
-        asm.swaps.append({"where": where, "brick": bid, "from": old, "to": new, "id": wid,
-                          "category": w["category"], "strength": s_new,
-                          "pos": "checked" if p_old and p_new else "unverified"})
+        shift = len(new) - (b - a)
+        for _, span in done:                    # keep earlier swaps' spans on the live text
+            if span[0] >= b:
+                span[0] += shift; span[1] += shift
+        rec = {"where": where, "brick": bid, "from": old, "to": new, "id": wid,
+               "category": w["category"], "strength": s_new,
+               "pos": "checked" if p_old and p_new else "unverified"}
+        asm.swaps.append(rec)
+        done.append((rec, [a, a + len(new)]))
         asm.trace.append({"where": where, "kind": "word", "id": wid, "text": new})
+    for rec, (a, b) in done:                     # neighbours in the brick as finally swapped
+        rec["left"], rec["right"] = neighbours(text, a, b)
     return text
 
 
@@ -598,6 +687,14 @@ class Pile:
             self.terms = {t.strip() for t in (d / "terms.txt").read_text(encoding="utf-8").splitlines() if t.strip()}
         self.swaps: dict[str, dict[str, str]] = {}
         self.swap_errors: list[str] = []
+        # stage 1 (1.3.0): sentences rewritten on a declared frame, checked by `stage1`
+        self.stage1_spec: dict | None = None
+        self.stage1: dict[str, dict] = {}
+        if (d / "stage1.json").exists():
+            self.stage1_spec = json.loads((d / "stage1.json").read_text(encoding="utf-8"))
+            for k, rec in enumerate(stage1_records(self.stage1_spec), 1):
+                self.stage1[f"T{k}"] = rec
+        self.msent = {r["id"]: r for r in read_tsv(d / "msent.tsv")} if (d / "msent.tsv").exists() else {}
         self.content: dict[str, str] = {}
         cf = d / "content.tsv"
         if cf.exists():
@@ -623,8 +720,9 @@ class Pile:
             for bid, m in data.items():
                 if bid.startswith("_"):
                     continue
-                if not re.fullmatch(r"[CD]\d+", bid) or not isinstance(m, dict):
-                    errs.append(f"{p.name}: '{bid}' — swaps are keyed by C# or D#, each a {{word: W###}} map")
+                if not re.fullmatch(r"[CDT]\d+", bid) or not isinstance(m, dict):
+                    errs.append(f"{p.name}: '{bid}' — swaps are keyed by C#, D# or T#, "
+                                "each a {{word: W### or B###}} map")
                     continue
                 for k, v in m.items():
                     prev = self.swaps.setdefault(bid, {}).get(k)
@@ -697,8 +795,139 @@ class Assembly:
         self.swaps: list[dict] = []
 
 
+DETERMINERS = ("a", "an", "the", "this", "these", "that", "those", "its", "their", "our")
+IRREGULAR = {  # past / participle forms -> base, for the few verbs regular rules miss
+    "brought": "bring", "made": "make", "taken": "take", "took": "take", "given": "give",
+    "gave": "give", "shown": "show", "drawn": "draw", "drew": "draw", "held": "hold",
+    "led": "lead", "found": "find", "thought": "think", "been": "be", "became": "become",
+    "begun": "begin", "began": "begin", "left": "leave", "meant": "mean", "kept": "keep",
+    "known": "know", "knew": "know", "understood": "understand", "sought": "seek",
+    "built": "build", "set": "set", "put": "put", "done": "do", "did": "do", "had": "have",
+    "said": "say", "told": "tell", "got": "get", "won": "win", "lost": "lose", "met": "meet",
+    "ran": "run", "run": "run", "chosen": "choose", "chose": "choose", "written": "write",
+    "wrote": "write", "risen": "rise", "rose": "rise", "fallen": "fall", "fell": "fall",
+}
+IRREGULAR_PAST = {}
+for _p, _b in IRREGULAR.items():
+    IRREGULAR_PAST.setdefault(_b, _p)
+VERB_OPS = ("base", "s", "ing", "ed")
+
+
+def _bases(w: str) -> list[str]:
+    """Candidate base forms of w, most likely first (w itself last)."""
+    w = w.lower()
+    out = []
+    if w in IRREGULAR:
+        out.append(IRREGULAR[w])
+    if w.endswith("ing") and len(w) > 4:
+        s = w[:-3]
+        out += [s + "e", s] + ([s[:-1]] if len(s) > 2 and s[-1] == s[-2] else [])
+    if w.endswith("ied"):
+        out.append(w[:-3] + "y")
+    elif w.endswith("ed") and len(w) > 3:
+        s = w[:-2]
+        out += [w[:-1], s] + ([s[:-1]] if len(s) > 2 and s[-1] == s[-2] else [])
+    if w.endswith("ies"):
+        out.append(w[:-3] + "y")
+    elif w.endswith("es"):
+        out += [w[:-1], w[:-2]]
+    elif w.endswith("s") and not w.endswith("ss"):
+        out.append(w[:-1])
+    return out + [w]
+
+
+def _forms(base: str, op: str) -> list[str]:
+    b = base
+    if op == "base":
+        return [b]
+    if op == "s":
+        return [b[:-1] + "ies"] if b.endswith("y") and b[-2:-1] not in "aeiou" else \
+            [b + "es"] if re.search(r"(s|x|z|ch|sh|o)$", b) else [b + "s"]
+    if op == "ing":
+        out = [b + "ing"]
+        if b.endswith("e") and not b.endswith(("ee", "ye", "oe")):
+            out.insert(0, b[:-1] + "ing")
+        if re.search(r"[^aeiou][aeiou][bdgmnprt]$", b):
+            out.append(b + b[-1] + "ing")
+        return out
+    if op == "ed":
+        out = []
+        if b in IRREGULAR_PAST:
+            out.append(IRREGULAR_PAST[b])
+        out += [b + "d"] if b.endswith("e") else \
+            [b[:-1] + "ied"] if b.endswith("y") and b[-2:-1] not in "aeiou" else [b + "ed"]
+        if re.search(r"[^aeiou][aeiou][bdgmnprt]$", b):
+            out.append(b + b[-1] + "ed")
+        return out
+    return []
+
+
+def verb_form(word: str, op: str, attested: set[str]) -> str | None:
+    """The `op` form of `word`, built by rule and accepted only if attested."""
+    bases = _bases(word)
+    if op == "base" and len(bases) > 1:
+        bases = bases[:-1]          # an inflected-looking word is not its own base
+    for base in bases:
+        for f in _forms(base, op):
+            if f in attested:
+                return f
+    return None
+
+
+def transform(text: str, ops: list[str], pile: Pile, where: str, cid: str,
+              asm: Assembly) -> str:
+    for op in ops:
+        tag = f"{where} {cid}|{op}"
+        if op == "-det":
+            m = re.match(r"^(\w+)\s+", text)
+            if not m or m.group(1).lower() not in DETERMINERS:
+                asm.errors.append(f"{tag}: {cid} does not open on a determiner")
+                continue
+            asm.trace.append({"where": where, "kind": "transform", "id": f"{cid}|-det",
+                              "text": m.group(1)})
+            text = text[m.end():]
+        elif op in VERB_OPS:
+            m = re.match(r"^([A-Za-z]+)", text)
+            if not m:
+                asm.errors.append(f"{tag}: {cid} does not open on a word")
+                continue
+            attested = pile.attested | set(words(pile.draft_text))
+            new = verb_form(m.group(1), op, attested)
+            if not new:
+                asm.errors.append(f"{tag}: no attested '{op}' form of '{m.group(1)}'")
+                continue
+            new = match_case(m.group(1), new)
+            asm.trace.append({"where": where, "kind": "transform", "id": f"{cid}|{op}",
+                              "text": f"{m.group(1)}->{new}"})
+            text = new + text[m.end():]
+        else:
+            asm.errors.append(f"{tag}: unknown transform (use -det, base, s, ing, ed)")
+    return text
+
+
+def fix_articles(text: str, asm: "Assembly", where: str) -> str:
+    """Re-pick a/an after word swaps changed the next word (counted as auto)."""
+    def an(m):
+        art, nxt = m.group(1), m.group(2)
+        want = "an" if re.match(r"[aeiouAEIOU]", nxt) and not re.match(
+            r"(?i)(uni|use|usu|eu|one|once)", nxt) else "a"
+        return match_case(art, want) + m.group(0)[len(art):]
+    new = re.sub(r"\b([Aa]n?)\s+([A-Za-z])", an, text)
+    if new != text:
+        asm.trace.append({"where": where, "kind": "auto", "id": "a-an", "text": "a/an after swap"})
+    return new
+
+
 def render_item(item: str, pile: Pile, where: str, asm: Assembly, gaps: list) -> tuple[str, str, str]:
     """-> (text, kind, id)"""
+    m = re.fullmatch(r"(C\d+)\|([\w,+-]+)", item)
+    if m:
+        cid, ops = m.group(1), [o for o in m.group(2).split(",") if o]
+        if cid not in pile.content:
+            asm.errors.append(f"{where}: content brick {cid} is not in content.tsv")
+            return "", "content", cid
+        text = apply_swaps(pile.content[cid], cid, pile, asm, where)
+        return transform(text, ops, pile, where, cid, asm), "content", cid
     if item.startswith("g:"):
         w = item[2:]
         if w.lower() not in GLUE:
@@ -859,6 +1088,20 @@ def assemble(plan: dict, pile: Pile) -> Assembly:
             if "frame" in spec:
                 rec.update(kind="frame", text=build_frame_sentence(spec, pile, asm, where, gaps),
                            brick=pile.form.get(spec["frame"]))
+            elif "stage1" in spec:
+                tid = spec["stage1"]
+                t = pile.stage1.get(tid)
+                if not t:
+                    asm.errors.append(f"{where}: stage-1 sentence {tid!r} is not in pile/stage1.json "
+                                      "(run `stage1` first)")
+                    continue
+                base = norm_ws(str(t.get("text", ""))) if not t.get("keep") else \
+                    " ".join(pile.draft[d]["text"] for d in (t.get("from") or []) if d in pile.draft)
+                rec.update(kind="stage1", text=fix_articles(apply_swaps(base or "", tid, pile, asm, where), asm, where),
+                           brick=stage1_brick(pile, t),
+                           keep=bool(t.get("keep")))
+                gaps += GAP_RE.findall(rec["text"])
+                asm.trace.append({"where": where, "kind": "stage1", "id": tid, "text": rec["text"]})
             elif "keep" in spec:
                 d = pile.draft.get(spec["keep"])
                 if not d:
@@ -917,6 +1160,379 @@ def cmd_assemble(a) -> int:
     return 0
 
 
+# ---------------------------------------------------------------- stage 1 (1.3.0)
+#
+# Guided mode. The frame writer rewrites each draft sentence on ONE declared corpus
+# frame, in its own words, and the script measures what it did instead of trusting it:
+#   fit    share of the frame's fixed words present, in order (inflection tolerated)
+#   new    words that are neither frame words, draft words (same lemma) nor glue
+#   lost   draft content words the rewrite no longer has; digits and citations FAIL
+# Stage 2 (the word layer) then works on the stage-1 sentences (T#) by ID only.
+
+GAP_RE = re.compile(r"\[YOU WRITE:[^\]]*\]")
+_EQUIV = [frozenset("is are was were be been being am".split()),
+          frozenset("has have had having".split()), frozenset("does do did done doing".split())]
+
+
+def lemmas(w: str) -> set[str]:
+    w = w.lower()
+    for eq in _EQUIV:
+        if w in eq:
+            return set(eq)
+    return {w} | (set(_bases(w)) if len(w) >= 4 else set())
+
+
+def same_word(a: str, b: str) -> bool:
+    return bool(lemmas(a) & lemmas(b)) or inflect_ok(a, b)
+
+
+def frame_items(tpl: str) -> list[list[str]]:
+    """Fixed words of a template, in order; a choice token is one item with alternatives."""
+    items = []
+    for part in SLOT_RE.split(tpl):
+        for tok in part.split():
+            core = re.sub(r"^[(\"“'‘]+|[.,;:)\"”'’?!]+$", "", tok)
+            if not core:
+                continue
+            alts = expand_choice(core)
+            if alts:
+                items.append([x.lower() for x in alts])
+            else:
+                items += [[w] for w in words(core)]
+    return items
+
+
+def stage1_records(spec: dict) -> list[dict]:
+    out = []
+    paras = spec.get("paragraphs") or [{"sentences": spec.get("sentences", [])}]
+    for pi, para in enumerate(paras, 1):
+        sents = para.get("sentences") if isinstance(para, dict) else para
+        for s in sents or []:
+            out.append({**s, "paragraph": pi})
+    return out
+
+
+def check_stage1(pile: "Pile", min_fit: float, max_new: float) -> dict:
+    spec = pile.stage1_spec or {}
+    fails, warns, rows = [], [], []
+    draft = pile.draft
+    draft_all = words(pile.draft_text)
+    covered: dict[str, list[str]] = {}
+    tot = {"frame": 0, "draft": 0, "glue": 0, "new": 0, "gap": 0}
+    gaps = 0
+    used_frames: dict[str, int] = {}
+    for tid, rec in pile.stage1.items():
+        src = rec.get("from") or []
+        if isinstance(src, str):
+            src = [src]
+        bad = [d for d in src if d not in draft]
+        if not src or bad:
+            fails.append(f"{tid}: 'from' must list draft sentences D# ({', '.join(bad) or 'none given'})")
+            continue
+        for d in src:
+            covered.setdefault(d, []).append(tid)
+        if rec.get("keep"):
+            text = " ".join(draft[d]["text"] for d in src)
+            rec["text"] = text
+            if not str(rec.get("why", "")).strip():
+                fails.append(f"{tid}: a keep needs 'why' (the frame slot that could not take the content)")
+            rows.append({"id": tid, "from": ",".join(src), "frame": "keep", "kind": "keep",
+                         "paper": "", "fixed": "", "fit": "",
+                         "new": "", "lost": "", "text": text})
+            n = len(words(text))
+            tot["draft"] += n
+            continue
+        text = norm_ws(str(rec.get("text", "")))
+        rec["text"] = text
+        kind = "frame"
+        if rec.get("base"):
+            fid = rec["base"]
+            f = base_frame(pile, rec)
+            if not f:
+                fails.append(f"{tid}: base {fid!r} is not in pile/msent.tsv — run `match` first")
+                continue
+            if f["section"] not in match_sections(pile):
+                fails.append(f"{tid}: {fid} is from section {f['section']}, outside the matched sections")
+            kind = "verbatim" if text == f["base_text"] else "base"
+            if kind == "verbatim":
+                warns.append(f"{tid}: VERBATIM corpus sentence {fid} ({f['paper']}, {f['source']}) — "
+                             "another author's wording; not usable in a manuscript without quotation")
+        else:
+            fid = rec.get("frame", "")
+            f = pile.form.get(fid)
+            if not f or f["kind"] != "frame":
+                fails.append(f"{tid}: frame {fid!r} is not in the pile")
+                continue
+            if f["section"] != pile.meta["section"] and not pile.meta.get("cross_section"):
+                fails.append(f"{tid}: {fid} is from section {f['section']}, not {pile.meta['section']}")
+        used_frames[fid] = used_frames.get(fid, 0) + 1
+        if not text:
+            fails.append(f"{tid}: empty text")
+            continue
+        gaps += len(GAP_RE.findall(text))
+        gap_spans = [m.span() for m in GAP_RE.finditer(text)]
+        toks = [(m.group(0), m.span()) for m in WORD_RE.finditer(text)]
+        in_gap = [any(a <= s < b for a, b in gap_spans) for _, (s, _e) in toks]
+        items = frame_items(f["text"])
+        if not items:
+            fails.append(f"{tid}: {fid} has no fixed words — it imposes nothing; choose another frame")
+            continue
+        if kind != "frame" and len(items) < 4:
+            fails.append(f"{tid}: base {fid} keeps only {len(items)} fixed words for this draft "
+                         "sentence — too little of it survives; choose another base or a frame")
+            continue
+        role = ["gap" if g else "" for g in in_gap]
+        ptr, missing = 0, []
+        for alts in items:
+            hit = None
+            for j in range(ptr, len(toks)):
+                if role[j] == "" and any(same_word(toks[j][0], a) for a in alts):
+                    hit = j
+                    break
+            if hit is None:
+                missing.append("/".join(alts))
+            else:
+                role[hit] = "frame"
+                ptr = hit + 1
+        fit = (len(items) - len(missing)) / len(items)
+        src_words = [w for d in src for w in words(draft[d]["text"])]
+        new_words = []
+        for j, (w, _sp) in enumerate(toks):
+            if role[j]:
+                continue
+            lw = w.lower()
+            if any(same_word(lw, x) for x in src_words) or any(same_word(lw, x) for x in draft_all):
+                role[j] = "draft"
+            elif lw in GLUE:
+                role[j] = "glue"
+            else:
+                role[j] = "new"
+                new_words.append(w)
+        for r in role:
+            tot[r] += 1
+        if fit < min_fit:
+            fails.append(f"{tid}: {fid} fit {fit:.0%} < {min_fit:.0%} — missing fixed words: "
+                         f"{', '.join(missing)}")
+        rows.append({"id": tid, "from": ",".join(src), "frame": fid, "kind": kind,
+                     "paper": f["paper"], "fixed": len(items), "fit": f"{fit:.2f}",
+                     "new": " ".join(new_words), "missing": " ".join(missing), "lost": "",
+                     "text": text})
+        for g in GAP_RE.findall(text):
+            if any(t.lower() in g.lower() for t in pile.terms):
+                warns.append(f"{tid}: a gap's instruction names a protected term ({g}); "
+                             "Gate 1 must run on the gap-free copy")
+    # coverage, digits and citations, lost content words — per draft sentence
+    for d, row in draft.items():
+        tids = covered.get(d)
+        if not tids:
+            fails.append(f"{d} is not rewritten, kept or merged anywhere — draft content lost")
+            continue
+        out_text = " ".join(pile.stage1[t].get("text", "") for t in tids)
+        out_words = words(GAP_RE.sub(" ", out_text))
+        for tok in re.findall(r"\S*\d\S*", row["text"]):
+            core = tok.strip(".,;:()[]")
+            if core and core not in out_text:
+                fails.append(f"{d}: '{core}' (value or citation) is missing from {', '.join(tids)}")
+        lost = sorted({w for w in words(row["text"]) if len(w) >= 3 and w not in GLUE
+                       and not re.search(r"\d", w) and not any(same_word(w, x) for x in out_words)})
+        if lost:
+            warns.append(f"{d} -> {', '.join(tids)}: draft words not in the rewrite: {', '.join(lost)}")
+            for r in rows:
+                if r["id"] in tids:
+                    r["lost"] = " ".join(lost)
+    for d, tids in covered.items():
+        if len(tids) > 1 and len({pile.stage1[t].get("paragraph") for t in tids}) > 1:
+            warns.append(f"{d} is spread over paragraphs ({', '.join(tids)})")
+    if gaps > MAX_GAPS:
+        fails.append(f"{gaps} gaps; at most {MAX_GAPS} per run")
+    counted = sum(v for k, v in tot.items() if k != "gap")
+    share = tot["new"] / counted if counted else 0.0
+    if share > max_new:
+        fails.append(f"new words are {share:.0%} of the stage-1 text (limit {max_new:.0%}) — "
+                     "the rewrite is adding its own wording")
+    for fid, n in used_frames.items():
+        if n > 1:
+            warns.append(f"{fid} is used {n} times")
+    return {"fails": fails, "warns": warns, "rows": rows, "tot": tot, "share": share,
+            "gaps": gaps, "frames": used_frames}
+
+
+STAGE1_HEAD = ["id", "from", "frame", "kind", "paper", "fixed", "fit", "missing", "new", "lost", "text"]
+
+
+def cmd_stage1(a) -> int:
+    pile_dir = Path(a.pile)
+    spec = load_plan(Path(a.stage1))
+    (pile_dir / "stage1.json").write_text(json.dumps(spec, indent=2, ensure_ascii=False) + "\n",
+                                          encoding="utf-8")
+    pile = Pile(pile_dir)
+    res = check_stage1(pile, a.min_fit, a.max_new)
+    write_tsv(pile_dir / "stage1.tsv", STAGE1_HEAD, res["rows"])
+    plan = {"paragraphs": []}
+    for tid, rec in pile.stage1.items():
+        while len(plan["paragraphs"]) < rec["paragraph"]:
+            plan["paragraphs"].append({"sentences": []})
+        plan["paragraphs"][rec["paragraph"] - 1]["sentences"].append({"stage1": tid})
+    Path(a.plan_out).write_text(json.dumps(plan, indent=2) + "\n", encoding="utf-8")
+    t = res["tot"]
+    on = sum(1 for r in res["rows"] if r["frame"] not in ("keep", ""))
+    lines = [f"# brickyard {__version__} stage 1 — {'PASS' if not res['fails'] else 'FAIL'}", "",
+             f"- sentences on a declared frame: {on} of {len(res['rows'])}; keeps "
+             f"{sum(1 for r in res['rows'] if r['frame'] == 'keep')}; gaps {res['gaps']}",
+             f"- words by source: frame {t['frame']}, draft {t['draft']}, glue {t['glue']}, "
+             f"new {t['new']} ({res['share']:.0%}; limit {a.max_new:.0%})",
+             f"- on a corpus-sentence base: {sum(1 for r in res['rows'] if r['kind'] == 'base')}; "
+             f"verbatim corpus sentences: {sum(1 for r in res['rows'] if r['kind'] == 'verbatim')}", "",
+             "| T# | from | frame | kind | fixed | fit | missing fixed words | new words | draft words lost |",
+             "|---|---|---|---|---|---|---|---|---|"]
+    for r in res["rows"]:
+        lines.append(f"| {r['id']} | {r['from']} | {r['frame']} | {r['kind']} | {r['fixed']} | {r['fit']} | "
+                     f"{r.get('missing', '')} | {r['new']} | {r['lost']} |")
+    if res["fails"]:
+        lines += ["", "## FAIL", *[f"- {x}" for x in res["fails"]]]
+    if res["warns"]:
+        lines += ["", "## Warnings", *[f"- {x}" for x in res["warns"]]]
+    lines += ["", f"Stage-2 plan written to {a.plan_out}; word swaps key on T#."]
+    rep = "\n".join(lines) + "\n"
+    if a.report:
+        Path(a.report).write_text(rep, encoding="utf-8")
+    print(rep, end="")
+    return 1 if res["fails"] else 0
+
+
+# ---------------------------------------------------------------- corpus-sentence bases (1.5.0)
+#
+# `match` indexes every sentence of the target section(s) of the corpus papers (M###) and
+# lists, per draft sentence, the corpus sentences whose content is closest. In stage1.json a
+# sentence may then name {"base": "M###"} instead of a frame. The base becomes a frame on
+# the fly: its content words that the source draft sentence does not have, its digits and
+# its names become slots; every other word is fixed. A text identical to the corpus
+# sentence is a VERBATIM reuse: another author's wording, flagged everywhere.
+
+MATCH_STOP = GLUE | frozenset("""not no also more most such than very can may might could would
+should will has have had do does did been being into upon about over between both each
+other some any all only however thus""".split())
+
+
+def canon(w: str) -> str:
+    return sorted(lemmas(w), key=lambda x: (len(x), x))[0]
+
+
+def is_content(w: str) -> bool:
+    lw = w.lower()
+    return len(lw) >= 3 and lw not in MATCH_STOP and not re.search(r"\d", lw)
+
+
+def content_lemmas(text: str) -> set[str]:
+    return {canon(w) for w in words(text) if is_content(w)}
+
+
+def corpus_sentences(corpus: Path, papers: list[str], sections: list[str]) -> list[dict]:
+    rows = []
+    for slug in papers:
+        for sec in [s for s in SECTION_ORDER if s in sections]:
+            f = corpus / "papers" / slug / "sections" / f"{sec}.txt"
+            if not f.exists():
+                continue
+            paras = [p for p in re.split(r"\n\s*\n", f.read_text(encoding="utf-8", errors="replace"))
+                     if p.strip()]
+            for pi, par in enumerate(paras, 1):
+                sents = split_sentences(par)
+                for si, s in enumerate(sents, 1):
+                    s = norm_ws(s)
+                    if not 6 <= len(words(s)) <= 80:
+                        continue
+                    pos = ("solo" if len(sents) == 1 else "initial" if si == 1
+                           else "final" if si == len(sents) else "medial")
+                    rows.append({"paper": slug, "section": sec, "pos": pos,
+                                 "source": f"{sec} [P{pi}-S{si}]", "text": s})
+    for k, r in enumerate(rows, 1):
+        r["id"] = f"M{k:04d}"
+    return rows
+
+
+def match_sections(pile: "Pile") -> list[str]:
+    mj = pile.dir / "match.json"
+    if mj.exists():
+        return json.loads(mj.read_text(encoding="utf-8"))["sections"]
+    return [pile.meta["section"]]
+
+
+def cmd_match(a) -> int:
+    pile = Pile(Path(a.pile))
+    corpus = Path(pile.meta["corpus"])
+    if not corpus.is_dir():
+        raise Blocked(f"corpus folder not reachable: {corpus}")
+    secs = [s for s in SECTION_ORDER if s != "A"] if a.all_sections else [pile.meta["section"]]
+    ms = corpus_sentences(corpus, pile.meta["papers"], secs)
+    write_tsv(pile.dir / "msent.tsv", ["id", "paper", "section", "pos", "source", "text"], ms)
+    (pile.dir / "match.json").write_text(json.dumps({"sections": secs, "top": a.top}) + "\n",
+                                         encoding="utf-8")
+    index = [(m, content_lemmas(m["text"])) for m in ms]
+    out, lines = [], []
+    for did, d in pile.draft.items():
+        dw = content_lemmas(d["text"])
+        if not dw:
+            continue
+        scored = []
+        for m, cw in index:
+            if not cw:
+                continue
+            scored.append((len(dw & cw) / len(dw), len(cw - dw) / len(cw), m))
+        scored.sort(key=lambda x: (-x[0], x[1], x[2]["id"]))
+        for rank, (match, extra, m) in enumerate(scored[:a.top], 1):
+            same = "yes" if match >= a.same_match and extra <= a.same_extra else ""
+            out.append({"draft": did, "rank": rank, "id": m["id"], "match": f"{match:.2f}",
+                        "extra": f"{extra:.2f}", "same": same, "paper": m["paper"],
+                        "section": m["section"], "pos": m["pos"], "text": m["text"]})
+        if scored:
+            b = scored[0]
+            lines.append(f"- {did}: best {b[2]['id']} match {b[0]:.2f} extra {b[1]:.2f} "
+                         f"({b[2]['paper']}/{b[2]['section']})"
+                         + ("  SAME CONTENT" if b[0] >= a.same_match and b[1] <= a.same_extra else ""))
+    write_tsv(pile.dir / "match.tsv", ["draft", "rank", "id", "match", "extra", "same", "paper",
+                                       "section", "pos", "text"], out)
+    n_same = len({r["draft"] for r in out if r["same"]})
+    print(f"# brickyard {__version__} match\n\n- corpus sentences indexed: {len(ms)} "
+          f"(sections {''.join(secs)}; papers {len(pile.meta['papers'])})\n"
+          f"- draft sentences with a same-content candidate (match >= {a.same_match:.2f}, "
+          f"extra <= {a.same_extra:.2f}): {n_same} of {len(pile.draft)}\n" + "\n".join(lines)
+          + f"\n\nwrote {pile.dir / 'msent.tsv'} and {pile.dir / 'match.tsv'}")
+    return 0
+
+
+def base_frame(pile: "Pile", rec: dict) -> dict | None:
+    """A corpus sentence turned into a frame for this record's source sentences."""
+    m = pile.msent.get(rec.get("base", ""))
+    if not m:
+        return None
+    src = rec.get("from") or []
+    src = [src] if isinstance(src, str) else src
+    keep = content_lemmas(" ".join(pile.draft[d]["text"] for d in src if d in pile.draft))
+    parts, slot = [], False
+    for tok in m["text"].split():
+        ws = words(tok)
+        open_slot = any(re.search(r"\d", w) or (is_content(w) and canon(w) not in keep) for w in ws)
+        if open_slot:
+            if not slot:
+                parts.append("[X]")
+            slot = True
+        else:
+            parts.append(tok)
+            slot = False
+    return {"id": m["id"], "kind": "frame", "paper": m["paper"], "section": m["section"],
+            "pos": m["pos"], "status": "base", "source": m["source"], "text": " ".join(parts),
+            "base_text": m["text"]}
+
+
+def stage1_brick(pile: "Pile", rec: dict) -> dict | None:
+    if rec.get("keep"):
+        return None
+    if rec.get("base"):
+        return base_frame(pile, rec)
+    return pile.form.get(rec.get("frame", ""))
+
+
 # ---------------------------------------------------------------- verify
 
 def ngrams(ws: list[str], n: int) -> set[tuple[str, ...]]:
@@ -966,9 +1582,14 @@ def cmd_verify(a) -> int:
         fails.append("the draft changed after the pile was built — rebuild the pile")
 
     recs = [r for p in asm.paragraphs for r in p]
-    frames_used = [r for r in recs if r["kind"] == "frame" and r.get("brick")]
+    frames_used = [r for r in recs if r["kind"] in ("frame", "stage1") and r.get("brick")]
     sent_used = [r for r in recs if r["kind"] == "sentence"]
-    keeps = [r for r in recs if r["kind"] == "keep"]
+    keeps = [r for r in recs if r["kind"] == "keep" or (r["kind"] == "stage1" and r.get("keep"))]
+    s1 = None
+    if any(r["kind"] == "stage1" for r in recs):
+        s1 = check_stage1(pile, a.min_fit, a.max_new)
+        fails += [f"stage 1: {x}" for x in s1["fails"]]
+        warns += [f"stage 1: {x}" for x in s1["warns"]]
     if sent_used and not a.own_corpus:
         fails.append(f"{len(sent_used)} whole corpus sentences used without --own-corpus "
                      "(verbatim reuse of another author's sentence is plagiarism)")
@@ -993,17 +1614,20 @@ def cmd_verify(a) -> int:
     if copy_hits:
         msg = (f"{len(copy_hits)} sentences repeat a {n}-word run from the corpus "
                f"that the draft did not have: " + "; ".join(f"{w} '{h}'" for w, h in copy_hits[:4]))
-        (warns if a.own_corpus else fails).append(msg)
+        (warns if a.own_corpus or a.allow_copy else fails).append(msg)
 
     # mortar shares
     tr = asm.trace
     count = lambda kinds: sum(len(words(t["text"])) for t in tr if t["kind"] in kinds)
     w_frame = count({"frame", "pick", "inflect"})
     w_bundle = count({"bundle"})
-    w_content = count({"content"}) - count({"word"})
+    # swapped-in words sit inside content and keep text; take each out of its own kind
+    sw_in = lambda pfx: sum(len(words(x["to"])) for x in asm.swaps if x["brick"].startswith(pfx))
+    w_content = count({"content"}) - sw_in("C")
     w_word = count({"word"})
     w_glue = count({"glue"})
-    w_keep = count({"keep"})
+    w_keep = count({"keep"}) - sw_in("D")
+    n_trans = sum(1 for t in tr if t["kind"] == "transform")
     w_sent = count({"sentence"})
     w_out = len(words(rev)) if rev else 0
     w_draft = len(words(pile.draft_text))
@@ -1035,9 +1659,9 @@ def cmd_verify(a) -> int:
             continue
         n_par += 1
         first, last = p[0], p[-1]
-        if first["kind"] == "frame" and first.get("brick") and first["brick"]["pos"] in ("initial", "solo"):
+        if first["kind"] in ("frame", "stage1") and first.get("brick") and first["brick"]["pos"] in ("initial", "solo"):
             open_ok += 1
-        if last["kind"] == "gap" or (last["kind"] == "frame" and last.get("brick")
+        if last["kind"] == "gap" or (last["kind"] in ("frame", "stage1") and last.get("brick")
                                       and last["brick"]["pos"] in ("final", "solo")):
             close_ok += 1
         run = 1
@@ -1082,7 +1706,7 @@ def cmd_verify(a) -> int:
         by_cat[x["category"]] = by_cat.get(x["category"], 0) + 1
     strength_sw = [x for x in sw if x["strength"] != "-"]
     unverified = [x for x in sw if x["pos"] == "unverified"]
-    used_bricks = {t["id"] for t in tr if t["kind"] in ("content", "keep")}
+    used_bricks = {t["id"] for t in tr if t["kind"] in ("content", "keep", "stage1")}
     idle = sorted(b for b in pile.swaps if b not in used_bricks)
     if idle:
         warns.append(f"swaps on bricks the plan never uses: {', '.join(idle)}")
@@ -1092,7 +1716,7 @@ def cmd_verify(a) -> int:
     foreign: dict[str, int] = {}
     if pile.attested:
         for t in tr:
-            if t["kind"] not in ("content", "keep"):
+            if t["kind"] not in ("content", "keep", "stage1"):
                 continue
             spans = term_spans(t["text"], pile.terms)
             for m in WORD_RE.finditer(t["text"]):
@@ -1102,9 +1726,41 @@ def cmd_verify(a) -> int:
                         or m.group(0)[:1].isupper() and m.start() > 0):
                     continue
                 foreign[w] = foreign.get(w, 0) + 1
+    # collocation evidence: each swapped-in word with its neighbours, counted in the corpus.
+    # Evidence for Gate 2, not a refusal: a small corpus leaves most sound pairs unattested.
+    bigrams: dict[tuple[str, str], int] = {}
+    if corpus.is_dir():
+        for slug in pile.meta["papers"]:
+            for f in sorted((corpus / "papers" / slug / "sections").glob("*.txt")):
+                ws = [x.lower() for x in words(f.read_text(encoding="utf-8", errors="replace"))]
+                for pair in zip(ws, ws[1:]):
+                    bigrams[pair] = bigrams.get(pair, 0) + 1
+    unattested = []
+    for x in sw:
+        to = [y.lower() for y in words(x["to"])]
+        sides = []
+        for side, nb in (("left", x.get("left", "")), ("right", x.get("right", ""))):
+            if not nb or not to:
+                x[f"{side}_pair"], x[f"{side}_n"] = "", ""
+                continue
+            pair = (nb.lower(), to[0]) if side == "left" else (to[-1], nb.lower())
+            x[f"{side}_pair"] = " ".join(pair)
+            if nb.lower() in GLUE:
+                x[f"{side}_n"] = "glue"
+                continue
+            x[f"{side}_n"] = str(bigrams.get(pair, 0))
+            sides.append(bigrams.get(pair, 0))
+        x["collocation"] = ("no content neighbour" if not sides else
+                            "attested" if any(sides) else "unattested")
+        if x["collocation"] == "unattested":
+            unattested.append(x)
+    if unattested:
+        warns.append(f"{len(unattested)} of {len(sw)} swaps make no corpus-attested pair with a "
+                     "content neighbour — Gate 2 reads each pair for collocation (see word-swaps.tsv)")
     if a.report:
         write_tsv(Path(a.report).with_name("word-swaps.tsv"),
-                  ["where", "brick", "from", "to", "id", "category", "strength", "pos"], sw)
+                  ["where", "brick", "from", "to", "id", "category", "strength", "pos",
+                   "left_pair", "left_n", "right_pair", "right_n", "collocation"], sw)
 
     real = [r for r in recs if r["kind"] != "gap"]
     imposed = len(frames_used) + len(sent_used)
@@ -1125,10 +1781,31 @@ def cmd_verify(a) -> int:
         f"- paragraphs opening on an opener frame: {open_ok}/{n_par}; closing on a closer or gap: {close_ok}/{n_par}",
         f"- singleton frames used: {len(singles)}" + (f" ({', '.join(singles)})" if singles else ""),
         "",
+    ]
+    if s1:
+        t1 = s1["tot"]
+        fits = [float(r["fit"]) for r in s1["rows"] if r["fit"]]
+        lines += [
+            "## Stage 1 (guided rewrite on declared frames)",
+            f"- sentences on a frame: {len(fits)} of {len(s1['rows'])}; mean fit "
+            f"{(sum(fits) / len(fits)) if fits else 0:.0%}, lowest {min(fits) if fits else 0:.0%}",
+            f"- stage-1 words by source: frame {t1['frame']}, draft {t1['draft']}, glue {t1['glue']}, "
+            f"new {t1['new']} ({s1['share']:.0%}; limit {a.max_new:.0%})",
+            *[f"  - {r['id']} {r['frame']}: new [{r['new']}]" + (f"; missing fixed [{r['missing']}]" if r.get('missing') else "")
+              + (f"; draft words lost [{r['lost']}]" if r['lost'] else "")
+              for r in s1["rows"] if r["frame"] != "keep" and (r["new"] or r.get("missing") or r["lost"])],
+            "",
+        ]
+    lines += [
         "## Word layer",
         f"- swaps: {len(sw)}" + (" (" + ", ".join(f"{k} {v}" for k, v in sorted(by_cat.items())) + ")" if sw else ""),
         f"- claim-strength swaps (same class kept; Gate 2 must read each): {len(strength_sw)}"
         + ("".join(f"\n  - {x['where']} {x['brick']}: {x['from']} -> {x['to']} [{x['strength']}]" for x in strength_sw)),
+        f"- collocation: swaps whose new word pairs with a content neighbour attested in the corpus "
+        f"{sum(1 for x in sw if x.get('collocation') == 'attested')}, unattested {len(unattested)}, "
+        f"no content neighbour {sum(1 for x in sw if x.get('collocation') == 'no content neighbour')}"
+        + "".join(f"\n  - {x['where']} {x['brick']}: {x['from']} -> {x['to']} "
+                  f"[{' | '.join(q for q in (x['left_pair'], x['right_pair']) if q)}]" for x in unattested),
         f"- protected terms in the pile: {len(pile.terms)}",
         "- strength profile draft -> revision: " + (", ".join(
             f"{c} {pd.get(c, 0)}->{pr.get(c, 0)}" for c in sorted(set(pd) | set(pr))) or "none"),
@@ -1138,8 +1815,10 @@ def cmd_verify(a) -> int:
         "## Where every word came from",
         f"- output words {w_out} (draft {w_draft})",
         f"- frame words {w_frame}, bundle words {w_bundle}, corpus sentences {w_sent}",
-        f"- content words {w_content}, corpus words swapped in {w_word}, kept draft words {w_keep}",
-        f"- glue words {w_glue} ({glue_share:.0%}; limit {a.max_glue:.0%}); inflections {n_infl}; auto fixes {n_auto}",
+        f"- content words {w_content}, corpus words swapped in {w_word}, kept draft words {w_keep}"
+        + (f", stage-1 sentence words {count({'stage1'}) - sw_in('T')}" if s1 else ""),
+        f"- glue words {w_glue} ({glue_share:.0%}; limit {a.max_glue:.0%}); inflections {n_infl}; "
+        f"content transforms {n_trans}; auto fixes {n_auto}",
         f"- copy check: {n}-word corpus runs not in the draft: {len(copy_hits)}",
         "",
     ]
@@ -1147,10 +1826,17 @@ def cmd_verify(a) -> int:
         lines += ["## FAIL", *[f"- {x}" for x in fails], ""]
     if warns:
         lines += ["## Warnings", *[f"- {x}" for x in warns], ""]
-    lines += ["Gate 1 (preservation_inventory.py) and Gate 2 (meaning) are separate and still required."]
+    lines += ["Gate 1 (preservation_inventory.py) and Gate 2 (meaning) are separate and still required.",
+              "Run Gate 1 on revision.gate1.txt (the revision with [YOU WRITE: …] gaps removed), "
+              "so that a gap's instruction text is not counted as content."]
     report = "\n".join(lines) + "\n"
     if a.report:
         Path(a.report).write_text(report, encoding="utf-8")
+    if rev is not None:
+        g1 = Path(a.report).with_name("revision.gate1.txt") if a.report else \
+            rev_path.with_name("revision.gate1.txt")
+        g1.write_text(re.sub(r"[ \t]+([.,;:])", r"\1", re.sub(r"\s*\[YOU WRITE:[^\]]*\]", "", rev)),
+                      encoding="utf-8")
     print(report, end="")
     return 0 if not fails else 1
 
@@ -1188,12 +1874,30 @@ def main() -> int:
     p.add_argument("--own-corpus", action="store_true",
                    help="the corpus is the user's own papers: whole-sentence bricks and long "
                         "corpus runs become warnings instead of failures")
+    p.add_argument("--allow-copy", action="store_true",
+                   help="experiment only: corpus runs (and verbatim corpus sentences) become "
+                        "warnings; the report marks the text as reusing other authors' wording")
     p.add_argument("--strict", action="store_true", help="fail on any keep")
     p.add_argument("--copy-limit", type=int, default=8)
     p.add_argument("--max-glue", type=float, default=0.15)
+    p.add_argument("--min-fit", type=float, default=0.75, help="stage 1: least share of a frame's fixed words")
+    p.add_argument("--max-new", type=float, default=0.10, help="stage 1: most share of new words")
+    p = sub.add_parser("match", help="index corpus sentences (M###) and rank them per draft sentence")
+    p.add_argument("--pile", required=True)
+    p.add_argument("--top", type=int, default=5)
+    p.add_argument("--all-sections", action="store_true", help="index I M R D C, not only the target section")
+    p.add_argument("--same-match", type=float, default=0.80, help="'same content': least share of draft content words")
+    p.add_argument("--same-extra", type=float, default=0.20, help="'same content': most share of corpus-only content words")
+    p = sub.add_parser("stage1", help="check the guided rewrite (stage1.json) and write the stage-2 plan")
+    p.add_argument("--pile", required=True)
+    p.add_argument("--stage1", required=True, help="the frame writer's stage1.json")
+    p.add_argument("--plan-out", required=True, help="stage-2 plan.json to write")
+    p.add_argument("--report")
+    p.add_argument("--min-fit", type=float, default=0.75)
+    p.add_argument("--max-new", type=float, default=0.10)
     a = ap.parse_args()
     try:
-        return {"pile": cmd_pile, "content": cmd_content,
+        return {"pile": cmd_pile, "content": cmd_content, "stage1": cmd_stage1, "match": cmd_match,
                 "assemble": cmd_assemble, "verify": cmd_verify}[a.cmd](a)
     except Blocked as e:
         print(f"BLOCKED: {e}", file=sys.stderr)
